@@ -13,9 +13,9 @@ import (
 // create symlink, check if symlink exist, remove symlink
 func TestCreateSymlink(t *testing.T) {
 
-	testSymlinkSrc := "/test-gswap-src"
+	testSymlinkSrc := "/test-tgshift-src"
 
-	testSymlinkDest := "/test-gswap-dest"
+	testSymlinkDest := "/test-tgshift-dest"
 
 	usr, errCurr := user.Current()
 	if errCurr != nil {
@@ -51,9 +51,9 @@ func TestCreateSymlink(t *testing.T) {
 // remove symlink, check if symlink exist
 func TestRemoveSymlink(t *testing.T) {
 
-	testSymlinkSrc := "/test-gswap-src"
+	testSymlinkSrc := "/test-tgshift-src"
 
-	testSymlinkDest := "/test-gswap-dest"
+	testSymlinkDest := "/test-tgshift-dest"
 
 	usr, errCurr := user.Current()
 	if errCurr != nil {

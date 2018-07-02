@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="The tgshift command line tool lets you switch between different versions of terragrunt.">
+
+
+    <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/favicon_tgshift_16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/favicon_tgshift_32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/favicon_tgshift_48.png" sizes="48x48">
+
+<!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>gswap | Manage terragrunt versions - the gswap command line tool lets you switch between different versions of terragrunt</title>
+<meta name="generator" content="Jekyll v3.7.3" />
+<meta property="og:title" content="gswap" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Manage terragrunt versions - the gswap command line tool lets you switch between different versions of terragrunt" />
+<meta property="og:description" content="Manage terragrunt versions - the gswap command line tool lets you switch between different versions of terragrunt" />
+<link rel="canonical" href="http://localhost:4000/docs/additional.html" />
+<meta property="og:url" content="http://localhost:4000/docs/additional.html" />
+<meta property="og:site_name" content="gswap" />
+<script type="application/ld+json">
+{"description":"Manage terragrunt versions - the gswap command line tool lets you switch between different versions of terragrunt","@type":"WebPage","url":"http://localhost:4000/docs/additional.html","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/img/logo.png"}},"headline":"gswap","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/assets/css/style.css?v=02d932388e0a2a72506260f487edab3946b0fb97">
+    <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120055973-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-120055973-1');
+    </script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <!-- <h1 style="font-size:25px;"><a href="http://localhost:4000/">gswap</a></h1> -->
+        <!-- <h1 style="font-size:25px; text-align: center"><a href="http://localhost:4000/">tgshift</a></h1> -->
+
+        <p align="center">
+          <img align="middle" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/logo.png" alt="Logo" />
+        </p>
+
+        <p style="text-align: center">Manage terragrunt versions - the gswap command line tool lets you switch between different versions of terragrunt</p>
+        <!-- <p>Written in go</p> -->
+        <img src="https://travis-ci.org/warrensbox/terragrunt-switcher.svg?branch=master" alt="Travis" />
+        <img src="https://goreportcard.com/badge/github.com/warrensbox/terragrunt-switcher" alt="Go Report" />
+
+        <hr style="margin-top: 20px;">
+
+        
+        <ul>
+          <li><a href="https://github.com/warrensbox/terragrunt-switcher/releases/download//terragrunt-switcher__darwin_amd64.tar.gz">Download <strong>MacOS</strong></a></li>
+          <li><a href="https://github.com/warrensbox/terragrunt-switcher/releases/download//terragrunt-switcher__linux_amd64.tar.gz">Download <strong>Linux</strong></a></li>
+          <li><a href="https://github.com/warrensbox/terragrunt-switcher/releases">Releases On <strong>GitHub</strong></a></li>
+        </ul>
+        
+      </header>
+      <section>
+
+      
+<p><a href="index">Back to main</a></p>
+
+<h2 id="upgrade">Upgrade:</h2>
+
+<h3 id="homebrew">Homebrew</h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">brew</span> <span class="n">upgrade</span> <span class="n">warrensbox</span><span class="o">/</span><span class="n">tap</span><span class="o">/</span><span class="n">tgshift</span>
+</code></pre></div></div>
+<h3 id="linux">Linux</h3>
+
+<p>Rerun:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-L</span> https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
+</code></pre></div></div>
+
+<h2 id="uninstall">Uninstall:</h2>
+
+<h3 id="homebrew-1">Homebrew</h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">brew</span> <span class="n">uninstall</span> <span class="n">warrensbox</span><span class="o">/</span><span class="n">tap</span><span class="o">/</span><span class="n">tgshift</span>
+</code></pre></div></div>
+<h3 id="linux-1">Linux</h3>
+
+<p>Rerun:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rm /usr/local/bin/tgshift
+</code></pre></div></div>
+
+<h2 id="troubleshoot">Troubleshoot:</h2>
+
+<p>Common issues:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="ss">install: </span><span class="n">can</span><span class="err">'</span><span class="n">t</span> <span class="n">change</span> <span class="n">permissions</span> <span class="n">of</span> <span class="sr">/usr/</span><span class="n">local</span><span class="o">/</span><span class="ss">bin: </span><span class="no">Operation</span> <span class="n">not</span> <span class="n">permitted</span>
+</code></pre></div></div>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"Unable to remove symlink. You must have SUDO privileges"</span>
+</code></pre></div></div>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"Unable to create symlink. You must have SUDO privileges"</span>
+</code></pre></div></div>
+<p>You probably need to have <strong>sudo</strong> privileges to install <em>tgshift</em>.</p>
+
+<p><a href="#upgrade">Back to top</a>  <br />
+<a href="index">Back to main</a></p>
+
+      
+      <p><small>VERSION: . This project is maintained by <a href="http://github.com/warrensbox">warrensbox</a></small></p>
+      
+      </section>
+      <footer>
+        <!-- <p><small>View other products &mdash; by <a href="http://warren.veerasingam.com/#about_me" target="_blank">Warren Veerasingam</a></small></p> -->
+        <p><small>VERSION: . This project is maintained by <a href="http://github.com/warrensbox">warrensbox</a></small></p>
+      </footer>
+    </div>
+    <script src="/assets/js/scale.fix.js"></script>
+    
+  </body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="The tgshift command line tool lets you switch between different versions of terragrunt.">
+
+
+    <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/favicon_tgshift_16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/favicon_tgshift_32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/favicon_tgshift_48.png" sizes="48x48">
+
+<!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>Terragrunt Switcher | gswap</title>
+<meta name="generator" content="Jekyll v3.7.3" />
+<meta property="og:title" content="Terragrunt Switcher" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Manage terragrunt versions - the gswap command line tool lets you switch between different versions of terragrunt" />
+<meta property="og:description" content="Manage terragrunt versions - the gswap command line tool lets you switch between different versions of terragrunt" />
+<link rel="canonical" href="http://localhost:4000/" />
+<meta property="og:url" content="http://localhost:4000/" />
+<meta property="og:site_name" content="gswap" />
+<script type="application/ld+json">
+{"name":"gswap","description":"Manage terragrunt versions - the gswap command line tool lets you switch between different versions of terragrunt","@type":"WebSite","url":"http://localhost:4000/","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/img/logo.png"}},"headline":"Terragrunt Switcher","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/assets/css/style.css?v=02d932388e0a2a72506260f487edab3946b0fb97">
+    <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120055973-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-120055973-1');
+    </script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <!-- <h1 style="font-size:25px;"><a href="http://localhost:4000/">gswap</a></h1> -->
+        <!-- <h1 style="font-size:25px; text-align: center"><a href="http://localhost:4000/">tgshift</a></h1> -->
+
+        <p align="center">
+          <img align="middle" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/logo.png" alt="Logo" />
+        </p>
+
+        <p style="text-align: center">Manage terragrunt versions - the gswap command line tool lets you switch between different versions of terragrunt</p>
+        <!-- <p>Written in go</p> -->
+        <img src="https://travis-ci.org/warrensbox/terragrunt-switcher.svg?branch=master" alt="Travis" />
+        <img src="https://goreportcard.com/badge/github.com/warrensbox/terragrunt-switcher" alt="Go Report" />
+
+        <hr style="margin-top: 20px;">
+
+        
+        <ul>
+          <li><a href="https://github.com/warrensbox/terragrunt-switcher/releases/download//terragrunt-switcher__darwin_amd64.tar.gz">Download <strong>MacOS</strong></a></li>
+          <li><a href="https://github.com/warrensbox/terragrunt-switcher/releases/download//terragrunt-switcher__linux_amd64.tar.gz">Download <strong>Linux</strong></a></li>
+          <li><a href="https://github.com/warrensbox/terragrunt-switcher/releases">Releases On <strong>GitHub</strong></a></li>
+        </ul>
+        
+      </header>
+      <section>
+
+      <h1 id="terragrunt-switcher">Terragrunt Switcher</h1>
+
+<p>The <code class="highlighter-rouge">tgshift</code> command line tool lets you switch between different versions of <a href="https://www.terragrunt.io/" target="_blank">terragrunt</a>. 
+If you do not have a particular version of terragrunt installed, <code class="highlighter-rouge">tgshift</code> will download the version you desire.
+The installation is minimal and easy. 
+Once installed, simply select the version you require from the dropdown and start using terragrunt.</p>
+
+<hr />
+
+<h2 id="installation">Installation</h2>
+
+<p><code class="highlighter-rouge">tgshift</code> is available for MacOS and Linux based operating systems.</p>
+
+<h3 id="homebrew">Homebrew</h3>
+
+<p>Installation for MacOS is the easiest with Homebrew. <a href="https://brew.sh/" target="_blank">If you do not have homebrew installed, click here</a>.</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">brew</span> <span class="n">install</span> <span class="n">warrensbox</span><span class="o">/</span><span class="n">tap</span><span class="o">/</span><span class="n">tgshift</span>
+</code></pre></div></div>
+
+<h3 id="linux">Linux</h3>
+
+<p>Installation for Linux operation systems.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-L</span> https://raw.githubusercontent.com/warrensbox/terragrunt-switcher/release/install.sh | bash
+</code></pre></div></div>
+
+<h3 id="install-from-source">Install from source</h3>
+
+<p>Alternatively, you can install the binary from the source <a href="https://github.com/warrensbox/terragrunt-switcher/releases">here</a></p>
+
+<hr />
+
+<h2 id="how-to-use">How to use:</h2>
+<h3 id="use-dropdown-menu-to-select-version">Use dropdown menu to select version</h3>
+<p><img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/tgshift.gif" alt="drawing" style="width: 480px;" /></p>
+
+<ol>
+  <li>You can switch between different versions of terragrunt by typing the command <code class="highlighter-rouge">tgshift</code> on your terminal.</li>
+  <li>Select the version of terragrunt you require by using the up and down arrow.</li>
+  <li>Hit <strong>Enter</strong> to select the desired version.</li>
+</ol>
+
+<p>The most recently selected versions are presented at the top of the dropdown.</p>
+
+<h3 id="supply-version-on-command-line">Supply version on command line</h3>
+<p><img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/tgshift-v4.gif" alt="drawing" style="width: 480px;" /></p>
+
+<ol>
+  <li>You can also supply the desired version as an argument on the command line.</li>
+  <li>For example, <code class="highlighter-rouge">tgshift 0.10.5</code> for version 0.10.5 of terragrunt.</li>
+  <li>Hit <strong>Enter</strong> to switch.</li>
+</ol>
+
+<hr />
+
+<h2 id="issues">Issues</h2>
+
+<p>Please open  <em>issues</em> here: <a href="https://github.com/warrensbox/terragrunt-switcher/issues" target="_blank">New Issue</a></p>
+
+<hr />
+
+<p>See how to <em>upgrade</em>, <em>uninstall</em>, <em>troubleshoot</em> here:
+<a href="additional">Additional Info</a></p>
+
+      
+      <p><small>VERSION: . This project is maintained by <a href="http://github.com/warrensbox">warrensbox</a></small></p>
+      
+      </section>
+      <footer>
+        <!-- <p><small>View other products &mdash; by <a href="http://warren.veerasingam.com/#about_me" target="_blank">Warren Veerasingam</a></small></p> -->
+        <p><small>VERSION: . This project is maintained by <a href="http://github.com/warrensbox">warrensbox</a></small></p>
+      </footer>
+    </div>
+    <script src="/assets/js/scale.fix.js"></script>
+    
+  </body>
+</html>

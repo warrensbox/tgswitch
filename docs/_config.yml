@@ -1,0 +1,11 @@
+theme: jekyll-theme-minimal
+#github: [metadata] 
+repository: warrensbox/terragrunt-switcher
+logo: /assets/img/logo.png
+title: tgshift
+
+show_downloads: true
+
+exclude: [vendor]
+
+#github: [metadata] 
