@@ -101,13 +101,11 @@ type tgVersionList struct {
 //GetTGList :  Get the list of available terraform version given the hashicorp url
 func GetTGList(gruntURL string) ([]string, error) {
 
-	url := "https://api.github.com/repos/gruntwork-io/terragrunt/releases"
-
 	gswitch := http.Client{
 		Timeout: time.Second * 2, // Maximum of 2 secs
 	}
 
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+	req, err := http.NewRequest(http.MethodGet, gruntURL, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
