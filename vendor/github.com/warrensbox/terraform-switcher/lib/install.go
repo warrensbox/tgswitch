@@ -119,7 +119,7 @@ func Install(tfversion string) {
 
 	/* set symlink to desired version */
 	CreateSymlink(installLocation+installVersion+tfversion, installedBinPath)
-	fmt.Printf("Swicthed terragruntto version %q \n", tfversion)
+	fmt.Printf("Swicthed terragrunt to version %q \n", tfversion)
 	os.Exit(0)
 }
 
