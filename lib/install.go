@@ -90,7 +90,7 @@ func Install(tgversion string) {
 	}
 
 	/* if selected version already exist, */
-	/* proceed to download it from the hashicorp release page */
+	/* proceed to download it from the terragrunt release page */
 
 	url := gruntURL + "v" + tgversion + "/" + "terragrunt" + "_" + goos + "_" + goarch
 	file, _ := DownloadFromURL(installLocation, url)
