@@ -6,7 +6,6 @@
 
 <img style="text-allign:center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/smallerlogo.png" alt="drawing" width="110" height="140"/>
 
-<!-- ![gopher](https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/logo.png =100x20) -->
 
 The `tgshift` command line tool lets you switch between different versions of [terragrunt](https://www.terragrunt.io/). 
 If you do not have a particular version of terragrunt installed, `tgshift` will download the version you desire.
