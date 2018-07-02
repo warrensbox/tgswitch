@@ -7,14 +7,12 @@ package main
 
 /*** OPERATION WORKFLOW ***/
 /*
-* 1- Create /usr/local/terraform directory if does not exist
-* 2- Download zip file from url to /usr/local/terraform
-* 3- Unzip the file to /usr/local/terraform
-* 4- Rename the file from `terraform` to `terraform_version`
-* 5- Remove the downloaded zip file
-* 6- Read the existing symlink for terraform (Check if it's a homebrew symlink)
-* 7- Remove that symlink (Check if it's a homebrew symlink)
-* 8- Create new symlink to binary  `terraform_version`
+* 1- Create /usr/local/terragrunt directory if does not exist
+* 2- Download binary file from url to /usr/local/terragrunt
+* 3- Rename the file from `terragrunt` to `terragrunt_version`
+* 4- Read the existing symlink for terragrunt (Check if it's a homebrew symlink)
+* 6- Remove that symlink (Check if it's a homebrew symlink)
+* 7- Create new symlink to binary  `terragrunt_version`
  */
 
 import (
@@ -28,10 +26,10 @@ import (
 )
 
 const (
-	hashiURL = "https://api.github.com/repos/gruntwork-io/terragrunt/releases"
+	terragruntURL = "https://api.github.com/repos/gruntwork-io/terragrunt/releases"
 )
 
-var version = "0.3.0\n"
+var version = "0.1.0\n"
 
 func main() {
 
@@ -40,28 +38,28 @@ func main() {
 
 	if len(args) == 0 {
 
-		tflist, _ := lib.GetTGList(hashiURL)
+		tglist, _ := lib.GetTGList(terragruntURL)
 		recentVersions, _ := lib.GetRecentVersions() //get recent versions from RECENT file
-		tflist = append(recentVersions, tflist...)   //append recent versions to the top of the list
-		tflist = lib.RemoveDuplicateVersions(tflist) //remove duplicate version
+		tglist = append(recentVersions, tglist...)   //append recent versions to the top of the list
+		tglist = lib.RemoveDuplicateVersions(tglist) //remove duplicate version
 
-		/* prompt user to select version of terraform */
+		/* prompt user to select version of terragrunt */
 		prompt := promptui.Select{
-			Label: "Select Terraform version",
-			Items: tflist,
+			Label: "Select terragrunt version",
+			Items: tglist,
 		}
 
-		_, tfversion, errPrompt := prompt.Run()
+		_, tgversion, errPrompt := prompt.Run()
 
 		if errPrompt != nil {
 			log.Printf("Prompt failed %v\n", errPrompt)
 			os.Exit(1)
 		}
 
-		fmt.Printf("Terraform version %q selected\n", tfversion)
-		lib.AddRecent(tfversion) //add to recent file for faster lookup
-		lib.Install(tfversion)
-
+		fmt.Printf("Terragrunt version %q selected\n", tgversion)
+		lib.Install(tgversion)
+		lib.AddRecent(tgversion) //add to recent file for faster lookup (cache)
+		os.Exit(0)
 	} else {
 		usageMessage()
 	}
@@ -71,5 +69,5 @@ func main() {
 func usageMessage() {
 	fmt.Print("\n\n")
 	getopt.PrintUsage(os.Stderr)
-	fmt.Println("Supply the terraform version as an argument, or choose from a menu")
+	fmt.Println("Supply the terragrunt version as an argument, or choose from a menu")
 }

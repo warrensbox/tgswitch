@@ -113,7 +113,7 @@ func Install(tfversion string) {
 	if !exist {
 		fmt.Println("Symlink does not exist")
 	} else {
-		fmt.Println("Symlink exist")
+		//fmt.Println("Symlink exist")
 		RemoveSymlink(installedBinPath)
 	}
 

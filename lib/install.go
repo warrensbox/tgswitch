@@ -10,13 +10,11 @@ import (
 )
 
 const (
-	hashiURL       = "https://github.com/gruntwork-io/terragrunt/releases/download/"
+	gruntURL       = "https://github.com/gruntwork-io/terragrunt/releases/download/"
 	installFile    = "terragrunt"
 	installVersion = "terragrunt_"
 	binLocation    = "/usr/local/bin/terragrunt"
 	installPath    = "/.terragrunt.versions/"
-	macOS          = "_darwin_amd64.zip"
-	linux          = "_darwin_amd64.zip"
 	recentFile     = "RECENT"
 )
 
@@ -35,22 +33,21 @@ func init() {
 	/* set installation location */
 	installLocation = usr.HomeDir + installPath
 
-	/* set default binary path for terraform */
+	/* set default binary path for terragrunt */
 	installedBinPath = binLocation
 
-	/* find terraform binary location if terraform is already installed*/
+	/* find terragrunt binary location if terragrunt is already installed*/
 	cmd := NewCommand("terragrunt")
 	next := cmd.Find()
-	//existed := false
 
-	/* overrride installation default binary path if terraform is already installed */
+	/* overrride installation default binary path if terragrunt is already installed */
 	/* find the last bin path */
 	for path := next(); len(path) > 0; path = next() {
 		fmt.Printf("Found installation path: %v \n", path)
 		installedBinPath = path
 	}
 
-	fmt.Printf("Terraform binary path: %v \n", installedBinPath)
+	fmt.Printf("Terragrunt binary path: %v \n", installedBinPath)
 
 	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
@@ -58,76 +55,60 @@ func init() {
 }
 
 //Install : Install the provided version in the argument
-func Install(tfversion string) {
+func Install(tgversion string) {
 
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
 
 	/* check if selected version already downloaded */
-	fileExist := CheckFileExist(installLocation + installVersion + tfversion)
+	fileExist := CheckFileExist(installLocation + installVersion + tgversion)
+
+	//fmt.Println(fileExist)
 
 	/* if selected version already exist, */
 	if fileExist {
-		/* remove current symlink if exist*/
-		exist := CheckFileExist(installedBinPath)
 
-		if !exist {
-			fmt.Println("Symlink does not exist")
-		} else {
+		/* remove current symlink if exist*/
+		symlinkExist := CheckSymlink(installedBinPath)
+
+		if symlinkExist {
+			fmt.Println("Reset symlink")
 			RemoveSymlink(installedBinPath)
 		}
-
 		/* set symlink to desired version */
-		CreateSymlink(installLocation+installVersion+tfversion, installedBinPath)
-		fmt.Printf("Swicthed terraform to version %q \n", tfversion)
-		os.Exit(0)
+		CreateSymlink(installLocation+installVersion+tgversion, installedBinPath)
+		fmt.Printf("Switched terragrunt to version %q \n", tgversion)
+		return
+	}
+
+	/* remove current symlink if exist*/
+	symlinkExist := CheckSymlink(installedBinPath)
+
+	if symlinkExist {
+		fmt.Println("Reset symlink")
+		RemoveSymlink(installedBinPath)
 	}
 
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
 
-	//https: //github.com/gruntwork-io/terragrunt/releases/download/v0.14.11/terragrunt_darwin_386
+	url := gruntURL + "v" + tgversion + "/" + "terragrunt" + "_" + goos + "_" + goarch
+	file, _ := DownloadFromURL(installLocation, url)
 
-	url := hashiURL + "v" + tfversion + "/" + "terragrunt" + "_" + goos + "_" + goarch
-	zipFile, _ := DownloadFromURL(installLocation, url)
+	fmt.Printf("Downloaded File: %v \n", file)
 
-	fmt.Printf("Downloaded zipFile: %v \n", zipFile)
+	/* rename file to terragrunt version name - terragrunt_x.x.x */
+	RenameFile(installLocation+installFile+"_"+goos+"_"+goarch, installLocation+installVersion+tgversion)
 
-	/* unzip the downloaded zipfile */
-	// files, errUnzip := Unzip(zipFile, installLocation)
-	// if errUnzip != nil {
-	// 	fmt.Println("Unable to unzip downloaded zip file")
-	// 	log.Fatal(errUnzip)
-	// 	os.Exit(1)
-	// }
-
-	//fmt.Println("Unzipped: " + strings.Join(files, "\n"))
-
-	/* rename unzipped file to terraform version name - terraform_x.x.x */
-	RenameFile(installLocation+installFile+"_"+goos+"_"+goarch, installLocation+installVersion+tfversion)
-
-	/* remove zipped file to clear clutter */
-	RemoveFiles(installLocation + installVersion + "_" + goos + "_" + goarch)
-
-	/* remove current symlink if exist*/
-	exist := CheckFileExist(installedBinPath)
-
-	if !exist {
-		fmt.Println("Symlink does not exist")
-	} else {
-		fmt.Println("Symlink exist")
-		RemoveSymlink(installedBinPath)
-	}
-
-	err := os.Chmod(installLocation+installVersion+tfversion, 0755)
+	err := os.Chmod(installLocation+installVersion+tgversion, 0755)
 	if err != nil {
 		log.Println(err)
 	}
 
 	/* set symlink to desired version */
-	CreateSymlink(installLocation+installVersion+tfversion, installedBinPath)
-	fmt.Printf("Swicthed terraform to version %q \n", tfversion)
-	os.Exit(0)
+	CreateSymlink(installLocation+installVersion+tgversion, installedBinPath)
+	fmt.Printf("Switched terragrunt to version %q \n", tgversion)
+	return
 }
 
 // AddRecent : add to recent file
