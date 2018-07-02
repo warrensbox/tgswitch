@@ -1,0 +1,87 @@
+# This is an example goreleaser.yaml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+builds:
+  - ldflags:
+    - -s -w -X "main.version={{.Env.RELEASE_VERSION}}"
+  - main: main.go
+    binary: tgshift
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+checksum:
+  name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_checksums.txt'
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+archive:
+  name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+  replacements:
+    darwin: darwin
+    linux: linux
+    386: 386
+    amd64: amd64
+  format_overrides:
+  - goos: windows
+    format: zip
+brew:
+  # Name of the recipe
+  # Default to project name
+  name: tgshift
+
+  # Reporitory to push the tap to.
+  github:
+    owner: warrensbox
+    name: homebrew-tap
+
+  # Allows you to set a custom download strategy.
+  # Default is empty.
+  #download_strategy: GitHubPrivateRepositoryReleaseDownloadStrategy
+
+  # Git author used to commit to the repository.
+  # Defaults are shown.
+  commit_author:
+    name: Warren Veerasingam
+    email: warren.veerasingam@gmail.com
+
+  # Folder inside the repository to put the formula.
+  # Default is the root folder.
+  folder: Formula
+
+  # Caveats for the user of your binary.
+  # Default is empty.
+  caveats: "Type 'tgshift' on your command line and choose the terragrunt version that you want from the dropdown. This command currently only works on MacOs and Linux"
+
+  # Your app's homepage.
+  # Default is empty.
+  homepage: "https://warrensbox.github.io/terragrunt-switcher"
+
+  # Your app's description.
+  # Default is empty.
+  description: "The tgshift command lets you switch between terragrunt versions."
+
+  # Setting this will prevent goreleaser to actually try to commit the updated
+  # formula - instead, the formula file will be stored on the dist folder only,
+  # leaving the responsibility of publishing it to the user.
+  # Default is false.
+  skip_upload: false
+
+  # Packages that conflict with your package.
+  # conflicts:
+  #   - terragrunt
+
+  # So you can `brew test` your formula.
+  # Default is empty.
+  test: |
+    system "#{bin}/tgshift --version"
+
+  # Custom install script for brew.
+  # Default is 'bin.install "program"'.
+  install: |
+    bin.install "tgshift"
+

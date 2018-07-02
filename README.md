@@ -4,7 +4,7 @@
 
 # Terragrunt Switcher 
 
-<img style="text-allign:center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/smallerlogo.png" alt="drawing" width="120" height="130"/>
+<img style="text-allign:center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/smallerlogo.png" alt="drawing" width="110" height="140"/>
 
 <!-- ![gopher](https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/logo.png =100x20) -->
 

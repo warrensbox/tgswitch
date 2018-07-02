@@ -1,0 +1,103 @@
+# Golang CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.10
+
+    working_directory: /go/src/github.com/warrensbox/terragrunt-switcher
+
+    steps:
+      - checkout
+      - run: go get -v -t -d ./...
+      - run: go vet -tests=false ./...
+      - run: go test -v ./...
+      - run: mkdir -p build
+      - run: go build -v -o build/tgshift
+
+      - persist_to_workspace:
+          root: build
+          paths: tgshift
+
+  test-ubuntu:
+    docker:
+      - image: "circleci/ubuntu-server"
+
+    steps:
+    
+      - run: ls
+
+      - attach_workspace:
+          at: build
+
+  test-alpine:
+    docker:
+      - image: "mhart/alpine-node"
+
+    steps:
+      - run: ls
+
+  develop-master:
+    docker:
+      - image: circleci/golang:1.10
+
+    steps:
+      - checkout
+      - run: 
+          command: |
+            echo "Placeholder"
+
+
+  release:
+    docker:
+      - image: warrensbox/go-rb-py-aws
+
+    steps:
+      - checkout
+      - run: 
+          command: |
+            set +e
+            source version
+            export RELEASE_VERSION; 
+            RELEASE_VERSION=$RELEASE_VERSION.${CIRCLE_BUILD_NUM}
+            export RELEASE_VERSION;
+            echo $RELEASE_VERSION
+            cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
+            go get -v -t -d ./...
+            git config user.email "warren.veerasingam@gmail.com"
+            git config user.name "warrensbox"
+            git tag -a ${RELEASE_VERSION} -m "Release Version"
+            git push origin ${RELEASE_VERSION}
+            curl -L https://git.io/goreleaser | VERSION=v0.76.1 bash
+
+workflows:
+  version: 2
+
+  build_and_test:
+    jobs:
+      - build
+      - test-ubuntu:
+          requires:
+            - build
+      - test-alpine:
+          requires:
+            - build
+      - develop-master:
+          requires:
+            - test-ubuntu
+            - test-alpine
+          filters:
+            branches:
+              only: 
+              - master
+              - release
+      - release:
+          requires:
+            - develop-master
+          filters:
+            branches:
+              only: 
+              - release
+
