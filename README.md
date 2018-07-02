@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/warrensbox/terragrunt-switcher.svg?branch=master)](https://travis-ci.org/warrensbox/terragrunt-switcher)
 [![Go Report Card](https://goreportcard.com/badge/github.com/warrensbox/terragrunt-switcher)](https://goreportcard.com/report/github.com/warrensbox/terragrunt-switcher)
-[![CircleCI](https://circleci.com/gh/warrensbox/terragrunt-switcher/tree/master.svg?style=shield&circle-token=55ddceec95ff67eb38269152282f8a7d761c79a5)](https://circleci.com/gh/warrensbox/terragrunt-switcher)
+[![CircleCI](https://circleci.com/gh/warrensbox/terragrunt-switcher/tree/master.svg?style=shield&circle-token=d74b0de145c45b1d0da97f817363c77350e1a121)](https://circleci.com/gh/warrensbox/terragrunt-switcher)
 
 # Terragrunt Switcher 
 

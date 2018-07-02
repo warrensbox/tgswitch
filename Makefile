@@ -33,6 +33,3 @@ dep:
 	dep ensure
 
 
-test-local:
-	go get -v -t -d ./...
-	go test -v ./...
