@@ -45,10 +45,10 @@
   version = "v0.0.3"
 
 [[projects]]
-  name = "github.com/warrensbox/terragrunt-switcher"
-  packages = ["lib"]
-  revision = "a0300baf7b0b114824461d43c0007ef749d15c63"
-  version = "0.4.552"
+  branch = "master"
+  name = "github.com/pborman/getopt"
+  packages = ["."]
+  revision = "7148bc3a4c3008adfcab60cbebfd0576018f330b"
 
 [[projects]]
   branch = "master"
@@ -59,6 +59,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c92e95aced0d161e62ae6776817813764dc163965e5d7a1728b4d2b4b211db1d"
+  inputs-digest = "b0fd45285cf73ebc6a8c5a7d4621fff9c6ad0e6e5f69099da74e9fd9341eda10"
   solver-name = "gps-cdcl"
   solver-version = 1
