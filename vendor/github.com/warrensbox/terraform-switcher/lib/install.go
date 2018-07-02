@@ -36,22 +36,22 @@ func init() {
 	/* set installation location */
 	installLocation = usr.HomeDir + installPath
 
-	/* set default binary path for terraform */
+	/* set default binary path for terragrunt*/
 	installedBinPath = binLocation
 
-	/* find terraform binary location if terraform is already installed*/
+	/* find terragruntbinary location if terragruntis already installed*/
 	cmd := NewCommand("terraform")
 	next := cmd.Find()
 	//existed := false
 
-	/* overrride installation default binary path if terraform is already installed */
+	/* overrride installation default binary path if terragruntis already installed */
 	/* find the last bin path */
 	for path := next(); len(path) > 0; path = next() {
 		fmt.Printf("Found installation path: %v \n", path)
 		installedBinPath = path
 	}
 
-	fmt.Printf("Terraform binary path: %v \n", installedBinPath)
+	fmt.Printf("Terragrunt  binary path: %v \n", installedBinPath)
 
 	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
@@ -80,7 +80,7 @@ func Install(tfversion string) {
 
 		/* set symlink to desired version */
 		CreateSymlink(installLocation+installVersion+tfversion, installedBinPath)
-		fmt.Printf("Swicthed terraform to version %q \n", tfversion)
+		fmt.Printf("Swicthed terragruntto version %q \n", tfversion)
 		os.Exit(0)
 	}
 
@@ -101,7 +101,7 @@ func Install(tfversion string) {
 
 	fmt.Println("Unzipped: " + strings.Join(files, "\n"))
 
-	/* rename unzipped file to terraform version name - terraform_x.x.x */
+	/* rename unzipped file to terragruntversion name - terraform_x.x.x */
 	RenameFile(installLocation+installFile, installLocation+installVersion+tfversion)
 
 	/* remove zipped file to clear clutter */
@@ -119,7 +119,7 @@ func Install(tfversion string) {
 
 	/* set symlink to desired version */
 	CreateSymlink(installLocation+installVersion+tfversion, installedBinPath)
-	fmt.Printf("Swicthed terraform to version %q \n", tfversion)
+	fmt.Printf("Swicthed terragruntto version %q \n", tfversion)
 	os.Exit(0)
 }
 
