@@ -74,8 +74,9 @@ jobs:
             
             cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
 
-            git tag -a ${RELEASE_VERSION} -m "Release Version"
-            git push origin ${RELEASE_VERSION}
+            git checkout master
+
+            git merge release
 
 
 workflows:
