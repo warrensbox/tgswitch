@@ -9,8 +9,6 @@ import (
 //CreateSymlink : create symlink
 func CreateSymlink(cwd string, dir string) {
 
-	fmt.Println("CREATe")
-
 	err := os.Symlink(cwd, dir)
 	if err != nil {
 		fmt.Println(err)
