@@ -102,7 +102,7 @@ type tgVersionList struct {
 func GetTGList(gruntURL string) ([]string, error) {
 
 	gswitch := http.Client{
-		Timeout: time.Second * 2, // Maximum of 2 secs
+		Timeout: time.Second * 2, // Maximum of 2 secs [decresing this seem to fail]
 	}
 
 	req, err := http.NewRequest(http.MethodGet, gruntURL, nil)
