@@ -54,7 +54,7 @@ The most recently selected versions are presented at the top of the dropdown.
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/tgshift-v4.gif" alt="drawing" style="width: 170px;"/>
 
 1. You can also supply the desired version as an argument on the command line.
-2. For example, `tgshift 0.10.5` for version 0.10.5 of terragrunt.
+2. For example, `tgshift 0.10.7` for version 0.10.7 of terragrunt.
 3. Hit **Enter** to switch version.
 
 ## Additional Info
