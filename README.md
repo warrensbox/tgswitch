@@ -55,7 +55,7 @@ The most recently selected versions are presented at the top of the dropdown.
 
 1. You can also supply the desired version as an argument on the command line.
 2. For example, `tgshift 0.10.5` for version 0.10.5 of terragrunt.
-3. Hit **Enter** to switch.
+3. Hit **Enter** to switch version.
 
 ## Additional Info
 
@@ -65,10 +65,3 @@ See how to *upgrade*, *uninstall*, *troubleshoot* here:[More info](https://warre
 ## Issues
 
 Please open  *issues* here:  [New Issue](https://github.com/warrensbox/terragrunt-switcher/issues)
-
-
-
-
-
-
-
