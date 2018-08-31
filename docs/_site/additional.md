@@ -6,7 +6,7 @@
 ### Homebrew
 
 ```ruby
-brew upgrade warrensbox/tap/tgshift
+brew upgrade warrensbox/tap/tgswitch
 ```
 ### Linux
 
@@ -21,14 +21,14 @@ curl -L https://raw.githubusercontent.com/warrensbox/terragrunt-switcher/release
 ### Homebrew
 
 ```ruby
-brew uninstall warrensbox/tap/tgshift
+brew uninstall warrensbox/tap/tgswitch
 ```
 ### Linux
 
 Rerun:
 
 ```sh
-rm /usr/local/bin/tgshift
+rm /usr/local/bin/tgswitch
 ```
 
 ## Troubleshoot:
@@ -45,7 +45,7 @@ install: can't change permissions of /usr/local/bin: Operation not permitted
 ```ruby
 "Unable to create symlink. You must have SUDO privileges"
 ```
-You probably need to have **sudo** privileges to install *tgshift*.
+You probably need to have **sudo** privileges to install *tgswitch*.
 
 [Back to top](#upgrade)    
 [Back to main](index)

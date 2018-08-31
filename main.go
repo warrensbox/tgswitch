@@ -34,7 +34,7 @@ var version = "0.1.0\n"
 
 func main() {
 
-	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tgshift")
+	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tgswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
 	_ = versionFlag
 

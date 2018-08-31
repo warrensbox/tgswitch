@@ -4,20 +4,20 @@
 
 # Terragrunt Switcher 
 
-<img style="text-allign:center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/smallerlogo.png" alt="drawing" width="110" height="140"/>
+<img style="text-allign:center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/smallerlogo.png" alt="drawing" width="110" height="140"/>
 
 
-The `tgshift` command line tool lets you switch between different versions of [terragrunt](https://www.terragrunt.io/). 
-If you do not have a particular version of terragrunt installed, `tgshift` will download the version you desire.
+The `tgswitch` command line tool lets you switch between different versions of [terragrunt](https://www.terragrunt.io/). 
+If you do not have a particular version of terragrunt installed, `tgswitch` will download the version you desire.
 The installation is minimal and easy. 
 Once installed, simply select the version you require from the dropdown and start using terragrunt. 
 
 
-See installation guide here: [tgshift installation](https://warrensbox.github.io/terragrunt-switcher/)
+See installation guide here: [tgswitch installation](https://warrensbox.github.io/terragrunt-switcher/)
 
 ## Installation
 
-`tgshift` is available for MacOS and Linux based operating systems.
+`tgswitch` is available for MacOS and Linux based operating systems.
 
 ### Homebrew
 
@@ -25,7 +25,7 @@ Installation for MacOS is the easiest with Homebrew. [If you do not have homebre
 
 
 ```ruby
-brew install warrensbox/tap/tgshift
+brew install warrensbox/tap/tgswitch
 ```
 
 ### Linux
@@ -42,19 +42,19 @@ Alternatively, you can install the binary from source [here](https://github.com/
 
 ## How to use:
 ### Use dropdown menu to select version
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/tgshift.gif" alt="drawing" style="width: 180px;"/>
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/tgswitch.gif" alt="drawing" style="width: 180px;"/>
 
-1.  You can switch between different versions of terragrunt by typing the command `tgshift` on your terminal. 
+1.  You can switch between different versions of terragrunt by typing the command `tgswitch` on your terminal. 
 2.  Select the version of terragrunt you require by using the up and down arrow.
 3.  Hit **Enter** to select the desired version.
 
 The most recently selected versions are presented at the top of the dropdown.
 
 ### Supply version on command line
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgshift/tgshift-v4.gif" alt="drawing" style="width: 170px;"/>
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/tgswitch-v4.gif" alt="drawing" style="width: 170px;"/>
 
 1. You can also supply the desired version as an argument on the command line.
-2. For example, `tgshift 0.10.7` for version 0.10.7 of terragrunt.
+2. For example, `tgswitch 0.10.7` for version 0.10.7 of terragrunt.
 3. Hit **Enter** to switch version.
 
 ## Additional Info
