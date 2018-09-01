@@ -4,7 +4,7 @@ builds:
   - ldflags:
     - -s -w -X "main.version={{.Env.RELEASE_VERSION}}"
   - main: main.go
-    binary: tgshift
+    binary: tgswitch
     goos:
       - windows
       - darwin
@@ -32,7 +32,7 @@ archive:
 brew:
   # Name of the recipe
   # Default to project name
-  name: tgshift
+  name: tgswitch
 
   # Reporitory to push the tap to.
   github:
@@ -55,7 +55,7 @@ brew:
 
   # Caveats for the user of your binary.
   # Default is empty.
-  caveats: "Type 'tgshift' on your command line and choose the terragrunt version that you want from the dropdown. This command currently only works on MacOs and Linux"
+  caveats: "Type 'tgswitch' on your command line and choose the terragrunt version that you want from the dropdown. This command currently only works on MacOs and Linux"
 
   # Your app's homepage.
   # Default is empty.
@@ -63,7 +63,7 @@ brew:
 
   # Your app's description.
   # Default is empty.
-  description: "The tgshift command lets you switch between terragrunt versions."
+  description: "The tgswitch command lets you switch between terragrunt versions."
 
   # Setting this will prevent goreleaser to actually try to commit the updated
   # formula - instead, the formula file will be stored on the dist folder only,
@@ -78,10 +78,10 @@ brew:
   # So you can `brew test` your formula.
   # Default is empty.
   test: |
-    system "#{bin}/tgshift --version"
+    system "#{bin}/tgswitch --version"
 
   # Custom install script for brew.
   # Default is 'bin.install "program"'.
   install: |
-    bin.install "tgshift"
+    bin.install "tgswitch"
 

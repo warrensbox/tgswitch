@@ -20,7 +20,7 @@ src
 main
 build
 dist
-tgshift
+tgswitch
 
 .DS_Store
 
