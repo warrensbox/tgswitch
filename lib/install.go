@@ -43,15 +43,10 @@ func init() {
 	/* overrride installation default binary path if terragrunt is already installed */
 	/* find the last bin path */
 	for path := next(); len(path) > 0; path = next() {
-		fmt.Printf("Found installation path: %v \n", path)
 		installedBinPath = path
 	}
-
-	fmt.Printf("Terragrunt binary path: %v \n", installedBinPath)
-
 	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
-
 }
 
 //Install : Install the provided version in the argument
@@ -72,7 +67,6 @@ func Install(tgversion string) {
 		symlinkExist := CheckSymlink(installedBinPath)
 
 		if symlinkExist {
-			fmt.Println("Reset symlink")
 			RemoveSymlink(installedBinPath)
 		}
 		/* set symlink to desired version */
@@ -85,17 +79,13 @@ func Install(tgversion string) {
 	symlinkExist := CheckSymlink(installedBinPath)
 
 	if symlinkExist {
-		fmt.Println("Reset symlink")
 		RemoveSymlink(installedBinPath)
 	}
 
 	/* if selected version already exist, */
 	/* proceed to download it from the terragrunt release page */
-
 	url := gruntURL + "v" + tgversion + "/" + "terragrunt" + "_" + goos + "_" + goarch
-	file, _ := DownloadFromURL(installLocation, url)
-
-	fmt.Printf("Downloaded File: %v \n", file)
+	DownloadFromURL(installLocation, url)
 
 	/* rename file to terragrunt version name - terragrunt_x.x.x */
 	RenameFile(installLocation+installFile+"_"+goos+"_"+goarch, installLocation+installVersion+tgversion)
@@ -173,10 +163,8 @@ func GetRecentVersions() ([]string, error) {
 				return nil, errRead
 			}
 		}
-
 		return lines, nil
 	}
-
 	return nil, nil
 }
 
