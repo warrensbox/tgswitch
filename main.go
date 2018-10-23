@@ -90,7 +90,6 @@ func main() {
 				os.Exit(1)
 			}
 
-			fmt.Printf("Terragrunt version %q selected\n", tgversion)
 			lib.Install(tgversion)
 			lib.AddRecent(tgversion) //add to recent file for faster lookup (cache)
 			os.Exit(0)
