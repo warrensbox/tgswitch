@@ -57,8 +57,6 @@ func Install(url string, appversion string, assests []modal.Repo) string {
 	/* check if selected version already downloaded */
 	fileExist := CheckFileExist(installLocation + installVersion + appversion)
 
-	//fmt.Println(fileExist)
-
 	/* if selected version already exist, */
 	if fileExist {
 
@@ -89,14 +87,12 @@ func Install(url string, appversion string, assests []modal.Repo) string {
 	goos := runtime.GOOS
 	urlDownload := ""
 
-	//	fmt.Println(assests)
-
 	for _, v := range assests {
 
 		if v.TagName == "v"+appversion {
 			if len(v.Assets) > 0 {
 				for _, b := range v.Assets {
-					fmt.Println(b)
+
 					matchedOS, _ := regexp.MatchString(goos, b.BrowserDownloadURL)
 					matchedARCH, _ := regexp.MatchString(goarch, b.BrowserDownloadURL)
 					if matchedOS && matchedARCH {
@@ -108,9 +104,6 @@ func Install(url string, appversion string, assests []modal.Repo) string {
 			break
 		}
 	}
-
-	fmt.Println(urlDownload)
-	fmt.Println(urlDownload)
 
 	fileInstalled, _ := DownloadFromURL(installLocation, urlDownload)
 
