@@ -4,6 +4,7 @@ builds:
   - ldflags:
     - -s -w -X "main.version={{.Env.RELEASE_VERSION}}" -X "main.CLIENT_ID={{.Env.CLIENT_ID}}" -X "main.CLIENT_SECRET={{.Env.CLIENT_SECRET}}"
   - main: main.go
+    binary: tgswitch
     goos:
       - windows
       - darwin
@@ -20,11 +21,6 @@ changelog:
     - '^test:'
 archive:
   format: binary
-  replacements:
-    darwin: darwin
-    linux: linux
-    386: 386
-    amd64: amd64
   format_overrides:
   - goos: windows
     format: zip
