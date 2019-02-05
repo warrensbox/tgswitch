@@ -20,6 +20,12 @@ changelog:
     - '^docs:'
     - '^test:'
 archive:
+  name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_{{ .Os }}_{{ .Arch }}'
+  replacements:
+    darwin: darwin
+    linux: linux
+    386: 386
+    amd64: amd64
   format_overrides:
   - goos: windows
     format: zip
