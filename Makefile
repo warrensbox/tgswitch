@@ -4,6 +4,8 @@ VER := $(shell git ls-remote --tags git://github.com/warrensbox/terragrunt-switc
 PATH := build:$(PATH)
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
+CLIENT_ID := $(CLIENT_ID)
+CLIENT_SECRET := $(CLIENT_SECRET)
 
 $(EXE): Gopkg.lock *.go lib/*.go
 	GOOS=$@ go build -ldflags "-X main.version=$(VER) -X main.CLIENT_ID=$(CLIENT_ID) -X main.CLIENT_SECRET=$(CLIENT_SECRET)" -o $(EXE)-$(VER)-$@-$(GOARCH) $(PKG)
