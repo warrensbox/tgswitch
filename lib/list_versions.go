@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"reflect"
 	"regexp"
@@ -16,112 +17,38 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/warrensbox/terragrunt-switcher/modal"
 )
 
-//Repo : properties
-type Repo struct {
-	URL             string    `json:"url"`
-	AssetsURL       string    `json:"assets_url"`
-	UploadURL       string    `json:"upload_url"`
-	HTMLURL         string    `json:"html_url"`
-	ID              int       `json:"id"`
-	NodeID          string    `json:"node_id"`
-	TagName         string    `json:"tag_name"`
-	TargetCommitish string    `json:"target_commitish"`
-	Name            string    `json:"name"`
-	Draft           bool      `json:"draft"`
-	Prerelease      bool      `json:"prerelease"`
-	CreatedAt       time.Time `json:"created_at"`
-	PublishedAt     time.Time `json:"published_at"`
-	TarballURL      string    `json:"tarball_url"`
-	ZipballURL      string    `json:"zipball_url"`
-	Body            string    `json:"body"`
-	Author          Author    `json:"author"`
-	Assets          []Assets  `json:"assets"`
-}
-
-//Author : git owner properties
-type Author struct {
-	Login             string `json:"login"`
-	ID                int    `json:"id"`
-	NodeID            string `json:"node_id"`
-	AvatarURL         string `json:"avatar_url"`
-	GravatarID        string `json:"gravatar_id"`
-	URL               string `json:"url"`
-	HTMLURL           string `json:"html_url"`
-	FollowersURL      string `json:"followers_url"`
-	FollowingURL      string `json:"following_url"`
-	GistsURL          string `json:"gists_url"`
-	StarredURL        string `json:"starred_url"`
-	SubscriptionsURL  string `json:"subscriptions_url"`
-	OrganizationsURL  string `json:"organizations_url"`
-	ReposURL          string `json:"repos_url"`
-	EventsURL         string `json:"events_url"`
-	ReceivedEventsURL string `json:"received_events_url"`
-	Type              string `json:"type"`
-	SiteAdmin         bool   `json:"site_admin"`
-}
-
-//Author : author properties
-type Assets struct {
-	URL                string    `json:"url"`
-	ID                 int       `json:"id"`
-	NodeID             string    `json:"node_id"`
-	Name               string    `json:"name"`
-	Label              string    `json:"label"`
-	ContentType        string    `json:"content_type"`
-	State              string    `json:"state"`
-	Size               int       `json:"size"`
-	DownloadCount      int       `json:"download_count"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
-	BrowserDownloadURL string    `json:"browser_download_url"`
-	Uploader           Uploader  `json:"uploader"`
-}
-
-//Uploader : repo uploader properties
-type Uploader struct {
-	Login             string `json:"login"`
-	ID                int    `json:"id"`
-	NodeID            string `json:"node_id"`
-	AvatarURL         string `json:"avatar_url"`
-	GravatarID        string `json:"gravatar_id"`
-	URL               string `json:"url"`
-	HTMLURL           string `json:"html_url"`
-	FollowersURL      string `json:"followers_url"`
-	FollowingURL      string `json:"following_url"`
-	GistsURL          string `json:"gists_url"`
-	StarredURL        string `json:"starred_url"`
-	SubscriptionsURL  string `json:"subscriptions_url"`
-	OrganizationsURL  string `json:"organizations_url"`
-	ReposURL          string `json:"repos_url"`
-	EventsURL         string `json:"events_url"`
-	ReceivedEventsURL string `json:"received_events_url"`
-	Type              string `json:"type"`
-	SiteAdmin         bool   `json:"site_admin"`
-}
-
-type tgVersionList struct {
-	tglist []string
+type AppVersionList struct {
+	applist []string
+	appDown *modal.Assets
 }
 
 var wg = sync.WaitGroup{}
 
 var numPages = 5
 
-//GetTGList :  Get the list of available terraform version given the hashicorp url
-func GetTGList(gruntURL string) ([]string, error) {
+//GetAppList :  Get the list of available app versions
+func GetAppList(appURL string, client *modal.Client) ([]string, []modal.Repo) {
+
+	v := url.Values{}
+	v.Set("client_id", client.ClientID)
+	v.Add("client_secret", client.ClientSecret)
 
 	gswitch := http.Client{
 		Timeout: time.Second * 2, // Maximum of 2 secs [decresing this seem to fail]
 	}
 
-	req, err := http.NewRequest(http.MethodGet, gruntURL, nil)
+	apiURL := appURL + v.Encode()
+
+	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	req.Header.Set("User-Agent", "terragrunt-switcher")
+	req.Header.Set("User-Agent", "App Installer")
 
 	resp, _ := gswitch.Do(req)
 	links := resp.Header.Get("Link")
@@ -139,9 +66,14 @@ func GetTGList(gruntURL string) ([]string, error) {
 		}
 	}
 
-	tglist := getTGVersion(gruntURL, numPages)
+	applist, assets := getAppVersion(appURL, numPages, client)
 
-	return tglist, nil
+	if len(applist) == 0 {
+		log.Fatal("Unable to get release from repo ")
+		os.Exit(1)
+	}
+
+	return applist, assets
 }
 
 //VersionExist : check if requested version exist
@@ -183,50 +115,6 @@ func RemoveDuplicateVersions(elements []string) []string {
 	return result
 }
 
-func getVersions(gruntURLPage string) {
-
-	gswitch := http.Client{
-		Timeout: time.Second * 2, // Maximum of 2 secs [decresing this seem to fail]
-	}
-
-	req, err := http.NewRequest(http.MethodGet, gruntURLPage, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	req.Header.Set("User-Agent", "terragrunt-switcher")
-
-	res, getErr := gswitch.Do(req)
-	if getErr != nil {
-		log.Fatal(getErr)
-	}
-
-	body, readErr := ioutil.ReadAll(res.Body)
-	if readErr != nil {
-		log.Fatal(readErr)
-	}
-
-	var repo []Repo
-	jsonErr := json.Unmarshal(body, &repo)
-	if jsonErr != nil {
-		log.Fatal(jsonErr)
-	}
-
-	var tgVersionList tgVersionList
-
-	for _, num := range repo {
-		if num.Prerelease == false && num.Draft == false {
-			semverRegex := regexp.MustCompile(`\Av\d+(\.\d+){2}\z`)
-			if semverRegex.MatchString(num.Name) {
-				trimstr := strings.Trim(num.Name, "v")
-				tgVersionList.tglist = append(tgVersionList.tglist, trimstr)
-			}
-		}
-
-	}
-	fmt.Println(tgVersionList.tglist)
-}
-
 func inBetween(value string, a string, b string) string {
 	// Get substring between two strings.
 	posFirst := strings.Index(value, a)
@@ -244,36 +132,45 @@ func inBetween(value string, a string, b string) string {
 	return value[posFirstAdjusted:posLast]
 }
 
-func getTGVersion(gruntURLPage string, numPages int) []string {
-	version := make([]string, 0)
-	ch := make(chan []string, 10)
+func getAppVersion(appURL string, numPages int, client *modal.Client) ([]string, []modal.Repo) {
+	assets := make([]modal.Repo, 0)
+	ch := make(chan *[]modal.Repo, 10)
 
 	for i := 1; i <= numPages; i++ {
 		page := strconv.Itoa(i)
-		api := gruntURLPage + "?page=" + page
+		v := url.Values{}
+		v.Set("page", page)
+		v.Add("client_id", client.ClientID)
+		v.Add("client_secret", client.ClientSecret)
+
+		apiURL := appURL + v.Encode()
 		wg.Add(1)
-		go getTGBody(api, ch)
+		go getAppBody(apiURL, ch)
 	}
 
-	go func(ch chan<- []string) {
+	go func(ch chan<- *[]modal.Repo) {
 		defer close(ch)
 		wg.Wait()
 	}(ch)
 
 	for i := range ch {
-		version = append(version, i...)
+		assets = append(assets, *i...)
 	}
 
 	semvers := []*Version{}
 
 	var sortedVersion []string
 
-	for _, v := range version {
-		sv, err := NewVersion(v)
-		if err != nil {
-			fmt.Println(err)
+	for _, v := range assets {
+		semverRegex := regexp.MustCompile(`\Av\d+(\.\d+){2}\z`)
+		if semverRegex.MatchString(v.TagName) {
+			trimstr := strings.Trim(v.TagName, "v")
+			sv, err := NewVersion(trimstr)
+			if err != nil {
+				fmt.Println(err)
+			}
+			semvers = append(semvers, sv)
 		}
-		semvers = append(semvers, sv)
 	}
 
 	Sort(semvers)
@@ -282,10 +179,10 @@ func getTGVersion(gruntURLPage string, numPages int) []string {
 		sortedVersion = append(sortedVersion, sv.String())
 	}
 
-	return sortedVersion
+	return sortedVersion, assets
 }
 
-func getTGBody(gruntURLPage string, ch chan<- []string) {
+func getAppBody(gruntURLPage string, ch chan<- *[]modal.Repo) {
 	defer wg.Done()
 
 	gswitch := http.Client{
@@ -297,7 +194,7 @@ func getTGBody(gruntURLPage string, ch chan<- []string) {
 		log.Fatal(err)
 	}
 
-	req.Header.Set("User-Agent", "terragrunt-switcher")
+	req.Header.Set("User-Agent", "github-appinstaller")
 
 	res, getErr := gswitch.Do(req)
 	if getErr != nil {
@@ -306,28 +203,32 @@ func getTGBody(gruntURLPage string, ch chan<- []string) {
 
 	body, readErr := ioutil.ReadAll(res.Body)
 	if readErr != nil {
+		log.Fatal("Unable to get release from repo ")
 		log.Fatal(readErr)
 	}
 
-	var repo []Repo
+	var repo []modal.Repo
 	jsonErr := json.Unmarshal(body, &repo)
 	if jsonErr != nil {
+		log.Fatal("Unable to get release from repo ")
 		log.Fatal(jsonErr)
 	}
 
-	var tgVersionList tgVersionList
+	var validRepo []modal.Repo
 
 	for _, num := range repo {
 		if num.Prerelease == false && num.Draft == false {
 			semverRegex := regexp.MustCompile(`\Av\d+(\.\d+){2}\z`)
-			if semverRegex.MatchString(num.Name) {
-				trimstr := strings.Trim(num.Name, "v")
-				tgVersionList.tglist = append(tgVersionList.tglist, trimstr)
+			if semverRegex.MatchString(num.TagName) {
+				validRepo = append(validRepo, num)
 			}
 		}
 
 	}
-	ch <- tgVersionList.tglist
+
+	ch <- &validRepo
+
+	//return &repo
 }
 
 type Version struct {
