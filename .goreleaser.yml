@@ -2,7 +2,7 @@
 # Make sure to check the documentation at http://goreleaser.com
 builds:
   - ldflags:
-    - -s -w -X "main.version={{.Env.RELEASE_VERSION}}"
+    - -s -w -X "main.version={{.Env.RELEASE_VERSION}}" -X "main.CLIENT_ID={{.Env.CLIENT_ID}}" -X "main.CLIENT_SECRET={{.Env.CLIENT_SECRET}}"
   - main: main.go
     binary: tgswitch
     goos:
@@ -20,7 +20,8 @@ changelog:
     - '^docs:'
     - '^test:'
 archive:
-  name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+  format: binary
+  name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_{{ .Os }}_{{ .Arch }}'
   replacements:
     darwin: darwin
     linux: linux

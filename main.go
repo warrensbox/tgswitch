@@ -24,15 +24,24 @@ import (
 	"github.com/manifoldco/promptui"
 	"github.com/pborman/getopt"
 	lib "github.com/warrensbox/terragrunt-switcher/lib"
+	"github.com/warrensbox/terragrunt-switcher/modal"
 )
 
 const (
-	terragruntURL = "https://api.github.com/repos/gruntwork-io/terragrunt/releases"
+	terragruntURL = "https://api.github.com/repos/gruntwork-io/terragrunt/releases?"
 )
 
 var version = "0.1.0\n"
 
+var CLIENT_ID = "xxx"
+var CLIENT_SECRET = "xxx"
+
 func main() {
+
+	var client modal.Client
+
+	client.ClientID = CLIENT_ID
+	client.ClientSecret = CLIENT_SECRET
 
 	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tgswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
@@ -49,17 +58,17 @@ func main() {
 
 		if len(args) == 1 {
 
-			semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
+			semverRegex := regexp.MustCompile(`\Av\d+(\.\d+){2}\z`)
 			if semverRegex.MatchString(args[0]) {
 				requestedVersion := args[0]
 
 				//check if version exist before downloading it
-				tflist, _ := lib.GetTGList(terragruntURL)
+				tflist, assets := lib.GetAppList(terragruntURL, &client)
 				exist := lib.VersionExist(requestedVersion, tflist)
 
 				if exist {
-					lib.AddRecent(requestedVersion) //add to recent file for faster lookup
-					lib.Install(requestedVersion)
+					installLocation := lib.Install(terragruntURL, requestedVersion, assets)
+					lib.AddRecent(requestedVersion, installLocation) //add to recent file for faster lookup
 				} else {
 					fmt.Println("Not a valid terragrunt version")
 				}
@@ -72,7 +81,7 @@ func main() {
 
 		} else if len(args) == 0 {
 
-			tglist, _ := lib.GetTGList(terragruntURL)
+			tglist, assets := lib.GetAppList(terragruntURL, &client)
 			recentVersions, _ := lib.GetRecentVersions() //get recent versions from RECENT file
 			tglist = append(recentVersions, tglist...)   //append recent versions to the top of the list
 			tglist = lib.RemoveDuplicateVersions(tglist) //remove duplicate version
@@ -90,8 +99,8 @@ func main() {
 				os.Exit(1)
 			}
 
-			lib.Install(tgversion)
-			lib.AddRecent(tgversion) //add to recent file for faster lookup (cache)
+			installLocation := lib.Install(terragruntURL, tgversion, assets)
+			lib.AddRecent(tgversion, installLocation) //add to recent file for faster lookup
 			os.Exit(0)
 		} else {
 			usageMessage()

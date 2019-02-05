@@ -7,6 +7,8 @@ import (
 	"os/user"
 	"regexp"
 	"runtime"
+
+	"github.com/warrensbox/terragrunt-switcher/modal"
 )
 
 const (
@@ -50,15 +52,10 @@ func init() {
 }
 
 //Install : Install the provided version in the argument
-func Install(tgversion string) {
-
-	goarch := runtime.GOARCH
-	goos := runtime.GOOS
+func Install(url string, appversion string, assests []modal.Repo) string {
 
 	/* check if selected version already downloaded */
-	fileExist := CheckFileExist(installLocation + installVersion + tgversion)
-
-	//fmt.Println(fileExist)
+	fileExist := CheckFileExist(installLocation + installVersion + appversion)
 
 	/* if selected version already exist, */
 	if fileExist {
@@ -70,9 +67,9 @@ func Install(tgversion string) {
 			RemoveSymlink(installedBinPath)
 		}
 		/* set symlink to desired version */
-		CreateSymlink(installLocation+installVersion+tgversion, installedBinPath)
-		fmt.Printf("Switched terragrunt to version %q \n", tgversion)
-		return
+		CreateSymlink(installLocation+installVersion+appversion, installedBinPath)
+		fmt.Printf("Switched terragrunt to version %q \n", appversion)
+		return installLocation
 	}
 
 	/* remove current symlink if exist*/
@@ -84,27 +81,50 @@ func Install(tgversion string) {
 
 	/* if selected version already exist, */
 	/* proceed to download it from the terragrunt release page */
-	url := gruntURL + "v" + tgversion + "/" + "terragrunt" + "_" + goos + "_" + goarch
-	DownloadFromURL(installLocation, url)
+	//url := gruntURL + "v" + tgversion + "/" + "terragrunt" + "_" + goos + "_" + goarch
+
+	goarch := runtime.GOARCH
+	goos := runtime.GOOS
+	urlDownload := ""
+
+	for _, v := range assests {
+
+		if v.TagName == "v"+appversion {
+			if len(v.Assets) > 0 {
+				for _, b := range v.Assets {
+
+					matchedOS, _ := regexp.MatchString(goos, b.BrowserDownloadURL)
+					matchedARCH, _ := regexp.MatchString(goarch, b.BrowserDownloadURL)
+					if matchedOS && matchedARCH {
+						urlDownload = b.BrowserDownloadURL
+						break
+					}
+				}
+			}
+			break
+		}
+	}
+
+	fileInstalled, _ := DownloadFromURL(installLocation, urlDownload)
 
 	/* rename file to terragrunt version name - terragrunt_x.x.x */
-	RenameFile(installLocation+installFile+"_"+goos+"_"+goarch, installLocation+installVersion+tgversion)
+	RenameFile(fileInstalled, installLocation+installVersion+appversion)
 
-	err := os.Chmod(installLocation+installVersion+tgversion, 0755)
+	err := os.Chmod(installLocation+installVersion+appversion, 0755)
 	if err != nil {
 		log.Println(err)
 	}
 
 	/* set symlink to desired version */
-	CreateSymlink(installLocation+installVersion+tgversion, installedBinPath)
-	fmt.Printf("Switched terragrunt to version %q \n", tgversion)
-	return
+	CreateSymlink(installLocation+installVersion+appversion, installedBinPath)
+	fmt.Printf("Switched terragrunt to version %q \n", appversion)
+	return installLocation
 }
 
 // AddRecent : add to recent file
-func AddRecent(requestedVersion string) {
+func AddRecent(requestedVersion string, installLocation string) {
 
-	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
+	semverRegex := regexp.MustCompile(`\d+(\.\d+){2}\z`)
 
 	fileExist := CheckFileExist(installLocation + recentFile)
 	if fileExist {
@@ -117,7 +137,6 @@ func AddRecent(requestedVersion string) {
 
 		for _, line := range lines {
 			if !semverRegex.MatchString(line) {
-				fmt.Println("file corrupted")
 				RemoveFiles(installLocation + recentFile)
 				CreateRecentFile(requestedVersion)
 				return

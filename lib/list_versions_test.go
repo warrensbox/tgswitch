@@ -2,7 +2,6 @@ package lib_test
 
 import (
 	"log"
-	"reflect"
 	"testing"
 
 	"github.com/warrensbox/terragrunt-switcher/lib"
@@ -11,33 +10,6 @@ import (
 const (
 	gruntURL = "https://api.github.com/repos/gruntwork-io/terragrunt/releases"
 )
-
-// TestGetTFList : Get list from hashicorp
-func TestGetTFList(t *testing.T) {
-
-	list, _ := lib.GetTGList(gruntURL)
-
-	val := "0.14.11"
-	var exists bool
-
-	switch reflect.TypeOf(list).Kind() {
-	case reflect.Slice:
-		s := reflect.ValueOf(list)
-
-		for i := 0; i < s.Len(); i++ {
-			if reflect.DeepEqual(val, s.Index(i).Interface()) == true {
-				exists = true
-			}
-		}
-	}
-
-	if !exists {
-		log.Fatalf("Not able to find version: %s\n", val)
-	} else {
-		t.Log("Write versions exist (expected)")
-	}
-
-}
 
 //TestRemoveDuplicateVersions :  test to removed duplicate
 func TestRemoveDuplicateVersions(t *testing.T) {
