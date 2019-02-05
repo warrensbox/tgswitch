@@ -191,7 +191,7 @@ func getAppBody(gruntURLPage string, ch chan<- *[]modal.Repo) {
 
 	req, err := http.NewRequest(http.MethodGet, gruntURLPage, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Unable to make request. Try again later.")
 	}
 
 	req.Header.Set("User-Agent", "github-appinstaller")
