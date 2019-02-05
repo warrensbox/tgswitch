@@ -8,7 +8,7 @@ CLIENT_ID := $(CLIENT_ID)
 CLIENT_SECRET := $(CLIENT_SECRET)
 
 $(EXE): Gopkg.lock *.go lib/*.go
-	GOOS=$@ go build -ldflags "-X main.version=$(VER) -X main.CLIENT_ID=$(CLIENT_ID) -X main.CLIENT_SECRET=$(CLIENT_SECRET)" -o $(EXE)-$(VER)-$@-$(GOARCH) $(PKG)
+	go build -v -ldflags "-X main.version=$(VER) -X main.CLIENT_ID=$(CLIENT_ID) -X main.CLIENT_SECRET=$(CLIENT_SECRET)" -o $@ $(PKG)
 
 Gopkg.lock: Gopkg.toml
 	dep ensure
@@ -33,5 +33,3 @@ test: $(EXE)
 .PHONEY: dep
 dep:
 	dep ensure
-
-
