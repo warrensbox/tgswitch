@@ -20,7 +20,6 @@ changelog:
     - '^docs:'
     - '^test:'
 archive:
-  format: binary
   format_overrides:
   - goos: windows
     format: zip
