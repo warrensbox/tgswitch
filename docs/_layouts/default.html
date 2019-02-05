@@ -17,15 +17,15 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
 
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120055973-1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+      <!-- Global site tag (gtag.js) - Google Analytics terragrunt switch-->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120055973-5"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
-      gtag('config', 'UA-120055973-1');
-    </script>
+        gtag('config', 'UA-120055973-5');
+      </script>
   </head>
   <body>
     <div class="wrapper">
@@ -56,12 +56,12 @@
 
       {{ content }}
       {% if site.github.is_project_page %}
-      <p><small>VERSION: {{ site.github.releases[0].tag_name }}. This project is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></small></p>
+      <p><small>This project is maintained by <a href="{{ site.github.repository_url }}">{{ site.github.owner_name }}</a></small></p>
       {% endif %}
       </section>
       <footer>
         <!-- <p><small>View other products &mdash; by <a href="http://warren.veerasingam.com/#about_me" target="_blank">Warren Veerasingam</a></small></p> -->
-        <p><small>VERSION: {{ site.github.releases[0].tag_name }}. This project is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></small></p>
+        <!-- <p><small>VERSION: {{ site.github.releases[0].tag_name }}. This project is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></small></p> -->
       </footer>
     </div>
     <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
