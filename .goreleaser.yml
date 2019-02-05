@@ -21,7 +21,7 @@ changelog:
     - '^test:'
 archive:
   format: binary
-  name_template: 'binary_{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_{{ .Os }}_{{ .Arch }}'
+  name_template: '{{ .Binary }}_{{.Env.RELEASE_VERSION}}_{{ .Os }}_{{ .Arch }}'
   replacements:
     darwin: darwin
     linux: linux
