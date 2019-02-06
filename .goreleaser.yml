@@ -3,6 +3,7 @@
 builds:
   - ldflags:
     - -X main.version={{.Env.RELEASE_VERSION}} -X main.CLIENT_ID={{.Env.CLIENT_ID}} -X main.CLIENT_SECRET={{.Env.CLIENT_SECRET}}
+  - binary: tgswitch
   - main: main.go
     goos:
       - windows
