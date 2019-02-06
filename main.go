@@ -58,7 +58,7 @@ func main() {
 
 		if len(args) == 1 {
 
-			semverRegex := regexp.MustCompile(`\Av\d+(\.\d+){2}\z`)
+			semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
 			if semverRegex.MatchString(args[0]) {
 				requestedVersion := args[0]
 
