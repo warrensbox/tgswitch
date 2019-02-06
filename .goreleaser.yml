@@ -19,7 +19,6 @@ changelog:
     - '^docs:'
     - '^test:'
 archive:
-  name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_{{ .Os }}_{{ .Arch }}'
   replacements:
     darwin: darwin
     linux: linux
