@@ -4,7 +4,6 @@ builds:
   - ldflags:
     - -s -w -X main.version={{.Env.RELEASE_VERSION}} -X main.CLIENT_ID={{.Env.CLIENT_ID}} -X main.CLIENT_SECRET={{.Env.CLIENT_SECRET}}
   - main: main.go
-    binary: terragrunt-switcher
     goos:
       - windows
       - darwin
