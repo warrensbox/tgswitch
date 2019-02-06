@@ -38,16 +38,14 @@ func GetAppList(appURL string, client *modal.Client) ([]string, []modal.Repo) {
 	v.Add("client_secret", client.ClientSecret)
 
 	gswitch := http.Client{
-		Timeout: time.Second * 2, // Maximum of 2 secs [decresing this seem to fail]
+		Timeout: time.Second * 10, // Maximum of 10 secs [decresing this seem to fail]
 	}
 
 	apiURL := appURL + v.Encode()
 
-	fmt.Println(apiURL)
-
 	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
 	if err != nil {
-		log.Fatal("Unable to make request. Try again later.")
+		log.Fatal("Unable to make request. Please try again.")
 	}
 
 	req.Header.Set("User-Agent", "App Installer")
@@ -188,19 +186,19 @@ func getAppBody(gruntURLPage string, ch chan<- *[]modal.Repo) {
 	defer wg.Done()
 
 	gswitch := http.Client{
-		Timeout: time.Second * 2, // Maximum of 2 secs [decresing this seem to fail]
+		Timeout: time.Second * 10, // Maximum of 10 secs [decresing this seem to fail]
 	}
 
 	req, err := http.NewRequest(http.MethodGet, gruntURLPage, nil)
 	if err != nil {
-		log.Fatal("Unable to make request. Try again later.")
+		log.Fatal("Unable to make request. Please try again.")
 	}
 
 	req.Header.Set("User-Agent", "github-appinstaller")
 
 	res, getErr := gswitch.Do(req)
 	if getErr != nil {
-		log.Fatal("Unable to make request. Try again later.")
+		log.Fatal("Unable to make request Please try again.")
 	}
 
 	body, readErr := ioutil.ReadAll(res.Body)
