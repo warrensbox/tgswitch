@@ -1,6 +1,6 @@
 theme: jekyll-theme-minimal
 #github: [metadata] 
-repository: warrensbox/terragrunt-switcher
+repository: warrensbox/tgswitch
 logo: /assets/img/logo.png
 title: tgswitch
 

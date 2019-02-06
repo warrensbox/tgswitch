@@ -21,7 +21,7 @@
 //
 //	// Declare the flags to be used
 //	helpFlag := getopt.Bool('?', "display help")
-//      cmdFlag := getopt.StringLong("command", 'c', "", "the command)
+//	cmdFlag := getopt.StringLong("command", 'c', "", "the command")
 //
 //	func main() {
 //		// Parse the program arguments

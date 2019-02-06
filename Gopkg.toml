@@ -1,6 +1,6 @@
 # Gopkg.toml example
 #
-# Refer to https://github.com/golang/dep/blob/master/docs/Gopkg.toml.md
+# Refer to https://golang.github.io/dep/docs/Gopkg.toml.html
 # for detailed Gopkg.toml documentation.
 #
 # required = ["github.com/user/thing/cmd/thing"]
@@ -27,11 +27,11 @@
 
 [[constraint]]
   name = "github.com/manifoldco/promptui"
-  version = "0.3.0"
+  version = "0.3.2"
 
 [[constraint]]
-  name = "github.com/warrensbox/terragrunt-switcher"
-  version = "0.4.552"
+  branch = "master"
+  name = "github.com/pborman/getopt"
 
 [prune]
   go-tests = true

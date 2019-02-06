@@ -4,7 +4,7 @@ import (
 	"log"
 	"testing"
 
-	"github.com/warrensbox/terragrunt-switcher/lib"
+	"github.com/warrensbox/tgswitch/lib"
 )
 
 const (

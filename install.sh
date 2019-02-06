@@ -11,7 +11,7 @@ Usage: $this [-b] bindir [-d] [tag]
   -b sets bindir or installation directory, Defaults to ./bin
   -d turns on debug logging
    [tag] is a tag from
-   https://github.com/warrensbox/terragrunt-switcher/releases
+   https://github.com/warrensbox/tgswitch/releases
    If tag is missing, then the latest will be used.
 
 EOF
@@ -334,9 +334,9 @@ End of functions from https://github.com/client9/shlib
 ------------------------------------------------------------------------
 EOF
 
-PROJECT_NAME="terragrunt-switcher"
+PROJECT_NAME="tgswitch"
 OWNER=warrensbox
-REPO="terragrunt-switcher"
+REPO="tgswitch"
 BINARY=tgswitch
 FORMAT=tar.gz
 OS=$(uname_os)

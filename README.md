@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/warrensbox/terragrunt-switcher.svg?branch=master)](https://travis-ci.org/warrensbox/terragrunt-switcher)
-[![Go Report Card](https://goreportcard.com/badge/github.com/warrensbox/terragrunt-switcher)](https://goreportcard.com/report/github.com/warrensbox/terragrunt-switcher)
-[![CircleCI](https://circleci.com/gh/warrensbox/terragrunt-switcher/tree/master.svg?style=shield&circle-token=d74b0de145c45b1d0da97f817363c77350e1a121)](https://circleci.com/gh/warrensbox/terragrunt-switcher)
+[![Build Status](https://travis-ci.org/warrensbox/tgswitch.svg?branch=master)](https://travis-ci.org/warrensbox/tgswitch)
+[![Go Report Card](https://goreportcard.com/badge/github.com/warrensbox/tgswitch)](https://goreportcard.com/report/github.com/warrensbox/tgswitch)
+[![CircleCI](https://circleci.com/gh/warrensbox/tgswitch/tree/master.svg?style=shield&circle-token=d74b0de145c45b1d0da97f817363c77350e1a121)](https://circleci.com/gh/warrensbox/tgswitch)
 
 # Terragrunt Switcher 
 
@@ -13,7 +13,7 @@ The installation is minimal and easy.
 Once installed, simply select the version you require from the dropdown and start using terragrunt. 
 
 
-See installation guide here: [tgswitch installation](https://warrensbox.github.io/terragrunt-switcher/)
+See installation guide here: [tgswitch installation](https://warrensbox.github.io/tgswitch/)
 
 ## Installation
 
@@ -33,12 +33,12 @@ brew install warrensbox/tap/tgswitch
 Installation for other linux operation systems.
 
 ```sh
-curl -L https://raw.githubusercontent.com/warrensbox/terragrunt-switcher/release/install.sh | bash
+curl -L https://raw.githubusercontent.com/warrensbox/tgswitch/release/install.sh | bash
 ```
 
 ### Install from source
 
-Alternatively, you can install the binary from source [here](https://github.com/warrensbox/terragrunt-switcher/releases) 
+Alternatively, you can install the binary from source [here](https://github.com/warrensbox/tgswitch/releases) 
 
 ## How to use:
 ### Use dropdown menu to select version
@@ -59,9 +59,9 @@ The most recently selected versions are presented at the top of the dropdown.
 
 ## Additional Info
 
-See how to *upgrade*, *uninstall*, *troubleshoot* here:[More info](https://warrensbox.github.io/terragrunt-switcher/additional)
+See how to *upgrade*, *uninstall*, *troubleshoot* here:[More info](https://warrensbox.github.io/tgswitch/additional)
 
 
 ## Issues
 
-Please open  *issues* here:  [New Issue](https://github.com/warrensbox/terragrunt-switcher/issues)
+Please open  *issues* here:  [New Issue](https://github.com/warrensbox/tgswitch/issues)

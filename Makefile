@@ -1,6 +1,6 @@
 EXE  := tgswitch
-PKG  := github.com/warrensbox/terragrunt-switcher
-VER := $(shell git ls-remote --tags git://github.com/warrensbox/terragrunt-switcher | awk '{print $$2}'| awk -F"/" '{print $$3}' | sort -n -t. -k1,1 -k2,2 -k3,3 | tail -n 1)
+PKG  := github.com/warrensbox/tgswitch
+VER := $(shell git ls-remote --tags git://github.com/warrensbox/tgswitch | awk '{print $$2}'| awk -F"/" '{print $$3}' | sort -n -t. -k1,1 -k2,2 -k3,3 | tail -n 1)
 PATH := build:$(PATH)
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
