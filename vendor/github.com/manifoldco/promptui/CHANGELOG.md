@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+## [0.3.2] - 2018-11-26
+
+### Added
+
+- Support Go modules
+
+## [0.3.1] - 2018-07-26
+
+### Added
+
+- Improved documentation for GoDoc
+- Navigation keys information for Windows
+
+### Fixed
+
+- `success` template was not properly displayed after a successful prompt.
+
 ## [0.3.0] - 2018-05-22
 
 ### Added
