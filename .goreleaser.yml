@@ -4,7 +4,7 @@ builds:
   - ldflags:
     - -X main.version={{.Env.RELEASE_VERSION}} -X main.CLIENT_ID={{.Env.CLIENT_ID}} -X main.CLIENT_SECRET={{.Env.CLIENT_SECRET}}
   - main: main.go
-    binary: '{{ .ProjectName }}'
+    binary: tgswitch
     goos:
       - windows
       - darwin
@@ -22,7 +22,7 @@ changelog:
 brew:
   # Name of the recipe
   # Default to project name
-  name: tgswitch
+  name: '{{ .ProjectName }}'
 
   # Reporitory to push the tap to.
   github:
@@ -68,12 +68,12 @@ brew:
   # So you can `brew test` your formula.
   # Default is empty.
   test: |
-    system "#{bin}/tgswitch --version"
+    system "#{bin}/terragrunt-switcher --version"
 
   # Custom install script for brew.
   # Default is 'bin.install "program"'.
   install: |
-    bin.install "tgswitch"
+    bin.install "terragrunt-switcher"
 # .goreleaser.yml
 release:
   # Repo in which the release will be created.
@@ -91,10 +91,6 @@ release:
   # If set to true, will mark the release as not ready for production.
   # Default is false.
   prerelease: false
-
-  # You can change the name of the GitHub release.
-  # Default is `{{.Tag}}`
-  name_template: "{{.ProjectName}}-{{.Env.RELEASE_VERSION}}"
 
   # You can disable this pipe in order to not upload any artifacts to
   # GitHub.
