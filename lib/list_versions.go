@@ -43,6 +43,8 @@ func GetAppList(appURL string, client *modal.Client) ([]string, []modal.Repo) {
 
 	apiURL := appURL + v.Encode()
 
+	fmt.Println(apiURL)
+
 	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
 	if err != nil {
 		log.Fatal("Unable to make request. Try again later.")
