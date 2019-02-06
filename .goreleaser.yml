@@ -22,7 +22,7 @@ changelog:
 brew:
   # Name of the recipe
   # Default to project name
-  name: {{ .ProjectName }}
+  name: '{{ .ProjectName }}'
 
   # Reporitory to push the tap to.
   github:
@@ -68,12 +68,12 @@ brew:
   # So you can `brew test` your formula.
   # Default is empty.
   test: |
-    system "#{bin}/tgswitch --version"
+    system "#{bin}/terragrunt-switcher --version"
 
   # Custom install script for brew.
   # Default is 'bin.install "program"'.
   install: |
-    bin.install "{{ .ProjectName }}"
+    bin.install "terragrunt-switcher"
 # .goreleaser.yml
 release:
   # Repo in which the release will be created.
