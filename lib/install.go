@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"runtime"
 
-	"github.com/warrensbox/terragrunt-switcher/modal"
+	"github.com/warrensbox/tgswitch/modal"
 )
 
 const (

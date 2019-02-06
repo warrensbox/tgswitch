@@ -4,7 +4,7 @@ builds:
   - ldflags:
     - -X main.version={{.Env.RELEASE_VERSION}} -X main.CLIENT_ID={{.Env.CLIENT_ID}} -X main.CLIENT_SECRET={{.Env.CLIENT_SECRET}}
   - main: main.go
-    binary: tgswitch
+    binary: terraform-switcher
     goos:
       - windows
       - darwin
@@ -22,7 +22,7 @@ changelog:
 brew:
   # Name of the recipe
   # Default to project name
-  name: terragrunt-switcher
+  name: tgswitch
 
   # Reporitory to push the tap to.
   github:
@@ -49,7 +49,7 @@ brew:
 
   # Your app's homepage.
   # Default is empty.
-  homepage: "https://warrensbox.github.io/terragrunt-switcher"
+  homepage: "https://warrensbox.github.io/tgswitch"
 
   # Your app's description.
   # Default is empty.
@@ -68,19 +68,19 @@ brew:
   # So you can `brew test` your formula.
   # Default is empty.
   test: |
-    system "#{bin}/terragrunt-switcher --version"
+    system "#{bin}/tgswitch --version"
 
   # Custom install script for brew.
   # Default is 'bin.install "program"'.
   install: |
-    bin.install "terragrunt-switcher"
+    bin.install "tgswitch"
 # .goreleaser.yml
 release:
   # Repo in which the release will be created.
   # Default is extracted from the origin remote URL.
   github:
     owner: warrensbox
-    name: terragrunt-switcher
+    name: tgswitch
 
   # If set to true, will not auto-publish the release.
   # Default is false.

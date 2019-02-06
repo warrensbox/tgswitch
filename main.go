@@ -23,8 +23,8 @@ import (
 
 	"github.com/manifoldco/promptui"
 	"github.com/pborman/getopt"
-	lib "github.com/warrensbox/terragrunt-switcher/lib"
-	"github.com/warrensbox/terragrunt-switcher/modal"
+	lib "github.com/warrensbox/tgswitch/lib"
+	"github.com/warrensbox/tgswitch/modal"
 )
 
 const (

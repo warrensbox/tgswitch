@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/warrensbox/terragrunt-switcher/lib"
+	"github.com/warrensbox/tgswitch/lib"
 )
 
 // TestRenameFile : Create a file, check filename exist,

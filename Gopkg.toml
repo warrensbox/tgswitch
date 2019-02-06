@@ -30,7 +30,7 @@
   version = "0.3.0"
 
 [[constraint]]
-  name = "github.com/warrensbox/terragrunt-switcher"
+  name = "github.com/warrensbox/tgswitch"
   version = "0.4.552"
 
 [prune]

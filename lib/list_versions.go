@@ -18,7 +18,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/warrensbox/terragrunt-switcher/modal"
+	"github.com/warrensbox/tgswitch/modal"
 )
 
 type AppVersionList struct {
@@ -200,7 +200,7 @@ func getAppBody(gruntURLPage string, ch chan<- *[]modal.Repo) {
 
 	res, getErr := gswitch.Do(req)
 	if getErr != nil {
-		log.Fatal(getErr)
+		log.Fatal("Unable to make request. Try again later.")
 	}
 
 	body, readErr := ioutil.ReadAll(res.Body)
