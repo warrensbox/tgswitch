@@ -18,7 +18,7 @@ jobs:
             go vet -tests=false ./...
             go test -v ./...
             mkdir -p build
-            go build -v -o build/appinstall
+            go build -v -o build/tgswitch
 
   release:
     docker:
@@ -31,11 +31,6 @@ jobs:
       - run: 
           command: |
             set +e   
-            go get -v -t -d ./...
-            go vet -tests=false ./...
-            go test -v ./...
-            mkdir -p build
-            go build -v -o build/appinstall
             source version
             export RELEASE_VERSION; 
             RELEASE_VERSION=$RELEASE_VERSION.${CIRCLE_BUILD_NUM}
