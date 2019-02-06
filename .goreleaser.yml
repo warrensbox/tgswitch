@@ -22,7 +22,7 @@ changelog:
 brew:
   # Name of the recipe
   # Default to project name
-  name: '{{ .ProjectName }}'
+  name: terragrunt-switcher
 
   # Reporitory to push the tap to.
   github:
