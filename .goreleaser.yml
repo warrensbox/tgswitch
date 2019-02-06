@@ -4,7 +4,7 @@ builds:
   - ldflags:
     - -X main.version={{.Env.RELEASE_VERSION}} -X main.CLIENT_ID={{.Env.CLIENT_ID}} -X main.CLIENT_SECRET={{.Env.CLIENT_SECRET}}
   - main: main.go
-    binary: '{{ .ProjectName }}''
+    binary: '{{ .ProjectName }}'
     goos:
       - windows
       - darwin
