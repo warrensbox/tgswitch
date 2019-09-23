@@ -43,6 +43,7 @@ func main() {
 	client.ClientID = CLIENT_ID
 	client.ClientSecret = CLIENT_SECRET
 
+	userBinPath := getopt.StringLong("bin", 'b', "Custom binary path. For example: /Users/username/bin/terragrunt")
 	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tgswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
 	_ = versionFlag
@@ -67,7 +68,7 @@ func main() {
 				exist := lib.VersionExist(requestedVersion, tflist)
 
 				if exist {
-					installLocation := lib.Install(terragruntURL, requestedVersion, assets)
+					installLocation := lib.Install(terragruntURL, requestedVersion, assets, userBinPath)
 					lib.AddRecent(requestedVersion, installLocation) //add to recent file for faster lookup
 				} else {
 					fmt.Println("Not a valid terragrunt version")
@@ -99,7 +100,7 @@ func main() {
 				os.Exit(1)
 			}
 
-			installLocation := lib.Install(terragruntURL, tgversion, assets)
+			installLocation := lib.Install(terragruntURL, tgversion, assets, userBinPath)
 			lib.AddRecent(tgversion, installLocation) //add to recent file for faster lookup
 			os.Exit(0)
 		} else {
