@@ -52,7 +52,11 @@ func init() {
 }
 
 //Install : Install the provided version in the argument
-func Install(url string, appversion string, assests []modal.Repo) string {
+func Install(url string, appversion string, assests []modal.Repo, userBinPath * string) string {
+	/* If user provided bin path use user one instead of default */
+	if userBinPath != nil {
+		installedBinPath = *userBinPath
+	}
 
 	/* check if selected version already downloaded */
 	fileExist := CheckFileExist(installLocation + installVersion + appversion)
