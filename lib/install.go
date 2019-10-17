@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"runtime"
 
+	"github.com/warrensbox/terraform-switcher/lib"
 	"github.com/warrensbox/tgswitch/modal"
 )
 
@@ -47,15 +48,32 @@ func init() {
 	for path := next(); len(path) > 0; path = next() {
 		installedBinPath = path
 	}
+
+	/* remove current symlink if exist*/
+	symlinkExist := CheckSymlink(installedBinPath)
+
+	if symlinkExist {
+		RemoveSymlink(installedBinPath)
+	}
 	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
 }
 
 //Install : Install the provided version in the argument
-func Install(url string, appversion string, assests []modal.Repo, userBinPath * string) string {
+func Install(url string, appversion string, assests []modal.Repo, userBinPath *string) string {
+
 	/* If user provided bin path use user one instead of default */
 	if userBinPath != nil {
 		installedBinPath = *userBinPath
+	}
+
+	pathDir := lib.Path(installedBinPath)     //get path directory from binary path
+	binDirExist := lib.CheckDirExist(pathDir) //check bin path exist
+
+	if !binDirExist {
+		fmt.Printf("Binary path does not exist: %s\n", pathDir)
+		fmt.Printf("Please create binary path: %s for terragrunt installation\n", pathDir)
+		os.Exit(1)
 	}
 
 	/* check if selected version already downloaded */
@@ -194,4 +212,21 @@ func GetRecentVersions() ([]string, error) {
 //CreateRecentFile : create a recent file
 func CreateRecentFile(requestedVersion string) {
 	WriteLines([]string{requestedVersion}, installLocation+recentFile)
+}
+
+// ValidVersionFormat : returns valid version format
+/* For example: 0.1.2 = valid
+// For example: 0.1.2-beta1 = valid
+// For example: 0.1.2-alpha = valid
+// For example: a.1.2 = invalid
+// For example: 0.1. 2 = invalid
+*/
+func ValidVersionFormat(version string) bool {
+
+	// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
+	// Follow https://semver.org/spec/v1.0.0-beta.html
+	// Check regular expression at https://rubular.com/r/ju3PxbaSBALpJB
+	semverRegex := regexp.MustCompile(`^(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?$`)
+
+	return semverRegex.MatchString(version)
 }

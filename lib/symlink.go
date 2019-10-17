@@ -1,19 +1,24 @@
 package lib
 
 import (
-	"fmt"
 	"log"
 	"os"
 )
 
 //CreateSymlink : create symlink
+//CreateSymlink : create symlink
 func CreateSymlink(cwd string, dir string) {
 
 	err := os.Symlink(cwd, dir)
 	if err != nil {
-		fmt.Println(err)
-		log.Fatalf("Unable to create symlink. You must have SUDO privileges %v \n", err)
-		panic(err)
+		log.Fatalf(`
+		Unable to create new symlink.
+		Maybe symlink already exist. Try removing existing symlink manually.
+		Try running "unlink" to remove existing symlink.
+		If error persist, you may not have the permission to create a symlink at %s.
+		Error: %s
+		`, dir, dir, err)
+		os.Exit(1)
 	}
 }
 
@@ -22,15 +27,25 @@ func RemoveSymlink(symlinkPath string) {
 
 	_, err := os.Lstat(symlinkPath)
 	if err != nil {
-		fmt.Println(err)
-		log.Fatalf("Unable to find symlink. You must have SUDO privileges - %v \n", err)
-		panic(err)
+		log.Fatalf(`
+		Unable to remove symlink.
+		Maybe symlink already exist. Try removing existing symlink manually.
+		Try running "unlink" to remove existing symlink.
+		If error persist, you may not have the permission to create a symlink at %s.
+		Error: %s
+		`, symlinkPath, symlinkPath, err)
+		os.Exit(1)
 	} else {
 		errRemove := os.Remove(symlinkPath)
 		if errRemove != nil {
-			fmt.Println(errRemove)
-			log.Fatalf("Unable to remove symlink. You must have SUDO privileges - %v \n", errRemove)
-			panic(errRemove)
+			log.Fatalf(`
+			Unable to remove symlink.
+			Maybe symlink already exist. Try removing existing symlink manually.
+			Try running "unlink" to remove existing symlink.
+			If error persist, you may not have the permission to create a symlink at %s.
+			Error: %s
+			`, symlinkPath, symlinkPath, errRemove)
+			os.Exit(1)
 		}
 	}
 }
@@ -38,18 +53,12 @@ func RemoveSymlink(symlinkPath string) {
 // CheckSymlink : check file is symlink
 func CheckSymlink(symlinkPath string) bool {
 
-	//symlink := false
-	//fmt.Println("Checking symlink")
-
 	fi, err := os.Lstat(symlinkPath)
 	if err != nil {
-		fmt.Println(err)
-		// symlink = false
 		return false
 	}
 
 	if fi.Mode()&os.ModeSymlink != 0 {
-		//symlink = true
 		return true
 	}
 

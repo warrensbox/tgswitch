@@ -17,9 +17,11 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
+	"strings"
 
 	"github.com/manifoldco/promptui"
 	"github.com/pborman/getopt"
@@ -29,9 +31,11 @@ import (
 
 const (
 	terragruntURL = "https://api.github.com/repos/gruntwork-io/terragrunt/releases?"
+	defaultBin    = "/usr/local/bin/terragrunt" //default bin installation dir
+	rcFilename    = ".tgswitchrc"
 )
 
-var version = "0.1.0\n"
+var version = "0.2.0\n"
 
 var CLIENT_ID = "xxx"
 var CLIENT_SECRET = "xxx"
@@ -43,7 +47,7 @@ func main() {
 	client.ClientID = CLIENT_ID
 	client.ClientSecret = CLIENT_SECRET
 
-	userBinPath := getopt.StringLong("bin", 'b', "Custom binary path. For example: /Users/username/bin/terragrunt")
+	custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. For example: /Users/username/bin/terragrunt")
 	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tgswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
 	_ = versionFlag
@@ -51,13 +55,39 @@ func main() {
 	getopt.Parse()
 	args := getopt.Args()
 
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Printf("Failed to get current directory %v\n", err)
+		os.Exit(1)
+	}
+
+	rcfile := dir + fmt.Sprintf("/%s", rcFilename) //settings for .tfswitchrc file in current directory
+
 	if *versionFlag {
 		fmt.Printf("\nVersion: %v\n", version)
 	} else if *helpFlag {
 		usageMessage()
 	} else {
 
-		if len(args) == 1 {
+		if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tfswitchrc file, and no commmand line arguments
+			fmt.Printf("Reading required terraform version %s \n", rcFilename)
+
+			fileContents, err := ioutil.ReadFile(rcfile)
+			if err != nil {
+				fmt.Printf("Failed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md\n", rcFilename)
+				fmt.Printf("Error: %s\n", err)
+				os.Exit(1)
+			}
+			tfversion := strings.TrimSuffix(string(fileContents), "\n")
+			_, assets := lib.GetAppList(terragruntURL, &client)
+
+			if lib.ValidVersionFormat(tfversion) { //check if version is correct
+				lib.Install(terragruntURL, string(tfversion), assets, custBinPath)
+			} else {
+				fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+				os.Exit(1)
+			}
+		} else if len(args) == 1 {
 
 			semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
 			if semverRegex.MatchString(args[0]) {
@@ -68,7 +98,7 @@ func main() {
 				exist := lib.VersionExist(requestedVersion, tflist)
 
 				if exist {
-					installLocation := lib.Install(terragruntURL, requestedVersion, assets, userBinPath)
+					installLocation := lib.Install(terragruntURL, requestedVersion, assets, custBinPath)
 					lib.AddRecent(requestedVersion, installLocation) //add to recent file for faster lookup
 				} else {
 					fmt.Println("Not a valid terragrunt version")
@@ -100,7 +130,7 @@ func main() {
 				os.Exit(1)
 			}
 
-			installLocation := lib.Install(terragruntURL, tgversion, assets, userBinPath)
+			installLocation := lib.Install(terragruntURL, tgversion, assets, custBinPath)
 			lib.AddRecent(tgversion, installLocation) //add to recent file for faster lookup
 			os.Exit(0)
 		} else {
