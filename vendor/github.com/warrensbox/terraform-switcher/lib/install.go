@@ -61,7 +61,7 @@ func init() {
 func Install(tfversion string, binPath string) {
 
 	if !ValidVersionFormat(tfversion) {
-		fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
+		fmt.Printf("The provided terraform version format does not exist - %s. Try `tgswitch -l` to see all available versions.\n", tfversion)
 		os.Exit(1)
 	}
 
