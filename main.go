@@ -61,7 +61,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	rcfile := dir + fmt.Sprintf("/%s", rcFilename) //settings for .tfswitchrc file in current directory
+	rcfile := dir + fmt.Sprintf("/%s", rcFilename) //settings for .tgswitchrc file in current directory
 
 	if *versionFlag {
 		fmt.Printf("\nVersion: %v\n", version)
@@ -69,7 +69,7 @@ func main() {
 		usageMessage()
 	} else {
 
-		if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tfswitchrc file, and no commmand line arguments
+		if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tgswitchrc file, and no commmand line arguments
 			fmt.Printf("Reading required terraform version %s \n", rcFilename)
 
 			fileContents, err := ioutil.ReadFile(rcfile)
