@@ -147,6 +147,14 @@
   revision = "210d2dc333e90c7e3eedf4f2242507a8e83ed4ab"
 
 [[projects]]
+  digest = "1:96185c606fc88fe06a33311957d4ebd7e85965363d40819cb78e4d8bf5b4bac8"
+  name = "github.com/warrensbox/terraform-switcher"
+  packages = ["lib"]
+  pruneopts = "UT"
+  revision = "6789a3f06dca991301d9fe5aef8dcae324b9560c"
+  version = "0.7.737"
+
+[[projects]]
   branch = "master"
   digest = "1:969c44c96e9866e912a16e282a362cf045b64202107424983fe8abc3373d1eab"
   name = "golang.org/x/sys"
@@ -189,6 +197,7 @@
   input-imports = [
     "github.com/manifoldco/promptui",
     "github.com/pborman/getopt",
+    "github.com/warrensbox/terraform-switcher/lib",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
