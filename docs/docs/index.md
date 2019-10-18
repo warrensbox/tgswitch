@@ -49,7 +49,65 @@ The most recently selected versions are presented at the top of the dropdown.
 
 1. You can also supply the desired version as an argument on the command line.
 2. For example, `tgswitch 0.10.5` for version 0.10.5 of terraform.
-3. Hit **Enter** to switch.
+3. Hit **Enter** to switch.   
+
+### Use .tgswitchrc file
+<img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/manual-tgswitchrc.gif" alt="drawing" style="width: 480px;"/>
+
+1. Create a `.tgswitchrc` file containing the desired version
+2. For example, `echo "0.14.1" >> .tgswitchrc` for version 0.10.5 of terraform
+3. Run the command `tgswitch` in the same directory as your `.tgswitchrc`
+
+**Automatically switch with bash**
+
+Add the following to the end of your `~/.bashrc` file:
+(Use `.tgswitchrc`)
+
+```
+cdtgswitch(){
+  builtin cd "$@";
+  cdir=$PWD;
+  if [ -f "$cdir/.tgswitchrc" ]; then
+    tgswitch
+  fi
+}
+alias cd='cdtgswitch'
+```
+
+<img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/auto-tgswitchrc.gif" alt="drawing" style="width: 480px;"/>
+
+**Automatically switch with zsh**
+
+
+Add the following to the end of your `~/.zshrc` file:
+
+```
+load-tgswitch() {
+  local tgswitchrc_path=".tgswitchrc"
+
+  if [ -f "$tgswitchrc_path" ]; then
+    tgswitch
+  fi
+}
+add-zsh-hook chpwd load-tgswitch
+load-tgswitch
+```
+> NOTE: if you see an error like this: `command not found: add-zsh-hook`, then you might be on an older version of zsh (see below), or you simply need to load `add-zsh-hook` by adding this to your `.zshrc`:
+>    ```
+>    autoload -U add-zsh-hook
+>    ```
+
+*older version of zsh*
+```
+cd(){
+  builtin cd "$@";
+  cdir=$PWD;
+  if [ -f "$cdir/.tgswitchrc" ]; then
+    tgswitch
+  fi
+}
+```
+
 
 <hr>
 

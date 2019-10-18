@@ -23,7 +23,7 @@
 {"description":"Manage terragrunt versions - the tgshift command line tool lets you switch between different versions of terragrunt","@type":"WebPage","url":"/docs/","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/assets/img/logo.png"}},"headline":"Terraform Switcher","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/assets/css/style.css?v=4e3fb47d8bc0329e7f66a7dc2a425e9ca63fccd8">
+    <link rel="stylesheet" href="/assets/css/style.css?v=84a189fed2d2c61c3ed746a0ff2ec1b46c73eac9">
     <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
@@ -118,6 +118,62 @@ Once installed, simply select the version you require from the dropdown and star
   <li>For example, <code class="highlighter-rouge">tgswitch 0.10.5</code> for version 0.10.5 of terraform.</li>
   <li>Hit <strong>Enter</strong> to switch.</li>
 </ol>
+
+<h3 id="use-tgswitchrc-file">Use .tgswitchrc file</h3>
+<p><img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/manual-tgswitchrc.gif" alt="drawing" style="width: 480px;" /></p>
+
+<ol>
+  <li>Create a <code class="highlighter-rouge">.tgswitchrc</code> file containing the desired version</li>
+  <li>For example, <code class="highlighter-rouge">echo "0.14.1" &gt;&gt; .tgswitchrc</code> for version 0.10.5 of terraform</li>
+  <li>Run the command <code class="highlighter-rouge">tgswitch</code> in the same directory as your <code class="highlighter-rouge">.tgswitchrc</code></li>
+</ol>
+
+<p><strong>Automatically switch with bash</strong></p>
+
+<p>Add the following to the end of your <code class="highlighter-rouge">~/.bashrc</code> file:
+(Use <code class="highlighter-rouge">.tgswitchrc</code>)</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdtgswitch(){
+  builtin cd "$@";
+  cdir=$PWD;
+  if [ -f "$cdir/.tgswitchrc" ]; then
+    tgswitch
+  fi
+}
+alias cd='cdtgswitch'
+</code></pre></div></div>
+
+<p><img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/auto-tgswitchrc.gif" alt="drawing" style="width: 480px;" /></p>
+
+<p><strong>Automatically switch with zsh</strong></p>
+
+<p>Add the following to the end of your <code class="highlighter-rouge">~/.zshrc</code> file:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>load-tgswitch() {
+  local tgswitchrc_path=".tgswitchrc"
+
+  if [ -f "$tgswitchrc_path" ]; then
+    tgswitch
+  fi
+}
+add-zsh-hook chpwd load-tgswitch
+load-tgswitch
+</code></pre></div></div>
+<blockquote>
+  <p>NOTE: if you see an error like this: <code class="highlighter-rouge">command not found: add-zsh-hook</code>, then you might be on an older version of zsh (see below), or you simply need to load <code class="highlighter-rouge">add-zsh-hook</code> by adding this to your <code class="highlighter-rouge">.zshrc</code>:</p>
+  <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   autoload -U add-zsh-hook
+</code></pre></div>  </div>
+</blockquote>
+
+<p><em>older version of zsh</em></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd(){
+  builtin cd "$@";
+  cdir=$PWD;
+  if [ -f "$cdir/.tgswitchrc" ]; then
+    tgswitch
+  fi
+}
+</code></pre></div></div>
 
 <hr />
 
