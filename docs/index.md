@@ -51,6 +51,13 @@ The most recently selected versions are presented at the top of the dropdown.
 2. For example, `tgswitch 0.10.5` for version 0.10.5 of terragrunt.
 3. Hit **Enter** to switch.
 
+### Use custom installation location  (For non-admin - users with limited privilege on their computers)    
+You can specify a custom binary path for your terraform installation
+
+1. Create a custom binary path. Ex: `mkdir /Users/warrenveerasingam/bin` (replace warrenveerasingam with your username)
+2. Add the path to your PATH. Ex: `export PATH=$PATH:/Users/warrenveerasingam/bin` (add this to your bash profile or zsh profile)
+3. Pass -b or --bin parameter with your custom path to install terraform. Ex: `tfswitch -b /Users/warrenveerasingam/bin/terragrunt 0.14.1 `
+
 ### Use .tgswitchrc file
 <img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/manual-tgswitchrc.gif" alt="drawing" style="width: 480px;"/>
 

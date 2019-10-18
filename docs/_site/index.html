@@ -23,7 +23,7 @@
 {"name":"tgswitch","description":"Manage terragrunt versions - the tgshift command line tool lets you switch between different versions of terragrunt","@type":"WebSite","url":"/","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/assets/img/logo.png"}},"headline":"Terragrunt Switcher","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/assets/css/style.css?v=84a189fed2d2c61c3ed746a0ff2ec1b46c73eac9">
+    <link rel="stylesheet" href="/assets/css/style.css?v=8f999830b1c2f3468e59fc2f84e16ebd0f025499">
     <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
@@ -117,6 +117,15 @@ Once installed, simply select the version you require from the dropdown and star
   <li>You can also supply the desired version as an argument on the command line.</li>
   <li>For example, <code class="highlighter-rouge">tgswitch 0.10.5</code> for version 0.10.5 of terragrunt.</li>
   <li>Hit <strong>Enter</strong> to switch.</li>
+</ol>
+
+<h3 id="use-custom-installation-location--for-non-admin---users-with-limited-privilege-on-their-computers">Use custom installation location  (For non-admin - users with limited privilege on their computers)</h3>
+<p>You can specify a custom binary path for your terraform installation</p>
+
+<ol>
+  <li>Create a custom binary path. Ex: <code class="highlighter-rouge">mkdir /Users/warrenveerasingam/bin</code> (replace warrenveerasingam with your username)</li>
+  <li>Add the path to your PATH. Ex: <code class="highlighter-rouge">export PATH=$PATH:/Users/warrenveerasingam/bin</code> (add this to your bash profile or zsh profile)</li>
+  <li>Pass -b or –bin parameter with your custom path to install terraform. Ex: <code class="highlighter-rouge">tfswitch -b /Users/warrenveerasingam/bin/terragrunt 0.14.1 </code></li>
 </ol>
 
 <h3 id="use-tgswitchrc-file">Use .tgswitchrc file</h3>
