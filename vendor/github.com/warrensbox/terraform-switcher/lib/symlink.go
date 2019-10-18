@@ -6,7 +6,6 @@ import (
 )
 
 //CreateSymlink : create symlink
-//CreateSymlink : create symlink
 func CreateSymlink(cwd string, dir string) {
 
 	err := os.Symlink(cwd, dir)
@@ -14,10 +13,10 @@ func CreateSymlink(cwd string, dir string) {
 		log.Fatalf(`
 		Unable to create new symlink.
 		Maybe symlink already exist. Try removing existing symlink manually.
-		Try running "unlink" to remove existing symlink.
+		Try running "unlink %s" to remove existing symlink.
 		If error persist, you may not have the permission to create a symlink at %s.
 		Error: %s
-		`, dir, err)
+		`, dir, dir, err)
 		os.Exit(1)
 	}
 }
@@ -30,10 +29,10 @@ func RemoveSymlink(symlinkPath string) {
 		log.Fatalf(`
 		Unable to remove symlink.
 		Maybe symlink already exist. Try removing existing symlink manually.
-		Try running "unlink" to remove existing symlink.
+		Try running "unlink %s" to remove existing symlink.
 		If error persist, you may not have the permission to create a symlink at %s.
 		Error: %s
-		`, symlinkPath, err)
+		`, symlinkPath, symlinkPath, err)
 		os.Exit(1)
 	} else {
 		errRemove := os.Remove(symlinkPath)
@@ -41,10 +40,10 @@ func RemoveSymlink(symlinkPath string) {
 			log.Fatalf(`
 			Unable to remove symlink.
 			Maybe symlink already exist. Try removing existing symlink manually.
-			Try running "unlink" to remove existing symlink.
+			Try running "unlink %s" to remove existing symlink.
 			If error persist, you may not have the permission to create a symlink at %s.
 			Error: %s
-			`, symlinkPath, errRemove)
+			`, symlinkPath, symlinkPath, errRemove)
 			os.Exit(1)
 		}
 	}
