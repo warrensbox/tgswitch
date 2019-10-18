@@ -17,7 +17,7 @@ func CreateSymlink(cwd string, dir string) {
 		Try running "unlink" to remove existing symlink.
 		If error persist, you may not have the permission to create a symlink at %s.
 		Error: %s
-		`, dir, dir, err)
+		`, dir, err)
 		os.Exit(1)
 	}
 }
@@ -33,7 +33,7 @@ func RemoveSymlink(symlinkPath string) {
 		Try running "unlink" to remove existing symlink.
 		If error persist, you may not have the permission to create a symlink at %s.
 		Error: %s
-		`, symlinkPath, symlinkPath, err)
+		`, symlinkPath, err)
 		os.Exit(1)
 	} else {
 		errRemove := os.Remove(symlinkPath)
@@ -44,7 +44,7 @@ func RemoveSymlink(symlinkPath string) {
 			Try running "unlink" to remove existing symlink.
 			If error persist, you may not have the permission to create a symlink at %s.
 			Error: %s
-			`, symlinkPath, symlinkPath, errRemove)
+			`, symlinkPath, errRemove)
 			os.Exit(1)
 		}
 	}
