@@ -70,11 +70,11 @@ func main() {
 	} else {
 
 		if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tgswitchrc file, and no commmand line arguments
-			fmt.Printf("Reading required terraform version %s \n", rcFilename)
+			fmt.Printf("Reading required terragrunt version %s \n", rcFilename)
 
 			fileContents, err := ioutil.ReadFile(rcfile)
 			if err != nil {
-				fmt.Printf("Failed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md\n", rcFilename)
+				fmt.Printf("Failed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/tgswitch/blob/master/README.md\n", rcFilename)
 				fmt.Printf("Error: %s\n", err)
 				os.Exit(1)
 			}
@@ -84,7 +84,7 @@ func main() {
 			if lib.ValidVersionFormat(tfversion) { //check if version is correct
 				lib.Install(terragruntURL, string(tfversion), assets, custBinPath)
 			} else {
-				fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+				fmt.Println("Invalid terragrunt version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				os.Exit(1)
 			}
 		} else if len(args) == 1 {

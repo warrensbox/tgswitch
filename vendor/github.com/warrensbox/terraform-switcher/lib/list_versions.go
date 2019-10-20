@@ -13,10 +13,10 @@ type tfVersionList struct {
 	tflist []string
 }
 
-//GetTFList :  Get the list of available terraform version given the hashicorp url
+//GetTFList :  Get the list of available terragrunt version given the hashicorp url
 func GetTFList(hashiURL string, listAll bool) ([]string, error) {
 
-	/* Get list of terraform versions from hashicorp releases */
+	/* Get list of terragrunt versions from hashicorp releases */
 	resp, errURL := http.Get(hashiURL)
 	if errURL != nil {
 		log.Printf("Error getting url: %v", errURL)

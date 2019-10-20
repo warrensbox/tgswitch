@@ -120,12 +120,12 @@ Once installed, simply select the version you require from the dropdown and star
 </ol>
 
 <h3 id="use-custom-installation-location--for-non-admin---users-with-limited-privilege-on-their-computers">Use custom installation location  (For non-admin - users with limited privilege on their computers)</h3>
-<p>You can specify a custom binary path for your terraform installation</p>
+<p>You can specify a custom binary path for your terragrunt installation</p>
 
 <ol>
   <li>Create a custom binary path. Ex: <code class="highlighter-rouge">mkdir /Users/warrenveerasingam/bin</code> (replace warrenveerasingam with your username)</li>
   <li>Add the path to your PATH. Ex: <code class="highlighter-rouge">export PATH=$PATH:/Users/warrenveerasingam/bin</code> (add this to your bash profile or zsh profile)</li>
-  <li>Pass -b or –bin parameter with your custom path to install terraform. Ex: <code class="highlighter-rouge">tgswitch -b /Users/warrenveerasingam/bin/terragrunt 0.14.1 </code></li>
+  <li>Pass -b or –bin parameter with your custom path to install terragrunt. Ex: <code class="highlighter-rouge">tgswitch -b /Users/warrenveerasingam/bin/terragrunt 0.14.1 </code></li>
 </ol>
 
 <h3 id="use-tgswitchrc-file">Use .tgswitchrc file</h3>
@@ -133,7 +133,7 @@ Once installed, simply select the version you require from the dropdown and star
 
 <ol>
   <li>Create a <code class="highlighter-rouge">.tgswitchrc</code> file containing the desired version</li>
-  <li>For example, <code class="highlighter-rouge">echo "0.14.1" &gt;&gt; .tgswitchrc</code> for version 0.10.5 of terraform</li>
+  <li>For example, <code class="highlighter-rouge">echo "0.14.1" &gt;&gt; .tgswitchrc</code> for version 0.14.1 of terragrunt</li>
   <li>Run the command <code class="highlighter-rouge">tgswitch</code> in the same directory as your <code class="highlighter-rouge">.tgswitchrc</code></li>
 </ol>
 

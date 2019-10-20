@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="The tgswitch command line tool lets you switch between different versions of terraform.">
+    <meta name="description" content="The tgswitch command line tool lets you switch between different versions of terragrunt.">
 
 
     <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/favicon_tgswitch_48.png" sizes="16x16">
@@ -12,17 +12,17 @@
     <link rel="icon" type="image/png" href="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/favicon_tgswitch_48.png" sizes="48x48">
 
 <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>Terraform Switcher | tgswitch</title>
+<title>Terragrunt Switcher | tgswitch</title>
 <meta name="generator" content="Jekyll v3.7.3" />
-<meta property="og:title" content="Terraform Switcher" />
+<meta property="og:title" content="Terragrunt Switcher" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Manage terraform versions - the tgswitch command line tool lets you switch between different versions of terraform" />
-<meta property="og:description" content="Manage terraform versions - the tgswitch command line tool lets you switch between different versions of terraform" />
+<meta name="description" content="Manage terragrunt versions - the tgswitch command line tool lets you switch between different versions of terragrunt" />
+<meta property="og:description" content="Manage terragrunt versions - the tgswitch command line tool lets you switch between different versions of terragrunt" />
 <link rel="canonical" href="http://localhost:4000/" />
 <meta property="og:url" content="http://localhost:4000/" />
 <meta property="og:site_name" content="tgswitch" />
 <script type="application/ld+json">
-{"name":"tgswitch","description":"Manage terraform versions - the tgswitch command line tool lets you switch between different versions of terraform","@type":"WebSite","url":"http://localhost:4000/","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/img/logo.png"}},"headline":"Terraform Switcher","@context":"http://schema.org"}</script>
+{"name":"tgswitch","description":"Manage terragrunt versions - the tgswitch command line tool lets you switch between different versions of terragrunt","@type":"WebSite","url":"http://localhost:4000/","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/img/logo.png"}},"headline":"Terragrunt Switcher","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
     <link rel="stylesheet" href="/assets/css/style.css?v=248b5fa8c336f7ea2cc841ee9f8e90d9b6e4a680">
@@ -50,29 +50,29 @@
           <img align="middle" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/logo.png" alt="Logo" />
         </p>
 
-        <p style="text-align: center">Manage terraform versions - the tgswitch command line tool lets you switch between different versions of terraform</p>
+        <p style="text-align: center">Manage terragrunt versions - the tgswitch command line tool lets you switch between different versions of terragrunt</p>
         <!-- <p>Written in go</p> -->
-        <img src="https://travis-ci.org/warrensbox/terraform-switcher.svg?branch=master" alt="Travis" />
-        <img src="https://goreportcard.com/badge/github.com/warrensbox/terraform-switcher" alt="Go Report" />
+        <img src="https://travis-ci.org/warrensbox/tgswitch.svg?branch=master" alt="Travis" />
+        <img src="https://goreportcard.com/badge/github.com/warrensbox/tgswitch" alt="Go Report" />
 
         <hr style="margin-top: 20px;">
 
         
         <ul>
-          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.4.552/terraform-switcher_0.4.552_darwin_amd64.tar.gz">Download <strong>MacOS</strong></a></li>
-          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.4.552/terraform-switcher_0.4.552_linux_amd64.tar.gz">Download <strong>Linux</strong></a></li>
-          <li><a href="https://github.com/warrensbox/terraform-switcher/releases">Releases On <strong>GitHub</strong></a></li>
+          <li><a href="https://github.com/warrensbox/tgswitch/releases/download/0.4.552/tgswitch_0.4.552_darwin_amd64.tar.gz">Download <strong>MacOS</strong></a></li>
+          <li><a href="https://github.com/warrensbox/tgswitch/releases/download/0.4.552/tgswitch_0.4.552_linux_amd64.tar.gz">Download <strong>Linux</strong></a></li>
+          <li><a href="https://github.com/warrensbox/tgswitch/releases">Releases On <strong>GitHub</strong></a></li>
         </ul>
         
       </header>
       <section>
 
-      <h1 id="terraform-switcher">Terraform Switcher</h1>
+      <h1 id="tgswitch">Terragrunt Switcher</h1>
 
-<p>The <code class="highlighter-rouge">tgswitch</code> command line tool lets you switch between different versions of <a href="https://www.terraform.io/" target="_blank">terraform</a>. 
-If you do not have a particular version of terraform installed, <code class="highlighter-rouge">tgswitch</code> will download the version you desire.
+<p>The <code class="highlighter-rouge">tgswitch</code> command line tool lets you switch between different versions of <a href="https://github.com/gruntwork-io/terragrunt" target="_blank">terragrunt</a>. 
+If you do not have a particular version of terragrunt installed, <code class="highlighter-rouge">tgswitch</code> will download the version you desire.
 The installation is minimal and easy. 
-Once installed, simply select the version you require from the dropdown and start using terraform.</p>
+Once installed, simply select the version you require from the dropdown and start using terragrunt.</p>
 
 <hr />
 
@@ -91,12 +91,12 @@ Once installed, simply select the version you require from the dropdown and star
 
 <p>Installation for Linux operation systems.</p>
 
-<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-L</span> https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-L</span> https://raw.githubusercontent.com/warrensbox/tgswitch/release/install.sh | bash
 </code></pre></div></div>
 
 <h3 id="install-from-source">Install from source</h3>
 
-<p>Alternatively, you can install the binary from the source <a href="https://github.com/warrensbox/terraform-switcher/releases">here</a></p>
+<p>Alternatively, you can install the binary from the source <a href="https://github.com/warrensbox/tgswitch/releases">here</a></p>
 
 <hr />
 
@@ -105,8 +105,8 @@ Once installed, simply select the version you require from the dropdown and star
 <p><img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/tgswitch.gif" alt="drawing" style="width: 480px;" /></p>
 
 <ol>
-  <li>You can switch between different versions of terraform by typing the command <code class="highlighter-rouge">tgswitch</code> on your terminal.</li>
-  <li>Select the version of terraform you require by using the up and down arrow.</li>
+  <li>You can switch between different versions of terragrunt by typing the command <code class="highlighter-rouge">tgswitch</code> on your terminal.</li>
+  <li>Select the version of terragrunt you require by using the up and down arrow.</li>
   <li>Hit <strong>Enter</strong> to select the desired version.</li>
 </ol>
 
@@ -117,7 +117,7 @@ Once installed, simply select the version you require from the dropdown and star
 
 <ol>
   <li>You can also supply the desired version as an argument on the command line.</li>
-  <li>For example, <code class="highlighter-rouge">tgswitch 0.10.5</code> for version 0.10.5 of terraform.</li>
+  <li>For example, <code class="highlighter-rouge">tgswitch 0.10.5</code> for version 0.10.5 of terragrunt.</li>
   <li>Hit <strong>Enter</strong> to switch.</li>
 </ol>
 
@@ -125,7 +125,7 @@ Once installed, simply select the version you require from the dropdown and star
 
 <h2 id="issues">Issues</h2>
 
-<p>Please open  <em>issues</em> here: <a href="https://github.com/warrensbox/terraform-switcher/issues" target="_blank">New Issue</a></p>
+<p>Please open  <em>issues</em> here: <a href="https://github.com/warrensbox/tgswitch/issues" target="_blank">New Issue</a></p>
 
 <hr />
 
