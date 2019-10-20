@@ -13,7 +13,7 @@ brew upgrade warrensbox/tap/tgswitch
 Rerun:
 
 ```sh
-curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
+curl -L https://raw.githubusercontent.com/warrensbox/tgswitch/release/install.sh | bash
 ```
 
 ## Uninstall:

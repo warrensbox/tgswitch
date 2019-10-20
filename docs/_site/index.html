@@ -23,7 +23,7 @@
 {"name":"tgswitch","description":"Manage terragrunt versions - the tgshift command line tool lets you switch between different versions of terragrunt","@type":"WebSite","url":"/","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/assets/img/logo.png"}},"headline":"Terragrunt Switcher","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/assets/css/style.css?v=80e5a874c168b4f5d0228db1ab74db2b6193441a">
+    <link rel="stylesheet" href="/assets/css/style.css?v=bc196b231c93d2fb0a476312fda476bdd5f98fd0">
     <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
@@ -57,8 +57,8 @@
 
         
         <ul>
-          <li><a href="https://github.com/warrensbox/tgswitch/releases/download/0.2.276/tgswitch_0.2.276_darwin_amd64.tar.gz">Download <strong>MacOS</strong></a></li>
-          <li><a href="https://github.com/warrensbox/tgswitch/releases/download/0.2.276/tgswitch_0.2.276_linux_amd64.tar.gz">Download <strong>Linux</strong></a></li>
+          <li><a href="https://github.com/warrensbox/tgswitch/releases/download/0.3.285/tgswitch_0.3.285_darwin_amd64.tar.gz">Download <strong>MacOS</strong></a></li>
+          <li><a href="https://github.com/warrensbox/tgswitch/releases/download/0.3.285/tgswitch_0.3.285_linux_amd64.tar.gz">Download <strong>Linux</strong></a></li>
           <li><a href="https://github.com/warrensbox/tgswitch/releases">Releases On <strong>GitHub</strong></a></li>
         </ul>
         
@@ -119,6 +119,71 @@ Once installed, simply select the version you require from the dropdown and star
   <li>Hit <strong>Enter</strong> to switch.</li>
 </ol>
 
+<h3 id="use-custom-installation-location--for-non-admin---users-with-limited-privilege-on-their-computers">Use custom installation location  (For non-admin - users with limited privilege on their computers)</h3>
+<p>You can specify a custom binary path for your terragrunt installation</p>
+
+<ol>
+  <li>Create a custom binary path. Ex: <code class="highlighter-rouge">mkdir /Users/warrenveerasingam/bin</code> (replace warrenveerasingam with your username)</li>
+  <li>Add the path to your PATH. Ex: <code class="highlighter-rouge">export PATH=$PATH:/Users/warrenveerasingam/bin</code> (add this to your bash profile or zsh profile)</li>
+  <li>Pass -b or –bin parameter with your custom path to install terragrunt. Ex: <code class="highlighter-rouge">tgswitch -b /Users/warrenveerasingam/bin/terragrunt 0.14.1 </code></li>
+</ol>
+
+<h3 id="use-tgswitchrc-file">Use .tgswitchrc file</h3>
+<p><img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/manual-tgswitchrc.gif" alt="drawing" style="width: 480px;" /></p>
+
+<ol>
+  <li>Create a <code class="highlighter-rouge">.tgswitchrc</code> file containing the desired version</li>
+  <li>For example, <code class="highlighter-rouge">echo "0.14.1" &gt;&gt; .tgswitchrc</code> for version 0.14.1 of terragrunt</li>
+  <li>Run the command <code class="highlighter-rouge">tgswitch</code> in the same directory as your <code class="highlighter-rouge">.tgswitchrc</code></li>
+</ol>
+
+<p><strong>Automatically switch with bash</strong></p>
+
+<p>Add the following to the end of your <code class="highlighter-rouge">~/.bashrc</code> file:
+(Use <code class="highlighter-rouge">.tgswitchrc</code>)</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdtgswitch(){
+  builtin cd "$@";
+  cdir=$PWD;
+  if [ -f "$cdir/.tgswitchrc" ]; then
+    tgswitch
+  fi
+}
+alias cd='cdtgswitch'
+</code></pre></div></div>
+
+<p><img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/auto-tgswitchrc.gif" alt="drawing" style="width: 480px;" /></p>
+
+<p><strong>Automatically switch with zsh</strong></p>
+
+<p>Add the following to the end of your <code class="highlighter-rouge">~/.zshrc</code> file:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>load-tgswitch() {
+  local tgswitchrc_path=".tgswitchrc"
+
+  if [ -f "$tgswitchrc_path" ]; then
+    tgswitch
+  fi
+}
+add-zsh-hook chpwd load-tgswitch
+load-tgswitch
+</code></pre></div></div>
+<blockquote>
+  <p>NOTE: if you see an error like this: <code class="highlighter-rouge">command not found: add-zsh-hook</code>, then you might be on an older version of zsh (see below), or you simply need to load <code class="highlighter-rouge">add-zsh-hook</code> by adding this to your <code class="highlighter-rouge">.zshrc</code>:</p>
+  <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   autoload -U add-zsh-hook
+</code></pre></div>  </div>
+</blockquote>
+
+<p><em>older version of zsh</em></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd(){
+  builtin cd "$@";
+  cdir=$PWD;
+  if [ -f "$cdir/.tgswitchrc" ]; then
+    tgswitch
+  fi
+}
+</code></pre></div></div>
+
 <hr />
 
 <h2 id="issues">Issues</h2>
@@ -136,7 +201,7 @@ Once installed, simply select the version you require from the dropdown and star
       </section>
       <footer>
         <!-- <p><small>View other products &mdash; by <a href="http://warren.veerasingam.com/#about_me" target="_blank">Warren Veerasingam</a></small></p> -->
-        <!-- <p><small>VERSION: 0.2.276. This project is maintained by <a href="http://github.com/warrensbox">warrensbox</a></small></p> -->
+        <!-- <p><small>VERSION: 0.3.285. This project is maintained by <a href="http://github.com/warrensbox">warrensbox</a></small></p> -->
       </footer>
     </div>
     <script src="/assets/js/scale.fix.js"></script>
