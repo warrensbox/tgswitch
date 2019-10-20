@@ -1,6 +1,6 @@
 # Terragrunt Switcher 
 
-The `tgswitch` command line tool lets you switch between different versions of [terragrunt](https://www.terragrunt.io/){:target="_blank"}. 
+The `tgswitch` command line tool lets you switch between different versions of [terragrunt](https://github.com/gruntwork-io/terragrunt){:target="_blank"}. 
 If you do not have a particular version of terragrunt installed, `tgswitch` will download the version you desire.
 The installation is minimal and easy. 
 Once installed, simply select the version you require from the dropdown and start using terragrunt. 
@@ -62,7 +62,7 @@ You can specify a custom binary path for your terragrunt installation
 <img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/manual-tgswitchrc.gif" alt="drawing" style="width: 480px;"/>
 
 1. Create a `.tgswitchrc` file containing the desired version
-2. For example, `echo "0.14.1" >> .tgswitchrc` for version 0.10.5 of terragrunt
+2. For example, `echo "0.14.1" >> .tgswitchrc` for version 0.14.1 of terragrunt
 3. Run the command `tgswitch` in the same directory as your `.tgswitchrc`
 
 **Automatically switch with bash**
@@ -120,7 +120,7 @@ cd(){
 
 ## Issues
 
-Please open  *issues* here: [New Issue](https://github.com/warrensbox/terragrunt-switcher/issues){:target="_blank"}
+Please open  *issues* here: [New Issue](https://github.com/warrensbox/tgswitch/issues){:target="_blank"}
 
 <hr>
 
