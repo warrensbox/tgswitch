@@ -8,7 +8,6 @@ import (
 	"regexp"
 	"runtime"
 
-	"github.com/warrensbox/terraform-switcher/lib"
 	"github.com/warrensbox/tgswitch/modal"
 )
 
@@ -67,8 +66,8 @@ func Install(url string, appversion string, assests []modal.Repo, userBinPath *s
 		installedBinPath = *userBinPath
 	}
 
-	pathDir := lib.Path(installedBinPath)     //get path directory from binary path
-	binDirExist := lib.CheckDirExist(pathDir) //check bin path exist
+	pathDir := Path(installedBinPath)     //get path directory from binary path
+	binDirExist := CheckDirExist(pathDir) //check bin path exist
 
 	if !binDirExist {
 		fmt.Printf("Binary path does not exist: %s\n", pathDir)
