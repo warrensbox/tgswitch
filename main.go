@@ -82,7 +82,7 @@ func main() {
 			_, assets := lib.GetAppList(terragruntURL, &client)
 
 			if lib.ValidVersionFormat(tfversion) { //check if version is correct
-				lib.Install(terragruntURL, string(tfversion), assets, custBinPath)
+				lib.Install(terragruntURL, string(tfversion), assets, *custBinPath)
 			} else {
 				fmt.Println("Invalid terragrunt version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				os.Exit(1)
@@ -98,7 +98,7 @@ func main() {
 				exist := lib.VersionExist(requestedVersion, tflist)
 
 				if exist {
-					installLocation := lib.Install(terragruntURL, requestedVersion, assets, custBinPath)
+					installLocation := lib.Install(terragruntURL, requestedVersion, assets, *custBinPath)
 					lib.AddRecent(requestedVersion, installLocation) //add to recent file for faster lookup
 				} else {
 					fmt.Println("Not a valid terragrunt version")
@@ -124,13 +124,14 @@ func main() {
 			}
 
 			_, tgversion, errPrompt := prompt.Run()
+			tgversion = strings.Trim(tgversion, " *recent")
 
 			if errPrompt != nil {
 				log.Printf("Prompt failed %v\n", errPrompt)
 				os.Exit(1)
 			}
 
-			installLocation := lib.Install(terragruntURL, tgversion, assets, custBinPath)
+			installLocation := lib.Install(terragruntURL, tgversion, assets, *custBinPath)
 			lib.AddRecent(tgversion, installLocation) //add to recent file for faster lookup
 			os.Exit(0)
 		} else {
