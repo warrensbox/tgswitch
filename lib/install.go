@@ -15,28 +15,21 @@ const (
 	gruntURL       = "https://github.com/gruntwork-io/terragrunt/releases/download/"
 	installFile    = "terragrunt"
 	installVersion = "terragrunt_"
-	binLocation    = "/usr/local/bin/terragrunt"
 	installPath    = "/.terragrunt.versions/"
 	recentFile     = "RECENT"
 )
 
 var (
-	installLocation  = "/tmp"
-	installedBinPath = "/tmp"
+	installLocation = "/tmp"
 )
 
-func init() {
-	/* get current user */
-	usr, errCurr := user.Current()
-	if errCurr != nil {
-		log.Fatal(errCurr)
-	}
+// initialize : removes existing symlink to terragrunt binary
+func initialize() {
 
-	/* set installation location */
-	installLocation = usr.HomeDir + installPath
-
-	/* set default binary path for terragrunt */
-	installedBinPath = binLocation
+	/* initilize default binary path for terraform */
+	/* assumes that terraform is installed here */
+	/* we will find the terraform path instalation later and replace this variable with the correct installed bin path */
+	installedBinPath := "/usr/local/bin/terragrunt"
 
 	/* find terragrunt binary location if terragrunt is already installed*/
 	cmd := NewCommand("terragrunt")
@@ -54,17 +47,33 @@ func init() {
 	if symlinkExist {
 		RemoveSymlink(installedBinPath)
 	}
+}
+
+// getInstallLocation : get location where the terraform binary will be installed,
+// will create a directory in the home location if it does not exist
+func getInstallLocation() string {
+	/* get current user */
+	usr, errCurr := user.Current()
+	if errCurr != nil {
+		log.Fatal(errCurr)
+	}
+	/* set installation location */
+	installLocation = usr.HomeDir + installPath
 	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
+	return installLocation
 }
 
 //Install : Install the provided version in the argument
-func Install(url string, appversion string, assests []modal.Repo, userBinPath *string) string {
+func Install(url string, appversion string, assests []modal.Repo, installedBinPath string) string {
+
+	initialize()
+	installLocation = getInstallLocation() //get installation location -  this is where we will put our terraform binary file
 
 	/* If user provided bin path use user one instead of default */
-	if userBinPath != nil {
-		installedBinPath = *userBinPath
-	}
+	// if userBinPath != nil {
+	// 	installedBinPath = *userBinPath
+	// }
 
 	pathDir := Path(installedBinPath)     //get path directory from binary path
 	binDirExist := CheckDirExist(pathDir) //check bin path exist
@@ -145,6 +154,8 @@ func Install(url string, appversion string, assests []modal.Repo, userBinPath *s
 // AddRecent : add to recent file
 func AddRecent(requestedVersion string, installLocation string) {
 
+	installLocation = getInstallLocation()
+
 	semverRegex := regexp.MustCompile(`\d+(\.\d+){2}\z`)
 
 	fileExist := CheckFileExist(installLocation + recentFile)
@@ -186,11 +197,14 @@ func AddRecent(requestedVersion string, installLocation string) {
 // GetRecentVersions : get recent version from file
 func GetRecentVersions() ([]string, error) {
 
+	installLocation = getInstallLocation()
+
 	fileExist := CheckFileExist(installLocation + recentFile)
 	if fileExist {
 		semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
 
 		lines, errRead := ReadLines(installLocation + recentFile)
+		outputRecent := []string{}
 
 		if errRead != nil {
 			fmt.Printf("Error: %s\n", errRead)
@@ -202,14 +216,21 @@ func GetRecentVersions() ([]string, error) {
 				RemoveFiles(installLocation + recentFile)
 				return nil, errRead
 			}
+
+			/* 	output can be confusing since it displays the 3 most recent used terraform version
+			append the string *recent to the output to make it more user friendly
+			*/
+			outputRecent = append(outputRecent, fmt.Sprintf("%s *recent", line))
 		}
-		return lines, nil
+		return outputRecent, nil
 	}
 	return nil, nil
 }
 
 //CreateRecentFile : create a recent file
 func CreateRecentFile(requestedVersion string) {
+
+	installLocation = getInstallLocation()
 	WriteLines([]string{requestedVersion}, installLocation+recentFile)
 }
 
