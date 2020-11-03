@@ -71,10 +71,12 @@ You can specify a custom binary path for your terragrunt installation
 2. For example, `echo "0.14.1" >> .tgswitchrc` for version 0.14.1 of terragrunt
 3. Run the command `tgswitch` in the same directory as your `.tgswitchrc`
 
+#### *Instead of a `.tgswitchrc` file, a `.terragrunt-version` file may be used for compatibility with [`tgenv`](https://github.com/cunymatthieu/tgenv#terragrunt-version) and other tools which use it*
+
 **Automatically switch with bash**
 
 Add the following to the end of your `~/.bashrc` file:
-(Use `.tgswitchrc`)
+(Use either `.tgswitchrc` or `.terragrunt-version`)
 
 ```
 cdtgswitch(){

@@ -33,6 +33,7 @@ const (
 	terragruntURL = "https://api.github.com/repos/gruntwork-io/terragrunt/releases?"
 	defaultBin    = "/usr/local/bin/terragrunt" //default bin installation dir
 	rcFilename    = ".tgswitchrc"
+	tgvFilename   = ".terragrunt-version"
 )
 
 var version = "0.2.0\n"
@@ -61,7 +62,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	rcfile := dir + fmt.Sprintf("/%s", rcFilename) //settings for .tgswitchrc file in current directory
+	tgvfile := dir + fmt.Sprintf("/%s", tgvFilename) //settings for .terragrunt-version file in current directory (tgenv compatible)
+	rcfile := dir + fmt.Sprintf("/%s", rcFilename)   //settings for .tgswitchrc file in current directory
 
 	if *versionFlag {
 		fmt.Printf("\nVersion: %v\n", version)
@@ -78,15 +80,35 @@ func main() {
 				fmt.Printf("Error: %s\n", err)
 				os.Exit(1)
 			}
-			tfversion := strings.TrimSuffix(string(fileContents), "\n")
+			tgversion := strings.TrimSuffix(string(fileContents), "\n")
 			_, assets := lib.GetAppList(terragruntURL, &client)
 
-			if lib.ValidVersionFormat(tfversion) { //check if version is correct
-				lib.Install(terragruntURL, string(tfversion), assets, *custBinPath)
+			if lib.ValidVersionFormat(tgversion) { //check if version is correct
+				lib.Install(terragruntURL, string(tgversion), assets, *custBinPath)
 			} else {
 				fmt.Println("Invalid terragrunt version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				os.Exit(1)
 			}
+
+		} else if _, err := os.Stat(tgvfile); err == nil && len(args) == 0 {
+			fmt.Printf("Reading required terragrunt version %s \n", tgvFilename)
+
+			fileContents, err := ioutil.ReadFile(tgvfile)
+			if err != nil {
+				fmt.Printf("Failed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/tgswitch/blob/master/README.md\n", tgvFilename)
+				fmt.Printf("Error: %s\n", err)
+				os.Exit(1)
+			}
+			tgversion := strings.TrimSuffix(string(fileContents), "\n")
+			_, assets := lib.GetAppList(terragruntURL, &client)
+
+			if lib.ValidVersionFormat(tgversion) { //check if version is correct
+				lib.Install(terragruntURL, string(tgversion), assets, *custBinPath)
+			} else {
+				fmt.Println("Invalid terragrunt version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+				os.Exit(1)
+			}
+
 		} else if len(args) == 1 {
 
 			semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
