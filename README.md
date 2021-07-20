@@ -124,7 +124,6 @@ cd(){
 
 **Automatically switch with fish**
 
-
 Add the following to your `~/.config/fish/config.fish` file:
 
 ```
