@@ -69,7 +69,7 @@ func GetAppList(appURL string, client *modal.Client) ([]string, []modal.Repo) {
 	applist, assets := getAppVersion(appURL, numPages, client)
 
 	if len(applist) == 0 {
-		log.Fatal("Unable to get release from repo ")
+		log.Println("No versions returned")
 		os.Exit(1)
 	}
 
@@ -204,14 +204,14 @@ func getAppBody(gruntURLPage string, ch chan<- *[]modal.Repo) {
 
 	body, readErr := ioutil.ReadAll(res.Body)
 	if readErr != nil {
-		log.Fatal("Unable to get release from repo ")
+		log.Println("Unable to get release from repo ", string(body))
 		log.Fatal(readErr)
 	}
 
 	var repo []modal.Repo
 	jsonErr := json.Unmarshal(body, &repo)
 	if jsonErr != nil {
-		log.Fatal("Unable to get release from repo ")
+		log.Println("Unable to get release from repo ", string(body))
 		log.Fatal(jsonErr)
 	}
 
