@@ -93,7 +93,6 @@ alias cd='cdtgswitch'
 
 **Automatically switch with zsh**
 
-
 Add the following to the end of your `~/.zshrc` file:
 
 ```
@@ -121,6 +120,21 @@ cd(){
     tgswitch
   fi
 }
+```
+
+**Automatically switch with fish**
+
+Add the following to your `~/.config/fish/config.fish` file:
+
+```
+function cdtgswitch
+  builtin cd "$argv"
+  set cdir $PWD
+  if test -f "$cdir/.tgswitchrc"
+    tgswitch
+  end
+end
+alias cd='cdtgswitch'
 ```
 
 ## Additional Info
