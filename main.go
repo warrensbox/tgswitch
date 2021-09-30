@@ -16,17 +16,17 @@ package main
  */
 
 import (
-        "fmt"
-        "io/ioutil"
-        "log"
-        "os"
-        "regexp"
-        "strings"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
+	"regexp"
+	"strings"
 
-        "github.com/manifoldco/promptui"
-        "github.com/pborman/getopt"
-        lib "github.com/warrensbox/tgswitch/lib"
-        "github.com/warrensbox/tgswitch/modal"
+	"github.com/manifoldco/promptui"
+	"github.com/pborman/getopt"
+	lib "github.com/warrensbox/tgswitch/lib"
+	"github.com/warrensbox/tgswitch/modal"
 )
 
 const (
