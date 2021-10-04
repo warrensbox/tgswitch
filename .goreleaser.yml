@@ -11,6 +11,7 @@ builds:
       - linux
     goarch:
       - amd64
+      - arm64
 checksum:
   name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_checksums.txt'
 changelog:
