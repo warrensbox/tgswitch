@@ -49,9 +49,9 @@ func initialize() {
 	}
 }
 
-// getInstallLocation : get location where the terraform binary will be installed,
+// GetInstallLocation : get location where the terraform binary will be installed,
 // will create a directory in the home location if it does not exist
-func getInstallLocation() string {
+func GetInstallLocation() string {
 	/* get current user */
 	usr, errCurr := user.Current()
 	if errCurr != nil {
@@ -68,11 +68,11 @@ func getInstallLocation() string {
 func Install(url string, appversion string, assests []modal.Repo, installedBinPath string) string {
 
 	initialize()
-	installLocation = getInstallLocation() //get installation location -  this is where we will put our terraform binary file
+	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
 
 	/* If user provided bin path use user one instead of default */
 	// if userBinPath != nil {
-	// 	installedBinPath = *userBinPath
+	//      installedBinPath = *userBinPath
 	// }
 
 	pathDir := Path(installedBinPath)     //get path directory from binary path
@@ -86,19 +86,8 @@ func Install(url string, appversion string, assests []modal.Repo, installedBinPa
 
 	/* check if selected version already downloaded */
 	fileExist := CheckFileExist(installLocation + installVersion + appversion)
-
-	/* if selected version already exist, */
 	if fileExist {
-
-		/* remove current symlink if exist*/
-		symlinkExist := CheckSymlink(installedBinPath)
-
-		if symlinkExist {
-			RemoveSymlink(installedBinPath)
-		}
-		/* set symlink to desired version */
-		CreateSymlink(installLocation+installVersion+appversion, installedBinPath)
-		fmt.Printf("Switched terragrunt to version %q \n", appversion)
+		installLocation := ChangeSymlink(installedBinPath, appversion)
 		return installLocation
 	}
 
@@ -154,7 +143,7 @@ func Install(url string, appversion string, assests []modal.Repo, installedBinPa
 // AddRecent : add to recent file
 func AddRecent(requestedVersion string, installLocation string) {
 
-	installLocation = getInstallLocation()
+	installLocation = GetInstallLocation()
 
 	semverRegex := regexp.MustCompile(`\d+(\.\d+){2}\z`)
 
@@ -197,7 +186,7 @@ func AddRecent(requestedVersion string, installLocation string) {
 // GetRecentVersions : get recent version from file
 func GetRecentVersions() ([]string, error) {
 
-	installLocation = getInstallLocation()
+	installLocation = GetInstallLocation()
 
 	fileExist := CheckFileExist(installLocation + recentFile)
 	if fileExist {
@@ -217,7 +206,7 @@ func GetRecentVersions() ([]string, error) {
 				return nil, errRead
 			}
 
-			/* 	output can be confusing since it displays the 3 most recent used terraform version
+			/*      output can be confusing since it displays the 3 most recent used terraform version
 			append the string *recent to the output to make it more user friendly
 			*/
 			outputRecent = append(outputRecent, fmt.Sprintf("%s *recent", line))
@@ -230,7 +219,7 @@ func GetRecentVersions() ([]string, error) {
 //CreateRecentFile : create a recent file
 func CreateRecentFile(requestedVersion string) {
 
-	installLocation = getInstallLocation()
+	installLocation = GetInstallLocation()
 	WriteLines([]string{requestedVersion}, installLocation+recentFile)
 }
 

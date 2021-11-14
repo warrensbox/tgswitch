@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"fmt"
 	"log"
 	"os"
 )
@@ -63,4 +64,21 @@ func CheckSymlink(symlinkPath string) bool {
 	}
 
 	return false
+}
+
+// ChangeSymlink : move symlink to existing binary
+func ChangeSymlink(installedBinPath string, appversion string) string {
+
+	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
+
+	/* remove current symlink if exist*/
+	symlinkExist := CheckSymlink(installedBinPath)
+	if symlinkExist {
+		RemoveSymlink(installedBinPath)
+	}
+	/* set symlink to desired version */
+	CreateSymlink(installLocation+installVersion+appversion, installedBinPath)
+	fmt.Printf("Switched terragrunt to version %q \n", appversion)
+	return installLocation
+
 }

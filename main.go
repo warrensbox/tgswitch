@@ -30,10 +30,11 @@ import (
 )
 
 const (
-	terragruntURL = "https://api.github.com/repos/gruntwork-io/terragrunt/releases?"
-	defaultBin    = "/usr/local/bin/terragrunt" //default bin installation dir
-	rcFilename    = ".tgswitchrc"
-	tgvFilename   = ".terragrunt-version"
+	terragruntURL  = "https://api.github.com/repos/gruntwork-io/terragrunt/releases?"
+	defaultBin     = "/usr/local/bin/terragrunt" //default bin installation dir
+	rcFilename     = ".tgswitchrc"
+	tgvFilename    = ".terragrunt-version"
+	installVersion = "terragrunt_"
 )
 
 var version = "0.2.0\n"
@@ -70,7 +71,7 @@ func main() {
 	} else if *helpFlag {
 		usageMessage()
 	} else {
-
+		installLocation := lib.GetInstallLocation()
 		if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tgswitchrc file, and no commmand line arguments
 			fmt.Printf("Reading required terragrunt version %s \n", rcFilename)
 
@@ -81,6 +82,11 @@ func main() {
 				os.Exit(1)
 			}
 			tgversion := strings.TrimSuffix(string(fileContents), "\n")
+			fileExist := lib.CheckFileExist(installLocation + installVersion + tgversion)
+			if fileExist {
+				lib.ChangeSymlink(*custBinPath, string(tgversion))
+				os.Exit(0)
+			}
 			_, assets := lib.GetAppList(terragruntURL, &client)
 
 			if lib.ValidVersionFormat(tgversion) { //check if version is correct
@@ -100,6 +106,11 @@ func main() {
 				os.Exit(1)
 			}
 			tgversion := strings.TrimSuffix(string(fileContents), "\n")
+			fileExist := lib.CheckFileExist(installLocation + installVersion + string(tgversion))
+			if fileExist {
+				lib.ChangeSymlink(*custBinPath, string(tgversion))
+				os.Exit(0)
+			}
 			_, assets := lib.GetAppList(terragruntURL, &client)
 
 			if lib.ValidVersionFormat(tgversion) { //check if version is correct
@@ -114,6 +125,12 @@ func main() {
 			semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
 			if semverRegex.MatchString(args[0]) {
 				requestedVersion := args[0]
+
+				fileExist := lib.CheckFileExist(installLocation + installVersion + string(requestedVersion))
+				if fileExist {
+					lib.ChangeSymlink(*custBinPath, string(requestedVersion))
+					os.Exit(0)
+				}
 
 				//check if version exist before downloading it
 				tflist, assets := lib.GetAppList(terragruntURL, &client)
