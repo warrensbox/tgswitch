@@ -1,10 +1,26 @@
 # This is an example goreleaser.yaml file with some sane defaults.
 # Make sure to check the documentation at http://goreleaser.com
 builds:
-  - ldflags:
-    - -X main.version={{.Env.RELEASE_VERSION}} -X main.CLIENT_ID={{.Env.CLIENT_ID}} -X main.CLIENT_SECRET={{.Env.CLIENT_SECRET}}
-  - main: main.go
+  -
+    ldflags:
+      - -s -w -X "main.version={{.Env.RELEASE_VERSION}}"
+    main: main.go
     binary: terragrunt-switch
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - 386
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - 6
+      - 7
+    ignore:
+      - goos: windows
+        goarch: arm    
 checksum:
   name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_checksums.txt'
 changelog:
@@ -13,80 +29,75 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
-brew:
-  # Name of the recipe
-  # Default to project name
-  name: tgswitch
-
-  # Reporitory to push the tap to.
-  github:
-    owner: warrensbox
-    name: homebrew-tap
-
-  # Allows you to set a custom download strategy.
-  # Default is empty.
-  #download_strategy: GitHubPrivateRepositoryReleaseDownloadStrategy
-
-  # Git author used to commit to the repository.
-  # Defaults are shown.
-  commit_author:
-    name: Warren Veerasingam
-    email: warren.veerasingam@gmail.com
-
-  # Folder inside the repository to put the formula.
-  # Default is the root folder.
-  folder: Formula
-
-  # Caveats for the user of your binary.
-  # Default is empty.
-  caveats: "Type 'tgswitch' on your command line and choose the terragrunt version that you want from the dropdown. This command currently only works on MacOs and Linux"
-
-  # Your app's homepage.
-  # Default is empty.
-  homepage: "https://warrensbox.github.io/tgswitch"
-
-  # Your app's description.
-  # Default is empty.
-  description: "The tgswitch command lets you switch between terragrunt versions."
-
-  # Setting this will prevent goreleaser to actually try to commit the updated
-  # formula - instead, the formula file will be stored on the dist folder only,
-  # leaving the responsibility of publishing it to the user.
-  # Default is false.
-  skip_upload: false
-
-  # Packages that conflict with your package.
-  # conflicts:
-  #   - terragrunt
-
-  # So you can `brew test` your formula.
-  # Default is empty.
-  test: |
-    system "#{bin}/tgswitch --version"
-
-  # Custom install script for brew.
-  # Default is 'bin.install "program"'.
-  install: |
-    bin.install "tgswitch"
-# .goreleaser.yml
-release:
-  # Repo in which the release will be created.
-  # Default is extracted from the origin remote URL.
-  github:
-    owner: warrensbox
+archives:
+  -
+    name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    replacements:
+      darwin: darwin
+      linux: linux
+      386: 386
+      amd64: amd64
+    format_overrides:
+    - goos: windows
+      format: zip
+brews:
+  -
+    # Name of the recipe
+    # Default to project name
     name: tgswitch
 
-  # If set to true, will not auto-publish the release.
-  # Default is false.
-  draft: false
+  # GitHub/GitLab repository to push the formula to
+    # Gitea is not supported yet, but the support coming
+    tap:
+      owner: warrensbox
+      name: homebrew-tap
 
-  # If set to auto, will mark the release as not ready for production
-  # in case there is an indicator for this in the tag e.g. v1.0.0-rc1
-  # If set to true, will mark the release as not ready for production.
-  # Default is false.
-  prerelease: false
+    # Reporitory to push the tap to.
+    # github:
+    #   owner: warrensbox
+    #   name: homebrew-tap
 
-  # You can disable this pipe in order to not upload any artifacts to
-  # GitHub.
-  # Defaults to false.
-  disable: false
+    # Allows you to set a custom download strategy.
+    # Default is empty.
+    #download_strategy: GitHubPrivateRepositoryReleaseDownloadStrategy
+
+    # Git author used to commit to the repository.
+    # Defaults are shown.
+    commit_author:
+      name: Warren Veerasingam
+      email: warren.veerasingam@gmail.com
+
+    # Folder inside the repository to put the formula.
+    # Default is the root folder.
+    folder: Formula
+
+    # Caveats for the user of your binary.
+    # Default is empty.
+    caveats: "Type 'tgswitch' on your command line and choose the terragrunt version that you want from the dropdown. This command currently only works on MacOs and Linux"
+
+    # Your app's homepage.
+    # Default is empty.
+    homepage: "https://warrensbox.github.io/tgswitch"
+
+    # Your app's description.
+    # Default is empty.
+    description: "The tgswitch command lets you switch between terragrunt versions."
+
+    # Packages that conflict with your package.
+    conflicts:
+      - terragrunt
+
+    # Setting this will prevent goreleaser to actually try to commit the updated
+    # formula - instead, the formula file will be stored on the dist folder only,
+    # leaving the responsibility of publishing it to the user.
+    # Default is false.
+    skip_upload: false
+
+    # So you can `brew test` your formula.
+    # Default is empty.
+    test: |
+      system "#{bin}/tgswitch --version"
+    # Custom install script for brew.
+    # Default is 'bin.install "program"'.
+    install: |
+      bin.install "tgswitch"
