@@ -15,6 +15,9 @@ Once installed, simply select the version you require from the dropdown and star
 
 See installation guide here: [tgswitch installation](https://warrensbox.github.io/tgswitch/)
 
+***Important**
+Please see upcoming changes [Version 0.5](CHANGELOG.md)
+
 ## Installation
 
 `tgswitch` is available for MacOS and Linux based operating systems.
@@ -71,10 +74,12 @@ You can specify a custom binary path for your terragrunt installation
 2. For example, `echo "0.14.1" >> .tgswitchrc` for version 0.14.1 of terragrunt
 3. Run the command `tgswitch` in the same directory as your `.tgswitchrc`
 
+#### *Instead of a `.tgswitchrc` file, a `.terragrunt-version` file may be used for compatibility with [`tgenv`](https://github.com/cunymatthieu/tgenv#terragrunt-version) and other tools which use it*
+
 **Automatically switch with bash**
 
 Add the following to the end of your `~/.bashrc` file:
-(Use `.tgswitchrc`)
+(Use either `.tgswitchrc` or `.terragrunt-version`)
 
 ```
 cdtgswitch(){
@@ -90,7 +95,6 @@ alias cd='cdtgswitch'
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/auto-tgswitchrc.gif" alt="drawing" style="width: 170px;"/>   
 
 **Automatically switch with zsh**
-
 
 Add the following to the end of your `~/.zshrc` file:
 
@@ -121,6 +125,21 @@ cd(){
 }
 ```
 
+**Automatically switch with fish**
+
+Add the following to your `~/.config/fish/config.fish` file:
+
+```
+function cdtgswitch
+  builtin cd "$argv"
+  set cdir $PWD
+  if test -f "$cdir/.tgswitchrc"
+    tgswitch
+  end
+end
+alias cd='cdtgswitch'
+```
+
 ## Additional Info
 
 See how to *upgrade*, *uninstall*, *troubleshoot* here:[More info](https://warrensbox.github.io/tgswitch/additional)
@@ -129,3 +148,7 @@ See how to *upgrade*, *uninstall*, *troubleshoot* here:[More info](https://warre
 ## Issues
 
 Please open  *issues* here:  [New Issue](https://github.com/warrensbox/tgswitch/issues)
+
+## Upcoming Features
+
+Use environment variable to change terragrunt version
