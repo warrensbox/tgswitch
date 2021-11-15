@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - As a result, user cannot immediately download the version of terragrunt they want. They had to wait.
 
 ### Added
-- `tgswitch` will now get th list of releases from [terragrunt list page maintined by warrensbox](https://warrensbox.github.io/terragunt-versions-list/)
+- `tgswitch` will now get th list of releases from [terragrunt list page maintained by warrensbox](https://warrensbox.github.io/terragunt-versions-list/)
 - `tgswitch` will directly download from the [terragrunt release page](https://github.com/gruntwork-io/terragrunt/releases)
 
 ### Removed
