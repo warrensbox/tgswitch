@@ -55,7 +55,7 @@ func RemoveDuplicateVersions(elements []string) []string {
 	return result
 }
 
-func GetAppList2(gruntURLPage string) []string {
+func GetAppList(gruntURLPage string) []string {
 
 	gswitch := http.Client{
 		Timeout: time.Second * 10, // Maximum of 10 secs [decresing this seem to fail]

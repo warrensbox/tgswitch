@@ -169,7 +169,7 @@ func ValidVersionFormat(version string) bool {
 }
 
 //Install : Install the provided version in the argument
-func Install2(tgversion string, usrBinPath string, mirrorURL string) string {
+func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 
 	if !ValidVersionFormat(tgversion) {
 		fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tgversion)

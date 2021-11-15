@@ -28,7 +28,6 @@ import (
 )
 
 const (
-	//terragruntURL  = "https://api.github.com/repos/gruntwork-io/terragrunt/releases?"
 	terragruntURL  = "https://github.com/gruntwork-io/terragrunt/releases/download/"
 	defaultBin     = "/usr/local/bin/terragrunt" //default bin installation dir
 	rcFilename     = ".tgswitchrc"
@@ -63,10 +62,6 @@ func main() {
 	} else if *helpFlag {
 		usageMessage()
 	} else {
-
-		//listOfVersions := lib.GetAppList2(proxyUrl)
-		//fmt.Println(listOfVersions)
-		//os.Exit(0)
 		installLocation := lib.GetInstallLocation()
 		if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tgswitchrc file, and no commmand line arguments
 			fmt.Printf("Reading required terragrunt version %s \n", rcFilename)
@@ -83,10 +78,10 @@ func main() {
 				lib.ChangeSymlink(*custBinPath, string(tgversion))
 				os.Exit(0)
 			}
-			listOfVersions := lib.GetAppList2(proxyUrl)
+			listOfVersions := lib.GetAppList(proxyUrl)
 
 			if lib.ValidVersionFormat(tgversion) && lib.VersionExist(tgversion, listOfVersions) { //check if version format is correct && if version exist
-				lib.Install2(tgversion, *custBinPath, terragruntURL)
+				lib.Install(tgversion, *custBinPath, terragruntURL)
 			} else {
 				os.Exit(1)
 			}
@@ -106,10 +101,10 @@ func main() {
 				lib.ChangeSymlink(*custBinPath, string(tgversion))
 				os.Exit(0)
 			}
-			listOfVersions := lib.GetAppList2(proxyUrl)
+			listOfVersions := lib.GetAppList(proxyUrl)
 
 			if lib.ValidVersionFormat(tgversion) && lib.VersionExist(tgversion, listOfVersions) { //check if version format is correct && if version exist
-				lib.Install2(tgversion, *custBinPath, terragruntURL)
+				lib.Install(tgversion, *custBinPath, terragruntURL)
 			} else {
 				os.Exit(1)
 			}
@@ -126,14 +121,12 @@ func main() {
 				}
 
 				//check if version exist before downloading it
-				listOfVersions := lib.GetAppList2(proxyUrl)
+				listOfVersions := lib.GetAppList(proxyUrl)
 				exist := lib.VersionExist(requestedVersion, listOfVersions)
 
 				if exist {
-					//installLocation := lib.Install(terragruntURL, requestedVersion, assets, *custBinPath)
-					installLocation := lib.Install2(requestedVersion, *custBinPath, terragruntURL)
+					installLocation := lib.Install(requestedVersion, *custBinPath, terragruntURL)
 					fmt.Println("remove later - installLocation:", installLocation)
-					//lib.AddRecent(requestedVersion) //add to recent file for faster lookup
 				}
 
 			} else {
@@ -143,7 +136,7 @@ func main() {
 
 		} else if len(args) == 0 {
 
-			listOfVersions := lib.GetAppList2(proxyUrl)
+			listOfVersions := lib.GetAppList(proxyUrl)
 			recentVersions, _ := lib.GetRecentVersions()                 //get recent versions from RECENT file
 			listOfVersions = append(recentVersions, listOfVersions...)   //append recent versions to the top of the list
 			listOfVersions = lib.RemoveDuplicateVersions(listOfVersions) //remove duplicate version
@@ -162,9 +155,7 @@ func main() {
 				os.Exit(1)
 			}
 
-			//lib.Install(terragruntURL, tgversion, assets, *custBinPath)
-			lib.Install2(tgversion, *custBinPath, terragruntURL)
-			//lib.AddRecent(tgversion, installLocation) //add to recent file for faster lookup // moved it to install
+			lib.Install(tgversion, *custBinPath, terragruntURL)
 			os.Exit(0)
 		} else {
 			usageMessage()
