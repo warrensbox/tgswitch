@@ -5,7 +5,7 @@ builds:
     ldflags:
       - -s -w -X "main.version={{.Env.RELEASE_VERSION}}"
     main: main.go
-    binary: terragrunt-switch
+    binary: tgswitch
     goos:
       - darwin
       - linux
@@ -15,9 +15,6 @@ builds:
       - amd64
       - arm
       - arm64
-    goarm:
-      - 6
-      - 7
     ignore:
       - goos: windows
         goarch: arm    
@@ -82,10 +79,6 @@ brews:
     # Your app's description.
     # Default is empty.
     description: "The tgswitch command lets you switch between terragrunt versions."
-
-    # Packages that conflict with your package.
-    conflicts:
-      - terragrunt
 
     # Setting this will prevent goreleaser to actually try to commit the updated
     # formula - instead, the formula file will be stored on the dist folder only,
