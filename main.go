@@ -20,13 +20,11 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"regexp"
 	"strings"
 
 	"github.com/manifoldco/promptui"
 	"github.com/pborman/getopt"
 	lib "github.com/warrensbox/tgswitch/lib"
-	"github.com/warrensbox/tgswitch/modal"
 )
 
 const (
@@ -39,17 +37,9 @@ const (
 	proxyUrl       = "https://warrensbox.github.io/terragunt-versions-list/index.json"
 )
 
-var version = "0.2.0\n"
-
-var CLIENT_ID = "xxx"
-var CLIENT_SECRET = "xxx"
+var version = "0.5.0\n"
 
 func main() {
-
-	var client modal.Client
-
-	client.ClientID = CLIENT_ID
-	client.ClientSecret = CLIENT_SECRET
 
 	custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. For example: /Users/username/bin/terragrunt")
 	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tgswitch")
@@ -96,11 +86,8 @@ func main() {
 			listOfVersions := lib.GetAppList2(proxyUrl)
 
 			if lib.ValidVersionFormat(tgversion) && lib.VersionExist(tgversion, listOfVersions) { //check if version format is correct && if version exist
-				//lib.Install(terragruntURL, string(tgversion), assets, *custBinPath)
 				lib.Install2(tgversion, *custBinPath, terragruntURL)
-
 			} else {
-				fmt.Println("Invalid terragrunt version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				os.Exit(1)
 			}
 
@@ -124,15 +111,13 @@ func main() {
 			if lib.ValidVersionFormat(tgversion) && lib.VersionExist(tgversion, listOfVersions) { //check if version format is correct && if version exist
 				lib.Install2(tgversion, *custBinPath, terragruntURL)
 			} else {
-				fmt.Println("Invalid terragrunt version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				os.Exit(1)
 			}
 
 		} else if len(args) == 1 {
-			fmt.Println("going here")
-			semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
-			if semverRegex.MatchString(args[0]) {
-				requestedVersion := args[0]
+			requestedVersion := args[0]
+
+			if lib.ValidVersionFormat(requestedVersion) {
 
 				fileExist := lib.CheckFileExist(installLocation + installVersion + string(requestedVersion))
 				if fileExist {
@@ -141,7 +126,6 @@ func main() {
 				}
 
 				//check if version exist before downloading it
-				//tflist, assets := lib.GetAppList(terragruntURL, &client)
 				listOfVersions := lib.GetAppList2(proxyUrl)
 				exist := lib.VersionExist(requestedVersion, listOfVersions)
 
@@ -150,19 +134,15 @@ func main() {
 					installLocation := lib.Install2(requestedVersion, *custBinPath, terragruntURL)
 					fmt.Println("remove later - installLocation:", installLocation)
 					//lib.AddRecent(requestedVersion) //add to recent file for faster lookup
-				} else {
-					fmt.Println("Not a valid terragrunt version")
 				}
 
 			} else {
-				fmt.Println("Not a valid terragrunt version")
 				fmt.Println("Args must be a valid terragrunt version")
 				usageMessage()
 			}
 
 		} else if len(args) == 0 {
 
-			//tglist, assets := lib.GetAppList(terragruntURL, &client)
 			listOfVersions := lib.GetAppList2(proxyUrl)
 			recentVersions, _ := lib.GetRecentVersions()                 //get recent versions from RECENT file
 			listOfVersions = append(recentVersions, listOfVersions...)   //append recent versions to the top of the list

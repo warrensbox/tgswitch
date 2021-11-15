@@ -9,8 +9,6 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
-
-	"github.com/warrensbox/tgswitch/modal"
 )
 
 const (
@@ -63,82 +61,6 @@ func GetInstallLocation() string {
 	installLocation = usr.HomeDir + installPath
 	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
-	return installLocation
-}
-
-//Install : Install the provided version in the argument
-func Install(url string, appversion string, assests []modal.Repo, installedBinPath string) string {
-
-	initialize()
-	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
-
-	/* If user provided bin path use user one instead of default */
-	// if userBinPath != nil {
-	//      installedBinPath = *userBinPath
-	// }
-
-	pathDir := Path(installedBinPath)     //get path directory from binary path
-	binDirExist := CheckDirExist(pathDir) //check bin path exist
-
-	if !binDirExist {
-		fmt.Printf("Binary path does not exist: %s\n", pathDir)
-		fmt.Printf("Please create binary path: %s for terragrunt installation\n", pathDir)
-		os.Exit(1)
-	}
-
-	/* check if selected version already downloaded */
-	fileExist := CheckFileExist(installLocation + installVersion + appversion)
-	if fileExist {
-		installLocation := ChangeSymlink(installedBinPath, appversion)
-		return installLocation
-	}
-
-	/* remove current symlink if exist*/
-	symlinkExist := CheckSymlink(installedBinPath)
-
-	if symlinkExist {
-		RemoveSymlink(installedBinPath)
-	}
-
-	/* if selected version already exist, */
-	/* proceed to download it from the terragrunt release page */
-	//url := gruntURL + "v" + tgversion + "/" + "terragrunt" + "_" + goos + "_" + goarch
-
-	goarch := runtime.GOARCH
-	goos := runtime.GOOS
-	urlDownload := ""
-
-	for _, v := range assests {
-
-		if v.TagName == "v"+appversion {
-			if len(v.Assets) > 0 {
-				for _, b := range v.Assets {
-
-					matchedOS, _ := regexp.MatchString(goos, b.BrowserDownloadURL)
-					matchedARCH, _ := regexp.MatchString(goarch, b.BrowserDownloadURL)
-					if matchedOS && matchedARCH {
-						urlDownload = b.BrowserDownloadURL
-						break
-					}
-				}
-			}
-			break
-		}
-	}
-
-	fileInstalled, _ := DownloadFromURL(installLocation, urlDownload)
-
-	/* rename file to terragrunt version name - terragrunt_x.x.x */
-	RenameFile(fileInstalled, installLocation+installVersion+appversion)
-
-	err := os.Chmod(installLocation+installVersion+appversion, 0755)
-	if err != nil {
-		log.Println(err)
-	}
-
-	/* set symlink to desired version */
-	CreateSymlink(installLocation+installVersion+appversion, installedBinPath)
-	fmt.Printf("Switched terragrunt to version %q \n", appversion)
 	return installLocation
 }
 
@@ -239,6 +161,10 @@ func ValidVersionFormat(version string) bool {
 	// Check regular expression at https://rubular.com/r/ju3PxbaSBALpJB
 	semverRegex := regexp.MustCompile(`^(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?$`)
 
+	if !semverRegex.MatchString(version) {
+		fmt.Println("Invalid terragrunt version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+	}
+
 	return semverRegex.MatchString(version)
 }
 
@@ -263,13 +189,8 @@ func Install2(tgversion string, usrBinPath string, mirrorURL string) string {
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
 
-	// TODO: Workaround for macos arm64 since terraform doesn't have a binary for it yet
-	if goos == "darwin" && goarch == "arm64" {
-		goarch = "amd64"
-	}
-
 	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, installVersion+tgversion))
-	fmt.Println("installFileVersionPath", installFileVersionPath)
+
 	/* check if selected version already downloaded */
 	fileExist := CheckFileExist(installLocation + installVersion + tgversion)
 	if fileExist {
@@ -287,7 +208,6 @@ func Install2(tgversion string, usrBinPath string, mirrorURL string) string {
 	/* proceed to download it from the hashicorp release page */
 	url := mirrorURL + "v" + tgversion + "/" + "terragrunt" + "_" + goos + "_" + goarch
 
-	//https: //github.com/gruntwork-io/terragrunt/releases/download/v0.35.10/terragrunt_darwin_arm64
 	downloadedFile, errDownload := DownloadFromURL(installLocation, url)
 
 	/* If unable to download file from url, exit(1) immediately */
@@ -297,12 +217,7 @@ func Install2(tgversion string, usrBinPath string, mirrorURL string) string {
 	}
 
 	/* rename unzipped file to terraform version name - terraform_x.x.x */
-	fmt.Println("installLocation", downloadedFile)
-	fmt.Println("installLocation", installLocation)
-	fmt.Println("installFile", installFile)
-
-	installFilePath := ConvertExecutableExt(downloadedFile)
-	RenameFile(installFilePath, installFileVersionPath)
+	RenameFile(downloadedFile, installFileVersionPath)
 
 	err := os.Chmod(installFileVersionPath, 0755)
 	if err != nil {
