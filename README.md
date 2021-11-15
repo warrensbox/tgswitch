@@ -15,6 +15,9 @@ Once installed, simply select the version you require from the dropdown and star
 
 See installation guide here: [tgswitch installation](https://warrensbox.github.io/tgswitch/)
 
+***Important**
+Please see upcoming changes [Version 0.5](CHANGELOG.md)
+
 ## Installation
 
 `tgswitch` is available for MacOS and Linux based operating systems.
