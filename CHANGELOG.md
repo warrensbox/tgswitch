@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.5.0] - 2021-11-14
 ### Context
 - In the past, `tgswitch` uses github's API to get the list of releases.
-- Even with the client autorization key, github limits the number of api calls `tgswitch` can make.
+- `tgswitch` uses client autorization key to access the terragrunt releases, however, github limits the number of api calls `tgswitch` can make.
 - As a result, user cannot immediately download the version of terragrunt they want. They had to wait.
 
 ### Added
