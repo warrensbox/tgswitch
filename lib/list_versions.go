@@ -521,3 +521,54 @@ func (s Versions) Less(i, j int) bool {
 func Sort(versions []*Version) {
 	sort.Sort(sort.Reverse(Versions(versions)))
 }
+
+func GetAppList2(gruntURLPage string) []string {
+
+	gswitch := http.Client{
+		Timeout: time.Second * 10, // Maximum of 10 secs [decresing this seem to fail]
+	}
+
+	req, err := http.NewRequest(http.MethodGet, gruntURLPage, nil)
+	if err != nil {
+		log.Fatal("Unable to make request. Please try again.")
+	}
+
+	req.Header.Set("User-Agent", "github-appinstaller")
+
+	res, getErr := gswitch.Do(req)
+	if getErr != nil {
+		log.Fatal("Unable to make request Please try again.")
+	}
+
+	body, readErr := ioutil.ReadAll(res.Body)
+	if readErr != nil {
+		log.Println("Unable to get release from repo ", string(body))
+		log.Fatal(readErr)
+	}
+
+	var repo ListVersion
+	jsonErr := json.Unmarshal(body, &repo)
+	if jsonErr != nil {
+		log.Println("Unable to get release from repo ", string(body))
+		log.Fatal(jsonErr)
+	}
+
+	//fmt.Println(repo.Versions)
+	// var validRepo []modal.Repo
+
+	// for _, num := range repo {
+	// 	if num.Prerelease == false && num.Draft == false {
+	// 		semverRegex := regexp.MustCompile(`\Av\d+(\.\d+){2}\z`)
+	// 		if semverRegex.MatchString(num.TagName) {
+	// 			validRepo = append(validRepo, num)
+	// 		}
+	// 	}
+
+	// }
+
+	return repo.Versions
+}
+
+type ListVersion struct {
+	Versions []string `json:"Versions"`
+}
