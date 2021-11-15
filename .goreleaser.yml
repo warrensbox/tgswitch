@@ -5,13 +5,6 @@ builds:
     - -X main.version={{.Env.RELEASE_VERSION}} -X main.CLIENT_ID={{.Env.CLIENT_ID}} -X main.CLIENT_SECRET={{.Env.CLIENT_SECRET}}
   - main: main.go
     binary: terragrunt-switch
-    goos:
-      - windows
-      - darwin
-      - linux
-    goarch:
-      - amd64
-      - arm64
 checksum:
   name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_checksums.txt'
 changelog:
