@@ -69,7 +69,7 @@ func CheckSymlink(symlinkPath string) bool {
 // ChangeSymlink : move symlink to existing binary
 func ChangeSymlink(installedBinPath string, appversion string) string {
 
-	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
+	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terragrunt binary file
 
 	/* remove current symlink if exist*/
 	symlinkExist := CheckSymlink(installedBinPath)

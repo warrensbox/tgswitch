@@ -26,9 +26,9 @@ var (
 // initialize : removes existing symlink to terragrunt binary
 func initialize() {
 
-	/* initilize default binary path for terraform */
-	/* assumes that terraform is installed here */
-	/* we will find the terraform path instalation later and replace this variable with the correct installed bin path */
+	/* initilize default binary path for terragrunt */
+	/* assumes that terragrunt is installed here */
+	/* we will find the terragrunt path instalation later and replace this variable with the correct installed bin path */
 	installedBinPath := "/usr/local/bin/terragrunt"
 
 	/* find terragrunt binary location if terragrunt is already installed*/
@@ -49,7 +49,7 @@ func initialize() {
 	}
 }
 
-// GetInstallLocation : get location where the terraform binary will be installed,
+// GetInstallLocation : get location where the terragrunt binary will be installed,
 // will create a directory in the home location if it does not exist
 func GetInstallLocation() string {
 	/* get current user */
@@ -130,7 +130,7 @@ func GetRecentVersions() ([]string, error) {
 				return nil, errRead
 			}
 
-			/*      output can be confusing since it displays the 3 most recent used terraform version
+			/*      output can be confusing since it displays the 3 most recent used terragrunt version
 			append the string *recent to the output to make it more user friendly
 			*/
 			outputRecent = append(outputRecent, fmt.Sprintf("%s *recent", line))
@@ -171,12 +171,7 @@ func ValidVersionFormat(version string) bool {
 //Install : Install the provided version in the argument
 func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 
-	if !ValidVersionFormat(tgversion) {
-		fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tgversion)
-		os.Exit(1)
-	}
-
-	/* Check to see if user has permission to the default bin location which is  "/usr/local/bin/terraform"
+	/* Check to see if user has permission to the default bin location which is  "/usr/local/bin/terragrunt"
 	 * If user does not have permission to default bin location, proceed to create $HOME/bin and install the tfswitch there
 	 * Inform user that they dont have permission to default location, therefore tfswitch was installed in $HOME/bin
 	 * Tell users to add $HOME/bin to their path
@@ -184,7 +179,7 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	binPath := InstallableBinLocation(usrBinPath)
 
 	initialize()                           //initialize path
-	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
+	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terragrunt binary file
 
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
@@ -216,7 +211,7 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 		os.Exit(1)
 	}
 
-	/* rename unzipped file to terraform version name - terraform_x.x.x */
+	/* rename unzipped file to terragrunt version name - terraform_x.x.x */
 	RenameFile(downloadedFile, installFileVersionPath)
 
 	err := os.Chmod(installFileVersionPath, 0755)
@@ -238,38 +233,46 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	return ""
 }
 
-//InstallableBinLocation : Checks if terraform is installable in the location provided by the user.
+//InstallableBinLocation : Checks if terragrunt is installable in the location provided by the user.
 //If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH
 //Return $HOME/bin as install location
-func InstallableBinLocation(binLocation string) string {
+func InstallableBinLocation(userBinPath string) string {
 
 	usr, errCurr := user.Current()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	pathDir := Path(binLocation)              //get path directory from binary path
-	existDefaultBin := CheckDirExist(pathDir) //the default is /usr/local/bin but users can provide custom bin locations
-	if existDefaultBin {                      //if exist - now see if we can write to to it
 
-		writableToDefault := false
+	binDir := Path(userBinPath)           //get path directory from binary path
+	binPathExist := CheckDirExist(binDir) //the default is /usr/local/bin but users can provide custom bin locations
+
+	if binPathExist == true { //if bin path exist - check if we can write to to it
+
+		binPathWritable := false //assume bin path is not writable
 		if runtime.GOOS != "windows" {
-			writableToDefault = CheckDirWritable(pathDir) //check if is writable on ( only works on LINUX)
+			binPathWritable = CheckDirWritable(binDir) //check if is writable on ( only works on LINUX)
 		}
 
-		if !writableToDefault {
-			exisHomeBin := CheckDirExist(filepath.Join(usr.HomeDir, "bin"))
-			if exisHomeBin {
-				fmt.Printf("Installing terraform at %s\n", filepath.Join(usr.HomeDir, "bin"))
-				return filepath.Join(usr.HomeDir, "bin", "terraform")
+		// IF: "/usr/local/bin" or `custom bin path` provided by user is non-writable, (binPathWritable == false), we will attempt to install terragrunt at the ~/bin location. See ELSE
+		if binPathWritable == false {
+
+			homeBinExist := CheckDirExist(filepath.Join(usr.HomeDir, "bin")) //check to see if ~/bin exist
+			if homeBinExist {                                                //if ~/bin exist, install at ~/bin/terragrunt
+				fmt.Printf("Installing terragrunt at %s\n", filepath.Join(usr.HomeDir, "bin"))
+				return filepath.Join(usr.HomeDir, "bin", "terragrunt")
+			} else { //if ~/bin directory does not exist, create ~/bin for terragrunt installation
+				fmt.Printf("Unable to write to: %s\n", userBinPath)
+				fmt.Printf("Creating bin directory at: %s\n", filepath.Join(usr.HomeDir, "bin"))
+				CreateDirIfNotExist(filepath.Join(usr.HomeDir, "bin")) //create ~/bin
+				fmt.Printf("RUN `export PATH=$PATH:%s` to append bin to $PATH\n", filepath.Join(usr.HomeDir, "bin"))
+				return filepath.Join(usr.HomeDir, "bin", "terragrunt")
 			}
-			PrintCreateDirStmt(pathDir, filepath.Join(usr.HomeDir, "bin"))
-			CreateDirIfNotExist(filepath.Join(usr.HomeDir, "bin"))
-			return filepath.Join(usr.HomeDir, "bin", "terraform")
+		} else { // ELSE: the "/usr/local/bin" or custom path provided by user is writable, we will return installable location
+			return filepath.Join(userBinPath)
 		}
-		return binLocation
 	}
-	fmt.Printf("[Error] : Binary path does not exist: %s\n", binLocation)
-	fmt.Printf("[Error] : Manually create bin directory at: %s and try again.\n", binLocation)
+	fmt.Printf("[Error] : Binary path does not exist: %s\n", userBinPath)
+	fmt.Printf("[Error] : Manually create bin directory at: %s and try again.\n", binDir)
 	os.Exit(1)
 	return ""
 }
