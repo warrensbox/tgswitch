@@ -148,21 +148,31 @@ func CreateRecentFile(requestedVersion string) {
 }
 
 // ValidVersionFormat : returns valid version format
-/* For example: 0.1.2 = valid
-// For example: 0.1.2-beta1 = valid
-// For example: 0.1.2-alpha = valid
-// For example: a.1.2 = invalid
-// For example: 0.1. 2 = invalid
+/*
+For example:
+- 0.1.2 = valid
+- latest = valid
+- latest:^0.30 = valid
+- a.1.2 = invalid
+- 0.1. 2 = invalid
 */
 func ValidVersionFormat(version string) bool {
 
 	// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
 	// Follow https://semver.org/spec/v1.0.0-beta.html
 	// Check regular expression at https://rubular.com/r/ju3PxbaSBALpJB
-	semverRegex := regexp.MustCompile(`^(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?$`)
+	semverRegex := regexp.MustCompile(`^(?:\d+\.){2}\d+$`)
+	latestRegex := regexp.MustCompile(`^latest\:(.*)$`)
 
-	if !semverRegex.MatchString(version) {
-		fmt.Println("Invalid terragrunt version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+	if version == "latest" {
+		return true
+	} else if latestRegex.MatchString(version) {
+		return true
+	} else if semverRegex.MatchString(version) {
+		return true
+	} else {
+		fmt.Printf("Invalid terragrunt version format %q. Format should be #.#.#, latest, or latest:<regex>. For example, 0.11.7 and latest:^0.34 are valid versions", version)
+		return false
 	}
 
 	return semverRegex.MatchString(version)
@@ -227,7 +237,7 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
-	fmt.Printf("Switched terragrunt to version %q \n", tgversion)
+	fmt.Printf("Switched terragrunt to version %q\n", tgversion)
 	//AddRecent(tgversion) //add to recent file for faster lookup
 	os.Exit(0)
 	return ""
@@ -246,7 +256,7 @@ func InstallableBinLocation(userBinPath string) string {
 	binDir := Path(userBinPath)           //get path directory from binary path
 	binPathExist := CheckDirExist(binDir) //the default is /usr/local/bin but users can provide custom bin locations
 
-	if binPathExist == true { //if bin path exist - check if we can write to to it
+	if binPathExist { //if bin path exist - check if we can write to to it
 
 		binPathWritable := false //assume bin path is not writable
 		if runtime.GOOS != "windows" {
@@ -254,7 +264,7 @@ func InstallableBinLocation(userBinPath string) string {
 		}
 
 		// IF: "/usr/local/bin" or `custom bin path` provided by user is non-writable, (binPathWritable == false), we will attempt to install terragrunt at the ~/bin location. See ELSE
-		if binPathWritable == false {
+		if !binPathWritable {
 
 			homeBinExist := CheckDirExist(filepath.Join(usr.HomeDir, "bin")) //check to see if ~/bin exist
 			if homeBinExist {                                                //if ~/bin exist, install at ~/bin/terragrunt

@@ -20,15 +20,14 @@ func VersionExist(val interface{}, array interface{}) (exists bool) {
 		s := reflect.ValueOf(array)
 
 		for i := 0; i < s.Len(); i++ {
-			if reflect.DeepEqual(val, s.Index(i).Interface()) == true {
+			if reflect.DeepEqual(val, s.Index(i).Interface()) {
 				exists = true
-				return exists
 			}
 		}
 	}
 
 	if !exists {
-		fmt.Println("Requested version does not exist")
+		fmt.Printf("Requested version %q does not exist\n", val)
 	}
 
 	return exists
@@ -41,8 +40,8 @@ func RemoveDuplicateVersions(elements []string) []string {
 	result := []string{}
 
 	for _, val := range elements {
-		versionOnly := strings.Trim(val, " *recent")
-		if encountered[versionOnly] == true {
+		versionOnly := strings.TrimSuffix(val, " *recent")
+		if encountered[versionOnly] {
 			// Do not add duplicate.
 		} else {
 			// Record this element as an encountered element.
@@ -58,7 +57,7 @@ func RemoveDuplicateVersions(elements []string) []string {
 func GetAppList(gruntURLPage string) []string {
 
 	gswitch := http.Client{
-		Timeout: time.Second * 10, // Maximum of 10 secs [decresing this seem to fail]
+		Timeout: time.Second * 10, // Maximum of 10 secs [decreasing this seems to fail]
 	}
 
 	req, err := http.NewRequest(http.MethodGet, gruntURLPage, nil)
@@ -70,20 +69,18 @@ func GetAppList(gruntURLPage string) []string {
 
 	res, getErr := gswitch.Do(req)
 	if getErr != nil {
-		log.Fatal("Unable to make request Please try again.")
+		log.Fatal("Unable to make request. Please try again.")
 	}
 
 	body, readErr := ioutil.ReadAll(res.Body)
 	if readErr != nil {
-		log.Println("Unable to get release from repo ", string(body))
-		log.Fatal(readErr)
+		log.Fatalf("Unable to get release from repo %s:\n%s", body, readErr)
 	}
 
 	var repo ListVersion
 	jsonErr := json.Unmarshal(body, &repo)
 	if jsonErr != nil {
-		log.Println("Unable to get release from repo ", string(body))
-		log.Fatal(jsonErr)
+		log.Fatalf("Unable to get release from repo %s:\n%s", body, jsonErr)
 	}
 
 	return repo.Versions

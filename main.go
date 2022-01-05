@@ -20,6 +20,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/manifoldco/promptui"
@@ -38,24 +40,68 @@ const (
 
 var version = "0.5.0\n"
 
-func main() {
+// findVersionFile searches recursively upwards from the current working directory for a terragrunt
+// version file (ie. ".tgswitchrc" or ".terragrunt-version"). It then parses this file and returns
+// the version string.
+func findVersionFile() string {
+	var tgVersion string
+	var fileContents []byte
+	var err error
 
-	custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. For example: /Users/username/bin/terragrunt")
-	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tgswitch")
-	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
-	_ = versionFlag
-
-	getopt.Parse()
-	args := getopt.Args()
-
-	dir, err := os.Getwd()
+	cwd, err := os.Getwd()
 	if err != nil {
 		log.Printf("Failed to get current directory %v\n", err)
 		os.Exit(1)
 	}
 
-	tgvfile := dir + fmt.Sprintf("/%s", tgvFilename) //settings for .terragrunt-version file in current directory (tgenv compatible)
-	rcfile := dir + fmt.Sprintf("/%s", rcFilename)   //settings for .tgswitchrc file in current directory
+	path := strings.Split(cwd, string(filepath.Separator))
+	pathSegments := len(path)
+
+	// range over the segemnts of the full cwd path
+	for i := range path {
+		// get the current segment position in the path based on loop iterator
+		currentSegment := pathSegments - i
+
+		// create an array of all path segments based on iterator position
+		// since we are working backwards, we only want the segments _up to_ the
+		// current iterator position
+		var currentPathSegments = path[:currentSegment]
+
+		// check current segment position for either version file type
+		versionFiles := [2]string{rcFilename, tgvFilename}
+		for _, fileName := range versionFiles {
+			// constuct the full file path to check from the array of segments
+			filePath := append(currentPathSegments, fileName)
+			absPath := string(filepath.Separator) + filepath.Join(filePath...)
+
+			// check for the version file, if found break the loop
+			fileContents, _ = ioutil.ReadFile(absPath)
+			if fileContents != nil {
+				fmt.Printf("Found version file at %s\n", absPath)
+				tgVersion = strings.TrimSuffix(string(fileContents), "\n")
+				break
+			}
+		}
+
+		// if found a version break the parent loop
+		if tgVersion != "" {
+			break
+		}
+	}
+
+	return tgVersion
+}
+
+func main() {
+	custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. For example: /Users/username/bin/terragrunt")
+	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tgswitch")
+	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
+
+	getopt.Parse()
+	args := getopt.Args()
+
+	var requestedVersion string
+	var listOfVersions []string
 
 	if *versionFlag {
 		fmt.Printf("\nVersion: %v\n", version)
@@ -63,109 +109,82 @@ func main() {
 		usageMessage()
 	} else {
 		installLocation := lib.GetInstallLocation()
-		if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tgswitchrc file, and no commmand line arguments
-			fmt.Printf("Reading required terragrunt version %s \n", rcFilename)
-
-			fileContents, err := ioutil.ReadFile(rcfile)
-			if err != nil {
-				fmt.Printf("Failed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/tgswitch/blob/master/README.md\n", rcFilename)
-				fmt.Printf("Error: %s\n", err)
-				os.Exit(1)
-			}
-			tgversion := strings.TrimSuffix(string(fileContents), "\n")
-			fileExist := lib.CheckFileExist(installLocation + installVersion + tgversion)
-			if fileExist {
-				lib.ChangeSymlink(*custBinPath, string(tgversion))
-				os.Exit(0)
-			}
-			listOfVersions := lib.GetAppList(proxyUrl)
-
-			if lib.ValidVersionFormat(tgversion) && lib.VersionExist(tgversion, listOfVersions) { //check if version format is correct && if version exist
-				lib.Install(tgversion, *custBinPath, terragruntURL)
-			} else {
-				os.Exit(1)
-			}
-
-		} else if _, err := os.Stat(tgvfile); err == nil && len(args) == 0 {
-			fmt.Printf("Reading required terragrunt version %s \n", tgvFilename)
-
-			fileContents, err := ioutil.ReadFile(tgvfile)
-			if err != nil {
-				fmt.Printf("Failed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/tgswitch/blob/master/README.md\n", tgvFilename)
-				fmt.Printf("Error: %s\n", err)
-				os.Exit(1)
-			}
-			tgversion := strings.TrimSuffix(string(fileContents), "\n")
-			fileExist := lib.CheckFileExist(installLocation + installVersion + string(tgversion))
-			if fileExist {
-				lib.ChangeSymlink(*custBinPath, string(tgversion))
-				os.Exit(0)
-			}
-			listOfVersions := lib.GetAppList(proxyUrl)
-
-			if lib.ValidVersionFormat(tgversion) && lib.VersionExist(tgversion, listOfVersions) { //check if version format is correct && if version exist
-				lib.Install(tgversion, *custBinPath, terragruntURL)
-			} else {
-				os.Exit(1)
-			}
-
+		if len(args) == 0 {
+			requestedVersion = findVersionFile()
 		} else if len(args) == 1 {
-			requestedVersion := args[0]
+			requestedVersion = args[0]
+		}
 
-			if lib.ValidVersionFormat(requestedVersion) {
+		if requestedVersion != "" && lib.ValidVersionFormat(requestedVersion) {
+			fileExist := lib.CheckFileExist(installLocation + installVersion + requestedVersion)
+			if fileExist {
+				lib.ChangeSymlink(*custBinPath, requestedVersion)
+				os.Exit(0)
+			}
 
-				fileExist := lib.CheckFileExist(installLocation + installVersion + string(requestedVersion))
-				if fileExist {
-					lib.ChangeSymlink(*custBinPath, string(requestedVersion))
-					os.Exit(0)
+			// check if version exists locally before downloading it
+			listOfVersions = lib.GetAppList(proxyUrl)
+
+			// create a regex that will match a version string that itself contains a regex
+			latestRegex := regexp.MustCompile(`^latest\:(.*)$`)
+
+			// first check if the version is simply "latest" and use the first version
+			// next check if the version is a valid regex that matches one or more versions in
+			// the list of versions.
+			if requestedVersion == "latest" {
+				requestedVersion = listOfVersions[0]
+			} else if latestRegex.MatchString(requestedVersion) {
+				versionRegex, err := regexp.Compile(latestRegex.FindStringSubmatch(requestedVersion)[1])
+				if err != nil {
+					fmt.Printf("Version regex %q is not valid\n", requestedVersion)
+				} else {
+					for _, v := range listOfVersions {
+						if versionRegex.MatchString(v) {
+							requestedVersion = v
+							break
+						}
+					}
 				}
+			}
 
-				//check if version exist before downloading it
-				listOfVersions := lib.GetAppList(proxyUrl)
-				exist := lib.VersionExist(requestedVersion, listOfVersions)
-
-				if exist {
-					installLocation := lib.Install(requestedVersion, *custBinPath, terragruntURL)
-					fmt.Println("remove later - installLocation:", installLocation)
-				}
-
+			exist := lib.VersionExist(requestedVersion, listOfVersions)
+			if exist {
+				lib.Install(requestedVersion, *custBinPath, terragruntURL)
+				os.Exit(0)
 			} else {
-				fmt.Println("Args must be a valid terragrunt version")
 				usageMessage()
 			}
-
-		} else if len(args) == 0 {
-
-			listOfVersions := lib.GetAppList(proxyUrl)
-			recentVersions, _ := lib.GetRecentVersions()                 //get recent versions from RECENT file
-			listOfVersions = append(recentVersions, listOfVersions...)   //append recent versions to the top of the list
-			listOfVersions = lib.RemoveDuplicateVersions(listOfVersions) //remove duplicate version
-
-			/* prompt user to select version of terragrunt */
-			prompt := promptui.Select{
-				Label: "Select terragrunt version",
-				Items: listOfVersions,
-			}
-
-			_, tgversion, errPrompt := prompt.Run()
-			tgversion = strings.Trim(tgversion, " *recent")
-
-			if errPrompt != nil {
-				log.Printf("Prompt failed %v\n", errPrompt)
-				os.Exit(1)
-			}
-
-			lib.Install(tgversion, *custBinPath, terragruntURL)
-			os.Exit(0)
-		} else {
-			usageMessage()
 		}
-	}
 
+		if len(listOfVersions) == 0 {
+			listOfVersions = lib.GetAppList(proxyUrl)
+		}
+		recentVersions, _ := lib.GetRecentVersions()                 //get recent versions from RECENT file
+		listOfVersions = append(recentVersions, listOfVersions...)   //append recent versions to the top of the list
+		listOfVersions = lib.RemoveDuplicateVersions(listOfVersions) //remove duplicate version
+
+		/* prompt user to select version of terragrunt */
+		prompt := promptui.Select{
+			Label: "Select terragrunt version",
+			Items: listOfVersions,
+		}
+
+		_, requestedVersion, errPrompt := prompt.Run()
+		requestedVersion = strings.TrimSuffix(requestedVersion, " *recent")
+
+		if errPrompt != nil {
+			log.Printf("Prompt failed %v\n", errPrompt)
+			os.Exit(1)
+		}
+
+		lib.Install(requestedVersion, *custBinPath, terragruntURL)
+		os.Exit(0)
+	}
 }
 
 func usageMessage() {
 	fmt.Print("\n\n")
 	getopt.PrintUsage(os.Stderr)
 	fmt.Println("Supply the terragrunt version as an argument, or choose from a menu")
+	os.Exit(0)
 }
