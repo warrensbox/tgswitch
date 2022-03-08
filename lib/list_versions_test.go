@@ -80,7 +80,7 @@ func TestValidVersionFormat(t *testing.T) {
 		log.Fatalf("Failed to verify version format: %s\n", version)
 	}
 
-	version = "1.11.9-beta1"
+	version = "latest"
 
 	valid = lib.ValidVersionFormat(version)
 
@@ -90,7 +90,7 @@ func TestValidVersionFormat(t *testing.T) {
 		log.Fatalf("Failed to verify version format: %s\n", version)
 	}
 
-	version = "0.12.0-rc2"
+	version = "latest:^0.35"
 
 	valid = lib.ValidVersionFormat(version)
 
@@ -100,7 +100,7 @@ func TestValidVersionFormat(t *testing.T) {
 		log.Fatalf("Failed to verify version format: %s\n", version)
 	}
 
-	version = "1.11.4-boom"
+	version = "latest:^0.35.13"
 
 	valid = lib.ValidVersionFormat(version)
 
@@ -109,15 +109,4 @@ func TestValidVersionFormat(t *testing.T) {
 	} else {
 		log.Fatalf("Failed to verify version format: %s\n", version)
 	}
-
-	version = "1.11.4-1"
-
-	valid = lib.ValidVersionFormat(version)
-
-	if valid == false {
-		t.Logf("Invalid version format : %s (expected)", version)
-	} else {
-		log.Fatalf("Failed to verify version format: %s\n", version)
-	}
-
 }
