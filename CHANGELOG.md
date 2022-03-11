@@ -17,6 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - removed all functions that would make API github calls
 
-## [0.5.0] - 2021-11-28
+## [.0.5.382] - 2021-11-28
 ### Bug Fixes
 - Fixed issue where symlink points to terraform
