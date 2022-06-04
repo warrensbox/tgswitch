@@ -57,11 +57,12 @@ func main() {
 	tgvfile := dir + fmt.Sprintf("/%s", tgvFilename) //settings for .terragrunt-version file in current directory (tgenv compatible)
 	rcfile := dir + fmt.Sprintf("/%s", rcFilename)   //settings for .tgswitchrc file in current directory
 
-	if *versionFlag {
+	switch {
+	case *versionFlag:
 		fmt.Printf("\nVersion: %v\n", version)
-	} else if *helpFlag {
+	case *helpFlag:
 		usageMessage()
-	} else {
+	default:
 		installLocation := lib.GetInstallLocation()
 		if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tgswitchrc file, and no commmand line arguments
 			fmt.Printf("Reading required terragrunt version %s \n", rcFilename)
