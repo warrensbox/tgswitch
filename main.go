@@ -20,10 +20,12 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/manifoldco/promptui"
 	"github.com/pborman/getopt"
+	"github.com/spf13/viper"
 	lib "github.com/warrensbox/tgswitch/lib"
 )
 
@@ -34,15 +36,18 @@ const (
 	tgvFilename    = ".terragrunt-version"
 	installVersion = "terragrunt_"
 	proxyUrl       = "https://warrensbox.github.io/terragunt-versions-list/index.json"
+	tomlFilename   = ".tfswitch.toml"
 )
 
 var version = "0.5.0\n"
 
 func main() {
 
+	dir := lib.GetCurrentDirectory()
 	custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. For example: /Users/username/bin/terragrunt")
 	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tgswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
+	chDirPath := getopt.StringLong("chdir", 'c', dir, "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
 	_ = versionFlag
 
 	getopt.Parse()
@@ -54,14 +59,27 @@ func main() {
 		os.Exit(1)
 	}
 
-	tgvfile := dir + fmt.Sprintf("/%s", tgvFilename) //settings for .terragrunt-version file in current directory (tgenv compatible)
-	rcfile := dir + fmt.Sprintf("/%s", rcFilename)   //settings for .tgswitchrc file in current directory
+	homedir := lib.GetHomeDirectory()
+
+	TOMLConfigFile := filepath.Join(*chDirPath, tomlFilename)  //settings for .tfswitch.toml file in current directory (option to specify bin directory)
+	tgvfile := dir + fmt.Sprintf("/%s", tgvFilename)           //settings for .terragrunt-version file in current directory (tgenv compatible)
+	rcfile := dir + fmt.Sprintf("/%s", rcFilename)             //settings for .tgswitchrc file in current directory
+	HomeTOMLConfigFile := filepath.Join(homedir, tomlFilename) //settings for .tfswitch.toml file in home directory (option to specify bin directory)
 
 	switch {
 	case *versionFlag:
 		fmt.Printf("\nVersion: %v\n", version)
 	case *helpFlag:
 		usageMessage()
+	case lib.FileExists(TOMLConfigFile) || lib.FileExists(HomeTOMLConfigFile):
+		version := ""
+		binPath := *custBinPath
+		if lib.FileExists(TOMLConfigFile) { //read from toml from current directory
+			version, binPath = GetParamsTOML(binPath, *chDirPath)
+		} else { // else read from toml from home directory
+			version, binPath = GetParamsTOML(binPath, homedir)
+		}
+		fmt.Println("version", version)
 	default:
 		installLocation := lib.GetInstallLocation()
 		if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tgswitchrc file, and no commmand line arguments
@@ -169,4 +187,36 @@ func usageMessage() {
 	fmt.Print("\n\n")
 	getopt.PrintUsage(os.Stderr)
 	fmt.Println("Supply the terragrunt version as an argument, or choose from a menu")
+}
+
+/* parses everything in the toml file, return required version and bin path */
+func GetParamsTOML(binPath string, dir string) (string, string) {
+	path := lib.GetHomeDirectory()
+	if dir == path {
+		path = "home directory"
+	} else {
+		path = "current directory"
+	}
+	fmt.Printf("Reading configuration from %s\n", path+" for "+tomlFilename) //takes the default bin (defaultBin) if user does not specify bin path
+	configfileName := lib.GetFileName(tomlFilename)                          //get the config file
+	viper.SetConfigType("toml")
+	viper.SetConfigName(configfileName)
+	viper.AddConfigPath(dir)
+
+	errs := viper.ReadInConfig() // Find and read the config file
+	if errs != nil {
+		log.Fatalf("Error: %s\nUnable to read %s provided\n", errs, tomlFilename) // Handle errors reading the config file
+	}
+
+	bin := viper.Get("tgbin")                                          // read custom binary location
+	if binPath == lib.ConvertExecutableExt(defaultBin) && bin != nil { // if the bin path is the same as the default binary path and if the custom binary is provided in the toml file (use it)
+		binPath = os.ExpandEnv(bin.(string))
+	}
+	//fmt.Println(binPath) //uncomment this to debug
+	version := viper.Get("tgversion") //attempt to get the version if it's provided in the toml
+	if version == nil {
+		version = ""
+	}
+
+	return version.(string), binPath
 }
