@@ -80,6 +80,13 @@ func main() {
 			version, binPath = GetParamsTOML(binPath, homedir)
 		}
 		fmt.Println("version", version)
+		//TODO:
+		/*
+			check if binPath is empty
+			if empty get lib.GetInstallLocation()
+
+
+		*/
 	default:
 		installLocation := lib.GetInstallLocation()
 		if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tgswitchrc file, and no commmand line arguments
