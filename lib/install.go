@@ -228,7 +228,7 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
 	fmt.Printf("Switched terragrunt to version %q \n", tgversion)
-	//AddRecent(tgversion) //add to recent file for faster lookup
+	AddRecent(tgversion) //add to recent file for faster lookup
 	os.Exit(0)
 	return ""
 }
