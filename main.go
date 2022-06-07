@@ -32,14 +32,14 @@ import (
 )
 
 const (
-	terragruntURL  = "https://github.com/gruntwork-io/terragrunt/releases/download/"
-	defaultBin     = "/usr/local/bin/terragrunt" //default bin installation dir
-	rcFilename     = ".tgswitchrc"
-	tgvFilename    = ".terragrunt-version"
-	installVersion = "terragrunt_"
-	proxyUrl       = "https://warrensbox.github.io/terragunt-versions-list/index.json"
-	tomlFilename   = ".tgswitch.toml"
-	tgHclFilename  = "terragrunt.hcl"
+	terragruntURL = "https://github.com/gruntwork-io/terragrunt/releases/download/"
+	defaultBin    = "/usr/local/bin/terragrunt" //default bin installation dir
+	rcFilename    = ".tgswitchrc"
+	tgvFilename   = ".terragrunt-version"
+	versionPrefix = "terragrunt_"
+	proxyUrl      = "https://warrensbox.github.io/terragunt-versions-list/index.json"
+	tomlFilename  = ".tgswitch.toml"
+	tgHclFilename = "terragrunt.hcl"
 )
 
 var version = "0.5.0\n"
@@ -89,7 +89,7 @@ func main() {
 			requestedVersion := args[0]
 			if lib.ValidVersionFormat(requestedVersion) {
 
-				fileExist := lib.CheckFileExist(binPath + installVersion + string(requestedVersion))
+				fileExist := lib.CheckFileExist(binPath + versionPrefix + string(requestedVersion))
 				if fileExist {
 					lib.ChangeSymlink(*custBinPath, string(requestedVersion))
 					os.Exit(0)
@@ -109,10 +109,14 @@ func main() {
 			}
 		/* provide a tgswitchrc file (IN ADDITION TO A TOML FILE) */
 		case lib.FileExists(RCFile) && len(args) == 0:
-
+			lib.ReadingFileMsg(rcFilename)
+			tgversion := lib.RetrieveFileContents(RCFile)
+			installVersion(tgversion, custBinPath)
 		/* if .terragrunt-version file found (IN ADDITION TO A TOML FILE) */
 		case lib.FileExists(TFVersionFile) && len(args) == 0:
-
+			lib.ReadingFileMsg(rcFilename)
+			tgversion := lib.RetrieveFileContents(RCFile)
+			installVersion(tgversion, custBinPath)
 		/* if Terraform Version environment variable is set  (IN ADDITION TO A TOML FILE)*/
 		case checkTGEnvExist() && len(args) == 0 && version == "":
 
@@ -136,7 +140,7 @@ func main() {
 				os.Exit(1)
 			}
 			tgversion := strings.TrimSuffix(string(fileContents), "\n")
-			fileExist := lib.CheckFileExist(installLocation + installVersion + tgversion)
+			fileExist := lib.CheckFileExist(installLocation + versionPrefix + tgversion)
 			if fileExist {
 				lib.ChangeSymlink(*custBinPath, string(tgversion))
 				os.Exit(0)
@@ -159,7 +163,7 @@ func main() {
 				os.Exit(1)
 			}
 			tgversion := strings.TrimSuffix(string(fileContents), "\n")
-			fileExist := lib.CheckFileExist(installLocation + installVersion + string(tgversion))
+			fileExist := lib.CheckFileExist(installLocation + versionPrefix + string(tgversion))
 			if fileExist {
 				lib.ChangeSymlink(*custBinPath, string(tgversion))
 				os.Exit(0)
@@ -177,7 +181,7 @@ func main() {
 
 			if lib.ValidVersionFormat(requestedVersion) {
 
-				fileExist := lib.CheckFileExist(installLocation + installVersion + string(requestedVersion))
+				fileExist := lib.CheckFileExist(installLocation + versionPrefix + string(requestedVersion))
 				if fileExist {
 					lib.ChangeSymlink(*custBinPath, string(requestedVersion))
 					os.Exit(0)
@@ -266,6 +270,40 @@ func installFromList(custBinPath *string) {
 
 	lib.Install(tgversion, *custBinPath, terragruntURL)
 	os.Exit(0)
+}
+
+// install with provided version as argument
+func installVersion(arg string, custBinPath *string) {
+	if lib.ValidVersionFormat(arg) {
+		requestedVersion := arg
+
+		//check to see if the requested version has been downloaded before
+		installLocation := lib.GetInstallLocation()
+		installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, versionPrefix+requestedVersion))
+		recentDownloadFile := lib.CheckFileExist(installFileVersionPath)
+		if recentDownloadFile {
+			lib.ChangeSymlink(installFileVersionPath, *custBinPath)
+			fmt.Printf("Switched terraform to version %q \n", requestedVersion)
+			lib.AddRecent(requestedVersion) //add to recent file for faster lookup
+			os.Exit(0)
+		}
+
+		//if the requested version had not been downloaded before
+		//go get the list of versions
+		listOfVersions := lib.GetAppList(proxyUrl)
+		//check if version exist before downloading it
+		exist := lib.VersionExist(requestedVersion, listOfVersions)
+
+		if exist {
+			installLocation := lib.Install(requestedVersion, *custBinPath, terragruntURL)
+			fmt.Println("Install Location:", installLocation)
+		}
+
+	} else {
+		lib.PrintInvalidTGVersion()
+		usageMessage()
+		log.Fatalln("Args must be a valid terraform version")
+	}
 }
 
 // checkTGEnvExist - checks if the TG_VERSION environment variable is set

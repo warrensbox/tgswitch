@@ -199,3 +199,23 @@ func GetHomeDirectory() string {
 func GetFileName(configfile string) string {
 	return strings.TrimSuffix(configfile, filepath.Ext(configfile))
 }
+
+// Print message reading file content of :
+func ReadingFileMsg(filename string) {
+	fmt.Printf("Reading file %s \n", filename)
+}
+
+//retrive file content of regular file
+func RetrieveFileContents(file string) string {
+	fileContents, err := ioutil.ReadFile(file)
+	if err != nil {
+		log.Fatalf("Error: %s\nFailed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/tgswitch/blob/master/README.md\n", err, file)
+	}
+	tgversion := strings.TrimSuffix(string(fileContents), "\n")
+	return tgversion
+}
+
+// Print invalid TG version
+func PrintInvalidTGVersion() {
+	fmt.Println("Version does not exist or invalid terragrunt version format.\n Format should be #.#.# or #.#.#-@# where # are numbers and @ are word characters.\n For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+}
