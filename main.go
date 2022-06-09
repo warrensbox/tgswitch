@@ -119,7 +119,9 @@ func main() {
 			installVersion(tgversion, custBinPath)
 		/* if Terraform Version environment variable is set  (IN ADDITION TO A TOML FILE)*/
 		case checkTGEnvExist() && len(args) == 0 && version == "":
-
+			tgversion := os.Getenv("TG_VERSION")
+			fmt.Printf("Terragrunt version environment variable: %s\n", tgversion)
+			installVersion(tgversion, custBinPath)
 		/* if terragrunt.hcl file found (IN ADDITION TO A TOML FILE) */
 		case lib.FileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
 
@@ -321,6 +323,21 @@ func checkVersionDefinedHCL(tgFile *string) bool {
 	var version terragruntVersionConstraints
 	gohcl.DecodeBody(file.Body, nil, &version)
 	return version != (terragruntVersionConstraints{})
+}
+
+// Install using version constraint from terragrunt file
+func installTGHclFile(tgFile *string, custBinPath, mirrorURL *string) {
+	fmt.Printf("Terragrunt file found: %s\n", *tgFile)
+	parser := hclparse.NewParser()
+	file, diags := parser.ParseHCLFile(*tgFile) //use hcl parser to parse HCL file
+	if diags.HasErrors() {
+		fmt.Println("Unable to parse HCL file")
+		os.Exit(1)
+	}
+	var version terragruntVersionConstraints
+	gohcl.DecodeBody(file.Body, nil, &version)
+	//TODO figure out sermver
+	//installFromConstraint(&version.TerragruntVersionConstraint, custBinPath)
 }
 
 type terragruntVersionConstraints struct {
