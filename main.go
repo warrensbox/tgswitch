@@ -326,7 +326,7 @@ func checkVersionDefinedHCL(tgFile *string) bool {
 }
 
 // Install using version constraint from terragrunt file
-func installTGHclFile(tgFile *string, custBinPath, mirrorURL *string) {
+func installTGHclFile(tgFile *string, custBinPath *string) {
 	fmt.Printf("Terragrunt file found: %s\n", *tgFile)
 	parser := hclparse.NewParser()
 	file, diags := parser.ParseHCLFile(*tgFile) //use hcl parser to parse HCL file
