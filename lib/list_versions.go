@@ -2,7 +2,6 @@ package lib
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -25,10 +24,6 @@ func VersionExist(val interface{}, array interface{}) (exists bool) {
 				return exists
 			}
 		}
-	}
-
-	if !exists {
-		fmt.Println("Requested version does not exist")
 	}
 
 	return exists
