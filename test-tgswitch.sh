@@ -7,25 +7,44 @@ if [[ ! -f "./build/tgswitch" ]]; then
 fi
 #find ./test-data/* -type d -print0 | while read -r -d $'\0' TEST_PATH;do ./build/tgswitch -c "${TEST_PATH}" || exit 1; done;
 
-echo "Test terragrunt-version file"
-./build/tgswitch -c ./test-data/test_terragrunt-version || exit 1
-version=$(terragrunt -v | awk '{print $3}')
-echo "$version"
-if [[ "$version" == "v0.36.0" ]]; then
-    echo "Switch successful"
-else
-    echo "Switch failed"
-    exit 1
-fi
+function runtestdir(){
+    test_case=$1
+    dir=$2
+    expected_version=$3
+    echo "Test $test_case file"
+    ./build/tgswitch -c ./test-data/"$dir" || exit 1
+    version=$(terragrunt -v | awk '{print $3}')
+    echo "$version"
+    if [[ "$version" == "$expected_version" ]]; then
+        echo "Switch successful"
+    else
+        echo "Switch failed"
+        exit 1
+    fi
+}
 
 
-echo "Test terragrunt hcl file"
+function runtestenv(){
+    test_case=$1
+    env=$2
+    expected_version=$3
 
+    echo "Test $test_case"
+    export TG_VERSION="$env"
+    ./build/tgswitch || exit 1
+    version=$(terragrunt -v | awk '{print $3}')
+    echo "$version"
+    if [[ "$version" == "$expected_version" ]]; then
+        echo "Switch successful"
+    else
+        echo "Switch failed"
+        exit 1
+    fi
+}
 
-echo "Test tfswitchrc file"
-
-
-echo "Test tfswitchtoml file"
-
-echo "Test environment variable"
+runtestdir "terragrunt version" "test_terragrunt-version" "v0.36.0"
+runtestdir "terragrunt hcl" "test_terragrunt_hcl" "v0.37.4"
+runtestdir "tfswitchrc" "test_tgswitchrc" "v0.33.0"
+runtestdir ".toml" "test_tfswitchtoml" "v0.34.0"
+runtestenv "env variable" "0.37.1" "v0.37.1"
 
