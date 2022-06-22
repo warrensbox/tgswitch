@@ -362,6 +362,21 @@ func checkVersionDefinedHCL(tgFile *string) bool {
 	return version != (terragruntVersionConstraints{})
 }
 
+// Install using version constraint from terragrunt file
+func installTGHclFile(tgFile *string, custBinPath *string) {
+	fmt.Printf("Terragrunt file found: %s\n", *tgFile)
+	parser := hclparse.NewParser()
+	file, diags := parser.ParseHCLFile(*tgFile) //use hcl parser to parse HCL file
+	if diags.HasErrors() {
+		fmt.Println("Unable to parse HCL file")
+		os.Exit(1)
+	}
+	var version terragruntVersionConstraints
+	gohcl.DecodeBody(file.Body, nil, &version)
+	//TODO figure out sermver
+	//installFromConstraint(&version.TerragruntVersionConstraint, custBinPath)
+}
+
 type terragruntVersionConstraints struct {
 	TerragruntVersionConstraint string `hcl:"terragrunt_version_constraint"`
 }
