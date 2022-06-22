@@ -8,8 +8,6 @@ import (
 //CreateSymlink : create symlink
 //CreateSymlink : create symlink
 func CreateSymlink(cwd string, dir string) {
-	println("cwd", cwd)
-	println("dir", dir)
 	err := os.Symlink(cwd, dir)
 	if err != nil {
 		log.Fatalf(`
