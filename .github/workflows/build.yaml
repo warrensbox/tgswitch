@@ -46,3 +46,6 @@ jobs:
 
     - name: which
       run: which terragrunt
+
+    - name: Run Test script
+      run: chmod 755 test-tgswitch.sh && ./test-tgswitch.sh
