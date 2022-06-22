@@ -77,7 +77,7 @@ function runtestarg(){
 }
 
 runtestdir "terragrunt version" "test_terragrunt-version" "v0.36.0"
-runtestdir "terragrunt hcl" "test_terragrunt_hcl" "v0.37.4"
+runtestdir "terragrunt hcl" "test_terragrunt_hcl" "v0.36.0"
 runtestdir "tfswitchrc" "test_tgswitchrc" "v0.33.0"
 runtestdir ".toml" "test_tfswitchtoml" "v0.34.0"
 runtestenv "env variable" "0.37.1" "v0.37.1"

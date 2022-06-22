@@ -13,4 +13,4 @@ terraform {
     jsondecode(file("${find_in_parent_folders("general.tfvars")}"))
 )
 
-terragrunt_version_constraint=">= 0.37, < 0.38"
+terragrunt_version_constraint=">= 0.36, < 0.36.1"
