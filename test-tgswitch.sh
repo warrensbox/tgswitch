@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [[ ! -f "./build/tgswitch" ]]; then
     echo "Cannot run test.."
