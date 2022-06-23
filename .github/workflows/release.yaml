@@ -1,0 +1,80 @@
+# Trigger when commits are pushed to the release branch
+
+on:
+  push:
+    branches:
+      - release
+  workflow_dispatch:
+
+
+jobs:
+  hubapp-release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout Repository
+      uses: actions/checkout@master
+
+    - name: Checkout go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.18' # The Go version to download (if necessary) and use.
+
+    - name: Go version
+      id: Version
+      run: go version
+
+    - name: Go download
+      run: go mod download
+
+    - name: Go test
+      run: go test -v ./...
+      continue-on-error: false
+
+    - name: Go build
+      run: mkdir -p build && go build -v -o build/tgswitch
+
+    - name: Run Test script
+      run: chmod 755 test-tgswitch.sh && ./test-tgswitch.sh
+
+    - name: Bump version and push tag
+      uses: anothrNick/github-tag-action@1.26.0
+      id: vars
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        WITH_V: false
+        INITIAL_VERSION: 0.6.0
+        RELEASE_BRANCHES: release
+        DEFAULT_BUMP: patch
+
+    - name: Check output
+      env:
+        RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
+      run: |
+        echo $RELEASE_VERSION
+        echo ${{ steps.vars.outputs.tag }}
+    - name: Install GoReleaser
+      uses: goreleaser/goreleaser-action@v2
+      with:
+        version: latest
+        args: release --rm-dist
+      env:
+        GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
+        RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+
+    - name: Install Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install mkdocs-material
+    - name: Build page   
+      run: cd www && mkdocs gh-deploy --force
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
