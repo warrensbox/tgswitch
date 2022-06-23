@@ -1,24 +1,19 @@
 EXE  := tgswitch
 PKG  := github.com/warrensbox/tgswitch
-VER := $(shell git ls-remote --tags git://github.com/warrensbox/tgswitch | awk '{print $$2}'| awk -F"/" '{print $$3}' | sort -n -t. -k1,1 -k2,2 -k3,3 | tail -n 1)
+VER := $(shell { git ls-remote --tags . 2>/dev/null || git ls-remote --tags git@github.com:warrensbox/tgswitch.git; } | awk '{if ($$2 ~ "\\^\\{\\}$$") next; print vers[split($$2,vers,"\\/")]}' | sort -n -t. -k1,1 -k2,2 -k3,3 | tail -1)
 PATH := build:$(PATH)
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
-CLIENT_ID := $(CLIENT_ID)
-CLIENT_SECRET := $(CLIENT_SECRET)
 
-$(EXE): Gopkg.lock *.go lib/*.go
-	go build -v -ldflags "-X main.version=$(VER) -X main.CLIENT_ID=$(CLIENT_ID) -X main.CLIENT_SECRET=$(CLIENT_SECRET)" -o $@ $(PKG)
-
-Gopkg.lock: Gopkg.toml
-	dep ensure
+$(EXE): go.mod *.go lib/*.go
+	go build -v -ldflags "-X main.version=$(VER)" -o $@ $(PKG)
 
 .PHONY: release
 release: $(EXE) darwin linux
 
-.PHONY: darwin linux 
+.PHONY: darwin linux
 darwin linux:
-	GOOS=$@ go build -ldflags "-X main.version=$(VER) -X main.CLIENT_ID=$(CLIENT_ID) -X main.CLIENT_SECRET=$(CLIENT_SECRET)" -o $(EXE)-$(VER)-$@-$(GOARCH) $(PKG)
+	GOOS=$@ go build -ldflags "-X main.version=$(VER)" -o $(EXE)-$(VER)-$@-$(GOARCH) $(PKG)
 
 .PHONY: clean
 clean:
@@ -26,10 +21,20 @@ clean:
 
 .PHONY: test
 test: $(EXE)
+	mkdir -p build
 	mv $(EXE) build
 	go test -v ./...
 
+.PHONY: install
+install: $(EXE)
+	mkdir -p ~/bin
+	mv $(EXE) ~/bin
 
-.PHONEY: dep
-dep:
-	dep ensure
+.PHONY: docs
+docs:
+	cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
+
+.PHONY: version
+version:
+	@echo $(VER)
+

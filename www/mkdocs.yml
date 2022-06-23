@@ -1,0 +1,38 @@
+site_name: tgswitch
+site_description: A command line tool to switch between different versions of terragrunt (install with homebrew and more)
+copyright: This project is maintained by warrensbox
+repo_name: warrensbox/tgswitch
+repo_url: https://github.com/warrensbox/tgswitch
+site_url: https://tgswitch.warrensbox.com
+
+theme:
+    name: material
+    favicon: https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/favicon_tgswitch_16.png
+    logo: https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/logo.png
+    palette:
+      # - primary: light blue
+      # - accent: blue
+      # Palette toggle for light mode
+      - media: "(prefers-color-scheme: light)"
+        scheme: default
+        primary: light blue
+        accent: blue
+        toggle:
+          icon: material/brightness-7
+          name: Switch to dark mode
+
+      # Palette toggle for dark mode
+      - media: "(prefers-color-scheme: dark)"
+        scheme: slate
+        primary: light blue
+        accent: blue
+        toggle:
+          icon: material/brightness-4
+          name: Switch to light mode
+
+nav:
+    - index.md
+    - Install.md
+    - Quick-Start.md
+    - Upgrade-or-Uninstall.md
+    - Troubleshoot.md
