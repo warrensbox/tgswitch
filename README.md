@@ -55,8 +55,9 @@ The most recently selected versions are presented at the top of the dropdown.
 3. Hit **Enter** to switch.
 
 ### Use environment variables
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/tgswitch_v7.gif" alt="drawing" style="width: 600px;"/>
-You can also set the `TG_VERSION` environment variable to your desired terragrunt version. 
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/tgswitch_v7.gif" alt="drawing" style="width: 600px;"/> 
+
+1. You can also set the `TG_VERSION` environment variable to your desired terragrunt version. 
 For example:   
 ```bash
 export TG_VERSION=0.37.0
