@@ -195,7 +195,7 @@ func GetHomeDirectory() string {
 	return homedir
 }
 
-// GetFileName : remove file ext.  .tfswitch.config returns .tfswitch
+// GetFileName : remove file ext.  .tgswitch.config returns .tgswitch
 func GetFileName(configfile string) string {
 	return strings.TrimSuffix(configfile, filepath.Ext(configfile))
 }
