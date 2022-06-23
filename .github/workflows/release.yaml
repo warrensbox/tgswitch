@@ -39,7 +39,7 @@ jobs:
       run: chmod 755 test-tgswitch.sh && ./test-tgswitch.sh
 
     - name: Bump version and push tag
-      uses: anothrNick/github-tag-action@1.26.0
+      uses: anothrNick/github-tag-action@1.39.0
       id: vars
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
