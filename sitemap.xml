@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://tgswitch.warrensbox.com/</loc>
+         <lastmod>2022-06-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://tgswitch.warrensbox.com/Install/</loc>
+         <lastmod>2022-06-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://tgswitch.warrensbox.com/Quick-Start/</loc>
+         <lastmod>2022-06-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://tgswitch.warrensbox.com/Troubleshoot/</loc>
+         <lastmod>2022-06-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://tgswitch.warrensbox.com/Upgrade-or-Uninstall/</loc>
+         <lastmod>2022-06-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+</urlset>
