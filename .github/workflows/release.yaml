@@ -48,7 +48,7 @@ jobs:
         WITH_V: false
         INITIAL_VERSION: 0.6.0
         RELEASE_BRANCHES: release
-        DEFAULT_BUMP: minor
+        DEFAULT_BUMP: patch
 
     - name: Check output
       env:
