@@ -14,10 +14,12 @@ jobs:
     steps:
 
     - name: Checkout Repository
-      uses: actions/checkout@master
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Checkout go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: '1.18' # The Go version to download (if necessary) and use.
 
@@ -54,8 +56,9 @@ jobs:
       run: |
         echo $RELEASE_VERSION
         echo ${{ steps.vars.outputs.tag }}
+
     - name: Install GoReleaser
-      uses: goreleaser/goreleaser-action@v2
+      uses: goreleaser/goreleaser-action@v3
       with:
         version: latest
         args: release --rm-dist
