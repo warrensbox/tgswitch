@@ -40,12 +40,6 @@ jobs:
 
     - name: Go build
       run: mkdir -p build && go build -v -o build/tgswitch
-    
-    - name: Run test data
-      run: find ./test-data/* -type d -print0 | while read -r -d $'\0' TEST_PATH;do ./build/tgswitch -c "${TEST_PATH}" || exit 1; done;
-
-    - name: which
-      run: which terragrunt
 
     - name: Run Test script
       run: chmod 755 test-tgswitch.sh && ./test-tgswitch.sh
