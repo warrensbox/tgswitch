@@ -1,0 +1,45 @@
+# Trigger when commits are pushed to the master branch
+
+on:
+  push:
+    branches:
+      - feature/v0.5
+  pull_request:
+  workflow_dispatch:
+
+
+jobs:
+  tgswitch-build:
+    name: Workflow
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Checkout go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.18' # The Go version to download (if necessary) and use.
+
+    - name: Go version
+      id: Version
+      run: go version
+
+    - name: Go path
+      run: echo $GOPATH
+
+    - name: Go download
+      run: go mod download
+
+    - name: Go test
+      run: go test -v ./...
+      continue-on-error: false
+
+    - name: Go build
+      run: mkdir -p build && go build -v -o build/tgswitch
+
+    - name: Run Test script
+      run: chmod 755 test-tgswitch.sh && ./test-tgswitch.sh

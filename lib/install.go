@@ -170,7 +170,6 @@ func ValidVersionFormat(version string) bool {
 
 //Install : Install the provided version in the argument
 func Install(tgversion string, usrBinPath string, mirrorURL string) string {
-
 	/* Check to see if user has permission to the default bin location which is  "/usr/local/bin/terragrunt"
 	 * If user does not have permission to default bin location, proceed to create $HOME/bin and install the tfswitch there
 	 * Inform user that they dont have permission to default location, therefore tfswitch was installed in $HOME/bin
@@ -184,13 +183,25 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
 
-	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, installVersion+tgversion))
-
 	/* check if selected version already downloaded */
+	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, installVersion+tgversion))
 	fileExist := CheckFileExist(installLocation + installVersion + tgversion)
+
+	/* if selected version already exist, */
 	if fileExist {
-		installLocation := ChangeSymlink(binPath, tgversion)
-		return installLocation
+
+		/* remove current symlink if exist*/
+		symlinkExist := CheckSymlink(binPath)
+
+		if symlinkExist {
+			RemoveSymlink(binPath)
+		}
+
+		/* set symlink to desired version */
+		CreateSymlink(installFileVersionPath, binPath)
+		fmt.Printf("Switched terragrunt to version %q \n", tgversion)
+		AddRecent(tgversion) //add to recent file for faster lookup
+		os.Exit(0)
 	}
 
 	//if does not have slash - append slash
@@ -228,7 +239,7 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
 	fmt.Printf("Switched terragrunt to version %q \n", tgversion)
-	//AddRecent(tgversion) //add to recent file for faster lookup
+	AddRecent(tgversion) //add to recent file for faster lookup
 	os.Exit(0)
 	return ""
 }
