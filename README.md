@@ -4,7 +4,7 @@
 
 # Terragrunt Switcher 
 
-<img style="text-allign:center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tgswitch/smallerlogo.png" alt="drawing" width="110" height="140"/>
+<img style="text-allign:center" src="https://kepler-images.s3.us-east-2.amazonaws.com/warrensbox/tgswitch/tgswitch-banner.png" alt="drawing"/>
 
 
 The `tgswitch` command line tool lets you switch between different versions of <a href="https://terragrunt.gruntwork.io/" target="_blank">terragrunt</a>. 
