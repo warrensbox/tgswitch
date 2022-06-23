@@ -25,7 +25,7 @@ function runtestdir(){
     ./build/tgswitch -c ./test-data/"$dir" || exit 1
     version=$(terragrunt -v | awk '{print $3}')
     echo "$version"
-    sleep 2
+    sleep 1
     if [[ "$version" == "$expected_version" ]]; then
         echo "Switch successful"
     else
@@ -47,7 +47,7 @@ function runtestenv(){
     ./build/tgswitch || exit 1
     version=$(terragrunt -v | awk '{print $3}')
     echo "$version"
-    sleep 2
+    sleep 1
     if [[ "$version" == "$expected_version" ]]; then
         echo "Switch successful"
     else
@@ -66,7 +66,7 @@ function runtestarg(){
     ./build/tgswitch "$arg"|| exit 1
     version=$(terragrunt -v | awk '{print $3}')
     echo "$version"
-    sleep 2
+    sleep 1
     if [[ "$version" == "$expected_version" ]]; then
         echo "Switch successful"
     else
@@ -78,7 +78,7 @@ function runtestarg(){
 
 runtestdir "terragrunt version" "test_terragrunt-version" "v0.36.0"
 runtestdir "terragrunt hcl" "test_terragrunt_hcl" "v0.36.0"
-runtestdir "tfswitchrc" "test_tgswitchrc" "v0.33.0"
-runtestdir ".toml" "test_tfswitchtoml" "v0.34.0"
+runtestdir "tgswitchrc" "test_tgswitchrc" "v0.33.0"
+runtestdir ".toml" "test_tgswitchtoml" "v0.34.0"
 runtestenv "env variable" "0.37.1" "v0.37.1"
 runtestarg "passing argument" "0.36.1" "v0.36.1"

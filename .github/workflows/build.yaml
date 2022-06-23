@@ -9,7 +9,7 @@ on:
 
 
 jobs:
-  hubapp-build:
+  tgswitch-build:
     name: Workflow
     runs-on: ubuntu-latest
     steps:
