@@ -171,8 +171,8 @@ func ValidVersionFormat(version string) bool {
 //Install : Install the provided version in the argument
 func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	/* Check to see if user has permission to the default bin location which is  "/usr/local/bin/terragrunt"
-	 * If user does not have permission to default bin location, proceed to create $HOME/bin and install the tfswitch there
-	 * Inform user that they dont have permission to default location, therefore tfswitch was installed in $HOME/bin
+	 * If user does not have permission to default bin location, proceed to create $HOME/bin and install the tgswitch there
+	 * Inform user that they dont have permission to default location, therefore tgswitch was installed in $HOME/bin
 	 * Tell users to add $HOME/bin to their path
 	 */
 	binPath := InstallableBinLocation(usrBinPath)

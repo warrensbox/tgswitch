@@ -46,10 +46,10 @@ var version = "0.5.0\n"
 func main() {
 
 	dir := lib.GetCurrentDirectory()
-	custBinPath := getopt.StringLong("bin", 'b', lib.ConvertExecutableExt(defaultBin), "Custom binary path. Ex: tfswitch -b "+lib.ConvertExecutableExt("/Users/username/bin/terragrunt"))
+	custBinPath := getopt.StringLong("bin", 'b', lib.ConvertExecutableExt(defaultBin), "Custom binary path. Ex: tgswitch -b "+lib.ConvertExecutableExt("/Users/username/bin/terragrunt"))
 	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tgswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
-	chDirPath := getopt.StringLong("chdir", 'c', dir, "Switch to a different working directory before executing the given command. Ex: tgswitch --chdir terragrunt dir will run tfswitch in the directory")
+	chDirPath := getopt.StringLong("chdir", 'c', dir, "Switch to a different working directory before executing the given command. Ex: tgswitch --chdir terragrunt dir will run tgswitch in the directory")
 	_ = versionFlag
 
 	getopt.Parse()
@@ -119,7 +119,7 @@ func main() {
 		/* if terragrunt.hcl file found (IN ADDITION TO A TOML FILE) */
 		case lib.FileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
 			installTGHclFile(&TGHACLFile, binPath, proxyUrl)
-		/* if Terraform Version environment variable is set  (IN ADDITION TO A TOML FILE)*/
+		/* if terragrunt Version environment variable is set  (IN ADDITION TO A TOML FILE)*/
 		case checkTGEnvExist() && len(args) == 0 && version == "":
 			tgversion := os.Getenv("TG_VERSION")
 			fmt.Printf("Terragrunt version environment variable: %s\n", tgversion)
@@ -159,7 +159,7 @@ func main() {
 	/* if terragrunt.hcl file found */
 	case lib.FileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
 		installTGHclFile(&TGHACLFile, *custBinPath, proxyUrl)
-	/* if Terraform Version environment variable is set*/
+	/* if terragrunt Version environment variable is set*/
 	case checkTGEnvExist() && len(args) == 0:
 		tgversion := os.Getenv("TG_VERSION")
 		fmt.Printf("Terragrunt version environment variable: %s\n", tgversion)
@@ -245,7 +245,7 @@ func installVersion(arg string, custBinPath *string) {
 		recentDownloadFile := lib.CheckFileExist(installFileVersionPath)
 		if recentDownloadFile {
 			lib.ChangeSymlink(installFileVersionPath, *custBinPath)
-			fmt.Printf("Switched terraform to version %q \n", requestedVersion)
+			fmt.Printf("Switched terragrunt to version %q \n", requestedVersion)
 			lib.AddRecent(requestedVersion) //add to recent file for faster lookup
 			os.Exit(0)
 		}
@@ -264,7 +264,7 @@ func installVersion(arg string, custBinPath *string) {
 	} else {
 		lib.PrintInvalidTGVersion()
 		usageMessage()
-		log.Fatalln("Args must be a valid terraform version")
+		log.Fatalln("Args must be a valid terragrunt version")
 	}
 }
 
