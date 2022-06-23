@@ -14,10 +14,12 @@ jobs:
     steps:
 
     - name: Checkout Repository
-      uses: actions/checkout@master
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Checkout go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: '1.18' # The Go version to download (if necessary) and use.
 
@@ -39,14 +41,14 @@ jobs:
       run: chmod 755 test-tgswitch.sh && ./test-tgswitch.sh
 
     - name: Bump version and push tag
-      uses: anothrNick/github-tag-action@1.26.0
+      uses: anothrNick/github-tag-action@1.39.0
       id: vars
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         WITH_V: false
         INITIAL_VERSION: 0.6.0
         RELEASE_BRANCHES: release
-        DEFAULT_BUMP: patch
+        DEFAULT_BUMP: minor
 
     - name: Check output
       env:
@@ -54,13 +56,14 @@ jobs:
       run: |
         echo $RELEASE_VERSION
         echo ${{ steps.vars.outputs.tag }}
+
     - name: Install GoReleaser
-      uses: goreleaser/goreleaser-action@v2
+      uses: goreleaser/goreleaser-action@v3
       with:
         version: latest
         args: release --rm-dist
       env:
-        GITHUB_TOKEN: ${{ secrets.GORELEASER_GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.HOMEBREW_TOKEN_TGSWITCH }}
         RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
         CLIENT_ID: ${{ secrets.CLIENT_ID }}
         CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
