@@ -20,6 +20,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/hashicorp/hcl2/gohcl"
@@ -32,7 +33,6 @@ import (
 
 const (
 	terragruntURL = "https://github.com/gruntwork-io/terragrunt/releases/download/"
-	defaultBin    = "/usr/local/bin/terragrunt" //default bin installation dir
 	rcFilename    = ".tgswitchrc"
 	tgvFilename   = ".terragrunt-version"
 	versionPrefix = "terragrunt_"
@@ -40,6 +40,8 @@ const (
 	tomlFilename  = ".tgswitch.toml"
 	tgHclFilename = "terragrunt.hcl"
 )
+
+var defaultBin = getOSDefaultBin()
 
 var version = "0.5.0\n"
 
@@ -328,4 +330,18 @@ func checkVersionDefinedHCL(tgFile *string) bool {
 
 type terragruntVersionConstraints struct {
 	TerragruntVersionConstraint string `hcl:"terragrunt_version_constraint"`
+}
+
+func getOSDefaultBin() string {
+	//
+	const goos = runtime.GOOS
+	var homedir = lib.GetHomeDirectory()
+
+	if goos == "darwin" {
+		return homedir + "/bin/terragrunt"
+	}
+	if goos == "windows" {
+		return homedir + "/bin/terragrunt.exe"
+	}
+	return "/usr/local/bin/terragrunt"
 }
