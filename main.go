@@ -120,7 +120,7 @@ func main() {
 			installVersion(tgversion, &binPath)
 		/* if terragrunt.hcl file found (IN ADDITION TO A TOML FILE) */
 		case lib.FileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
-			installTGHclFile(&TGHACLFile, binPath, proxyUrl)
+			installTGHclFile(&TGHACLFile, binPath, terragruntURL)
 		/* if terragrunt Version environment variable is set  (IN ADDITION TO A TOML FILE)*/
 		case checkTGEnvExist() && len(args) == 0 && version == "":
 			tgversion := os.Getenv("TG_VERSION")
@@ -160,7 +160,7 @@ func main() {
 		installVersion(tgversion, custBinPath)
 	/* if terragrunt.hcl file found */
 	case lib.FileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
-		installTGHclFile(&TGHACLFile, *custBinPath, proxyUrl)
+		installTGHclFile(&TGHACLFile, *custBinPath, terragruntURL)
 	/* if terragrunt Version environment variable is set*/
 	case checkTGEnvExist() && len(args) == 0:
 		tgversion := os.Getenv("TG_VERSION")
@@ -278,7 +278,7 @@ func checkTGEnvExist() bool {
 // install using a version constraint
 func installFromConstraint(tgconstraint *string, custBinPath, mirrorURL string) {
 
-	tgversion, err := lib.GetSemver(tgconstraint, mirrorURL)
+	tgversion, err := lib.GetSemver(tgconstraint, proxyUrl)
 	if err == nil {
 		lib.Install(tgversion, custBinPath, mirrorURL)
 	}

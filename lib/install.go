@@ -185,7 +185,7 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 
 	/* check if selected version already downloaded */
 	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, installVersion+tgversion))
-	fileExist := CheckFileExist(installLocation + installVersion + tgversion)
+	fileExist := CheckFileExist(installFileVersionPath)
 
 	/* if selected version already exist, */
 	if fileExist {
@@ -212,8 +212,11 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
+	fmt.Println("MirrorURL: " + mirrorURL)
 	url := mirrorURL + "v" + tgversion + "/" + "terragrunt" + "_" + goos + "_" + goarch
-
+	if goos == "windows" {
+		url = url + ".exe"
+	}
 	downloadedFile, errDownload := DownloadFromURL(installLocation, url)
 
 	/* If unable to download file from url, exit(1) immediately */
