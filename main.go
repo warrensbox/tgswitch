@@ -20,6 +20,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/hashicorp/hcl2/gohcl"
@@ -32,7 +33,6 @@ import (
 
 const (
 	terragruntURL = "https://github.com/gruntwork-io/terragrunt/releases/download/"
-	defaultBin    = "/usr/local/bin/terragrunt" //default bin installation dir
 	rcFilename    = ".tgswitchrc"
 	tgvFilename   = ".terragrunt-version"
 	versionPrefix = "terragrunt_"
@@ -40,6 +40,8 @@ const (
 	tomlFilename  = ".tgswitch.toml"
 	tgHclFilename = "terragrunt.hcl"
 )
+
+var defaultBin = getOSDefaultBin()
 
 var version = "0.5.0\n"
 
@@ -118,7 +120,7 @@ func main() {
 			installVersion(tgversion, &binPath)
 		/* if terragrunt.hcl file found (IN ADDITION TO A TOML FILE) */
 		case lib.FileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
-			installTGHclFile(&TGHACLFile, binPath, proxyUrl)
+			installTGHclFile(&TGHACLFile, binPath, terragruntURL)
 		/* if terragrunt Version environment variable is set  (IN ADDITION TO A TOML FILE)*/
 		case checkTGEnvExist() && len(args) == 0 && version == "":
 			tgversion := os.Getenv("TG_VERSION")
@@ -158,7 +160,7 @@ func main() {
 		installVersion(tgversion, custBinPath)
 	/* if terragrunt.hcl file found */
 	case lib.FileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
-		installTGHclFile(&TGHACLFile, *custBinPath, proxyUrl)
+		installTGHclFile(&TGHACLFile, *custBinPath, terragruntURL)
 	/* if terragrunt Version environment variable is set*/
 	case checkTGEnvExist() && len(args) == 0:
 		tgversion := os.Getenv("TG_VERSION")
@@ -276,7 +278,7 @@ func checkTGEnvExist() bool {
 // install using a version constraint
 func installFromConstraint(tgconstraint *string, custBinPath, mirrorURL string) {
 
-	tgversion, err := lib.GetSemver(tgconstraint, mirrorURL)
+	tgversion, err := lib.GetSemver(tgconstraint, proxyUrl)
 	if err == nil {
 		lib.Install(tgversion, custBinPath, mirrorURL)
 	}
@@ -328,4 +330,18 @@ func checkVersionDefinedHCL(tgFile *string) bool {
 
 type terragruntVersionConstraints struct {
 	TerragruntVersionConstraint string `hcl:"terragrunt_version_constraint"`
+}
+
+func getOSDefaultBin() string {
+	//
+	const goos = runtime.GOOS
+	var homedir = lib.GetHomeDirectory()
+
+	if goos == "darwin" {
+		return homedir + "/bin/terragrunt"
+	}
+	if goos == "windows" {
+		return homedir + "/bin/terragrunt.exe"
+	}
+	return "/usr/local/bin/terragrunt"
 }

@@ -185,7 +185,7 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 
 	/* check if selected version already downloaded */
 	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, installVersion+tgversion))
-	fileExist := CheckFileExist(installLocation + installVersion + tgversion)
+	fileExist := CheckFileExist(installFileVersionPath)
 
 	/* if selected version already exist, */
 	if fileExist {
@@ -212,8 +212,11 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
+	fmt.Println("MirrorURL: " + mirrorURL)
 	url := mirrorURL + "v" + tgversion + "/" + "terragrunt" + "_" + goos + "_" + goarch
-
+	if goos == "windows" {
+		url = url + ".exe"
+	}
 	downloadedFile, errDownload := DownloadFromURL(installLocation, url)
 
 	/* If unable to download file from url, exit(1) immediately */
@@ -259,10 +262,8 @@ func InstallableBinLocation(userBinPath string) string {
 
 	if binPathExist == true { //if bin path exist - check if we can write to to it
 
-		binPathWritable := false //assume bin path is not writable
-		if runtime.GOOS != "windows" {
-			binPathWritable = CheckDirWritable(binDir) //check if is writable on ( only works on LINUX)
-		}
+		binPathWritable := false                   //assume bin path is not writable
+		binPathWritable = CheckDirWritable(binDir) //check if is writable on ( only works on LINUX)
 
 		// IF: "/usr/local/bin" or `custom bin path` provided by user is non-writable, (binPathWritable == false), we will attempt to install terragrunt at the ~/bin location. See ELSE
 		if binPathWritable == false {
