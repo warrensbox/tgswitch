@@ -1,0 +1,2 @@
+bin = "/usr/local/bin/terragrunt"
+version = "0.26.7"

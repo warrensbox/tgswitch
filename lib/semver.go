@@ -53,3 +53,12 @@ func SemVerParser(tfconstraint *string, tflist []string) (string, error) {
 func PrintInvalidTFVersion() {
 	fmt.Println("Version does not exist or invalid terraform version format.\n Format should be #.#.# or #.#.#-@# where # are numbers and @ are word characters.\n For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 }
+
+// Function that check constraint for darwin M1. Terragrunt started release arm64 versions for linux and darwin OS from version 0.28.12 included.
+// However, amd64 versions work on darwin arm64. To be tested on linux platforms.
+func CheckDarwinArm64VersionConstraint(tgversion string, goarch string, goos string) (bool, error) {
+	version, err := semver.NewVersion(tgversion)
+	darwinM1constraint, err := semver.NewConstraint("< 0.28.12")
+
+	return darwinM1constraint.Check(version) && goarch == "arm64" && goos == "darwin", err
+}

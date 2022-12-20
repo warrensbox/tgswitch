@@ -140,7 +140,7 @@ func GetRecentVersions() ([]string, error) {
 	return nil, nil
 }
 
-//CreateRecentFile : create a recent file
+// CreateRecentFile : create a recent file
 func CreateRecentFile(requestedVersion string) {
 
 	installLocation = GetInstallLocation()
@@ -168,7 +168,7 @@ func ValidVersionFormat(version string) bool {
 	return semverRegex.MatchString(version)
 }
 
-//Install : Install the provided version in the argument
+// Install : Install the provided version in the argument
 func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	/* Check to see if user has permission to the default bin location which is  "/usr/local/bin/terragrunt"
 	 * If user does not have permission to default bin location, proceed to create $HOME/bin and install the tgswitch there
@@ -182,6 +182,17 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
+
+	checkDarwinArm64Constraint, err := CheckDarwinArm64VersionConstraint(tgversion, goarch, goos)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	if checkDarwinArm64Constraint {
+		fmt.Printf("%s satisfies Darwin arm64 constraints for tg version < 0.28.12. Switching arch to amd64 \n", tgversion)
+		goarch = "amd64"
+	}
 
 	/* check if selected version already downloaded */
 	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, installVersion+tgversion))
@@ -225,7 +236,7 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	/* rename unzipped file to terragrunt version name - terraform_x.x.x */
 	RenameFile(downloadedFile, installFileVersionPath)
 
-	err := os.Chmod(installFileVersionPath, 0755)
+	err = os.Chmod(installFileVersionPath, 0755)
 	if err != nil {
 		log.Println(err)
 	}
@@ -244,9 +255,9 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	return ""
 }
 
-//InstallableBinLocation : Checks if terragrunt is installable in the location provided by the user.
-//If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH
-//Return $HOME/bin as install location
+// InstallableBinLocation : Checks if terragrunt is installable in the location provided by the user.
+// If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH
+// Return $HOME/bin as install location
 func InstallableBinLocation(userBinPath string) string {
 
 	usr, errCurr := user.Current()
@@ -294,7 +305,7 @@ func PrintCreateDirStmt(unableDir string, writable string) {
 	fmt.Printf("RUN `export PATH=$PATH:%s` to append bin to $PATH\n", writable)
 }
 
-//ConvertExecutableExt : convert excutable with local OS extension
+// ConvertExecutableExt : convert excutable with local OS extension
 func ConvertExecutableExt(fpath string) string {
 	switch runtime.GOOS {
 	case "windows":
