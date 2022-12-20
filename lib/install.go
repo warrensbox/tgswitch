@@ -9,6 +9,8 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
+
+	semver "github.com/hashicorp/go-version"
 )
 
 const (
@@ -140,7 +142,7 @@ func GetRecentVersions() ([]string, error) {
 	return nil, nil
 }
 
-//CreateRecentFile : create a recent file
+// CreateRecentFile : create a recent file
 func CreateRecentFile(requestedVersion string) {
 
 	installLocation = GetInstallLocation()
@@ -168,7 +170,7 @@ func ValidVersionFormat(version string) bool {
 	return semverRegex.MatchString(version)
 }
 
-//Install : Install the provided version in the argument
+// Install : Install the provided version in the argument
 func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	/* Check to see if user has permission to the default bin location which is  "/usr/local/bin/terragrunt"
 	 * If user does not have permission to default bin location, proceed to create $HOME/bin and install the tgswitch there
@@ -182,6 +184,15 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
+	versionObj, err := semver.NewVersion(tgversion)
+
+	// Constraint for darwin M1. Terragrunt started release arm64 versions for linux and darwin OS from version 0.28.12 included.
+	// However, amd64 versions work on darwin arm64. To be tested on linux platforms.
+	darwinM1constraint, err := semver.NewConstraint("< 0.28.12")
+	if darwinM1constraint.Check(versionObj) && goarch == "arm64" && goos == "darwin" {
+		fmt.Printf("%s satisfies constraints %s", versionObj, darwinM1constraint)
+		goarch = "amd64"
+	}
 
 	/* check if selected version already downloaded */
 	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, installVersion+tgversion))
@@ -244,9 +255,9 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	return ""
 }
 
-//InstallableBinLocation : Checks if terragrunt is installable in the location provided by the user.
-//If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH
-//Return $HOME/bin as install location
+// InstallableBinLocation : Checks if terragrunt is installable in the location provided by the user.
+// If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH
+// Return $HOME/bin as install location
 func InstallableBinLocation(userBinPath string) string {
 
 	usr, errCurr := user.Current()
@@ -294,7 +305,7 @@ func PrintCreateDirStmt(unableDir string, writable string) {
 	fmt.Printf("RUN `export PATH=$PATH:%s` to append bin to $PATH\n", writable)
 }
 
-//ConvertExecutableExt : convert excutable with local OS extension
+// ConvertExecutableExt : convert excutable with local OS extension
 func ConvertExecutableExt(fpath string) string {
 	switch runtime.GOOS {
 	case "windows":
