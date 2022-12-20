@@ -82,3 +82,5 @@ runtestdir "tgswitchrc" "test_tgswitchrc" "v0.33.0"
 runtestdir ".toml" "test_tgswitchtoml" "v0.34.0"
 runtestenv "env variable" "0.37.1" "v0.37.1"
 runtestarg "passing argument" "0.36.1" "v0.36.1"
+# M1 darwin arm64 test
+runtestarg "passing argument" "0.28.0" "v0.28.0"

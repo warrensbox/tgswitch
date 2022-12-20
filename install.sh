@@ -337,7 +337,7 @@ End of functions from https://github.com/client9/shlib
 EOF
 
 PROJECT_NAME="tgswitch"
-OWNER=warrensbox
+OWNER=EliaBracciSumo
 REPO="tgswitch"
 BINARY=tgswitch
 FORMAT=tar.gz
