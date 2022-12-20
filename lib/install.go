@@ -185,7 +185,11 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 
 	checkDarwinArm64Constraint, err := CheckDarwinArm64VersionConstraint(tgversion, goarch, goos)
 
-	if checkDarwinArm64Constraint && err == nil {
+	if err != nil {
+		log.Println(err)
+	}
+
+	if checkDarwinArm64Constraint {
 		fmt.Printf("%s satisfies Darwin arm64 constraints for tg version < 0.28.12. Switching arch to amd64 \n", tgversion)
 		goarch = "amd64"
 	}
