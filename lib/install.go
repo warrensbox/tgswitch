@@ -236,7 +236,7 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	/* rename unzipped file to terragrunt version name - terraform_x.x.x */
 	RenameFile(downloadedFile, installFileVersionPath)
 
-	err := os.Chmod(installFileVersionPath, 0755)
+	err = os.Chmod(installFileVersionPath, 0755)
 	if err != nil {
 		log.Println(err)
 	}
