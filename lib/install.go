@@ -9,8 +9,6 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
-
-	semver "github.com/hashicorp/go-version"
 )
 
 const (
@@ -184,13 +182,11 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
-	versionObj, err := semver.NewVersion(tgversion)
 
-	// Constraint for darwin M1. Terragrunt started release arm64 versions for linux and darwin OS from version 0.28.12 included.
-	// However, amd64 versions work on darwin arm64. To be tested on linux platforms.
-	darwinM1constraint, err := semver.NewConstraint("< 0.28.12")
-	if darwinM1constraint.Check(versionObj) && goarch == "arm64" && goos == "darwin" {
-		fmt.Printf("%s satisfies constraints %s", versionObj, darwinM1constraint)
+	checkDarwinArm64Constraint, err := CheckDarwinArm64VersionConstraint(tgversion, goarch, goos)
+
+	if checkDarwinArm64Constraint && err == nil {
+		fmt.Printf("%s satisfies Darwin arm64 constraints for tg version < 0.28.12. Switching arch to amd64 \n", tgversion)
 		goarch = "amd64"
 	}
 
