@@ -1,8 +1,11 @@
+//go:build !windows
 // +build !windows
 
 package lib
 
-import "golang.org/x/sys/unix"
+import (
+	"golang.org/x/sys/unix"
+)
 
 //Check if user has permission to directory :
 //dir=path to file

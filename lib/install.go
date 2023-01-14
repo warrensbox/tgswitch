@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -8,7 +9,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
-	"strings"
+
+	"github.com/google/go-github/v49/github"
 )
 
 const (
@@ -169,7 +171,7 @@ func ValidVersionFormat(version string) bool {
 }
 
 //Install : Install the provided version in the argument
-func Install(tgversion string, usrBinPath string, mirrorURL string) string {
+func Install(ctx context.Context, tgVersion string, usrBinPath string, ghClient *github.Client) string {
 	/* Check to see if user has permission to the default bin location which is  "/usr/local/bin/terragrunt"
 	 * If user does not have permission to default bin location, proceed to create $HOME/bin and install the tgswitch there
 	 * Inform user that they dont have permission to default location, therefore tgswitch was installed in $HOME/bin
@@ -180,12 +182,9 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	initialize()                           //initialize path
 	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terragrunt binary file
 
-	goarch := runtime.GOARCH
-	goos := runtime.GOOS
-
 	/* check if selected version already downloaded */
-	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, installVersion+tgversion))
-	fileExist := CheckFileExist(installLocation + installVersion + tgversion)
+	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, installVersion+tgVersion))
+	fileExist := CheckFileExist(installLocation + installVersion + tgVersion)
 
 	/* if selected version already exist, */
 	if fileExist {
@@ -199,23 +198,14 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 
 		/* set symlink to desired version */
 		CreateSymlink(installFileVersionPath, binPath)
-		fmt.Printf("Switched terragrunt to version %q \n", tgversion)
-		AddRecent(tgversion) //add to recent file for faster lookup
+		fmt.Printf("Switched terragrunt to version %q \n", tgVersion)
+		AddRecent(tgVersion) //add to recent file for faster lookup
 		os.Exit(0)
 	}
 
-	//if does not have slash - append slash
-	hasSlash := strings.HasSuffix(mirrorURL, "/")
-	if !hasSlash {
-		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
-	}
+	asset := FindMatchingReleaseAsset(ctx, ghClient, tgVersion)
 
-	/* if selected version already exist, */
-	/* proceed to download it from the hashicorp release page */
-	url := mirrorURL + "v" + tgversion + "/" + "terragrunt" + "_" + goos + "_" + goarch
-
-	downloadedFile, errDownload := DownloadFromURL(installLocation, url)
-
+	downloadedFile, errDownload := DownloadFromURL(ctx, ghClient, installLocation, asset)
 	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {
 		fmt.Println(errDownload)
@@ -225,9 +215,9 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	/* rename unzipped file to terragrunt version name - terraform_x.x.x */
 	RenameFile(downloadedFile, installFileVersionPath)
 
-	err := os.Chmod(installFileVersionPath, 0755)
-	if err != nil {
-		log.Println(err)
+	chmodError := os.Chmod(installFileVersionPath, 0755)
+	if chmodError != nil {
+		log.Println(chmodError)
 	}
 	/* remove current symlink if exist*/
 	symlinkExist := CheckSymlink(binPath)
@@ -238,10 +228,43 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
-	fmt.Printf("Switched terragrunt to version %q \n", tgversion)
-	AddRecent(tgversion) //add to recent file for faster lookup
+	fmt.Printf("Switched terragrunt to version %q \n", tgVersion)
+	AddRecent(tgVersion) //add to recent file for faster lookup
 	os.Exit(0)
 	return ""
+}
+
+func FindMatchingReleaseAsset(ctx context.Context, ghClient *github.Client, tgVersion string) *github.ReleaseAsset {
+	repoOwner := ctx.Value("repoOwner").(string)
+	repoName := ctx.Value("repoName").(string)
+
+	goarch := runtime.GOARCH
+	goos := runtime.GOOS
+
+	var re = regexp.MustCompile("terragrunt" + "_" + goos + "_" + goarch)
+
+	var asset *github.ReleaseAsset
+	release, _, err := ghClient.Repositories.GetReleaseByTag(ctx, repoOwner, repoName, "v"+tgVersion)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	opt := &github.ListOptions{Page: 1, PerPage: 100}
+	releaseAssets, _, err := ghClient.Repositories.ListReleaseAssets(ctx, repoOwner, repoName, *release.ID, opt)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, v := range releaseAssets {
+		name := *v.Name
+		res := re.MatchString(name)
+		if !res {
+			continue
+		}
+		asset = v
+	}
+
+	return asset
 }
 
 //InstallableBinLocation : Checks if terragrunt is installable in the location provided by the user.
@@ -257,7 +280,7 @@ func InstallableBinLocation(userBinPath string) string {
 	binDir := Path(userBinPath)           //get path directory from binary path
 	binPathExist := CheckDirExist(binDir) //the default is /usr/local/bin but users can provide custom bin locations
 
-	if binPathExist == true { //if bin path exist - check if we can write to to it
+	if binPathExist { //if bin path exist - check if we can write to to it
 
 		binPathWritable := false //assume bin path is not writable
 		if runtime.GOOS != "windows" {
@@ -265,7 +288,7 @@ func InstallableBinLocation(userBinPath string) string {
 		}
 
 		// IF: "/usr/local/bin" or `custom bin path` provided by user is non-writable, (binPathWritable == false), we will attempt to install terragrunt at the ~/bin location. See ELSE
-		if binPathWritable == false {
+		if !binPathWritable {
 
 			homeBinExist := CheckDirExist(filepath.Join(usr.HomeDir, "bin")) //check to see if ~/bin exist
 			if homeBinExist {                                                //if ~/bin exist, install at ~/bin/terragrunt

@@ -1,6 +1,7 @@
 package lib_test
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/url"
@@ -9,17 +10,28 @@ import (
 	"runtime"
 	"testing"
 
+	"github.com/google/go-github/v49/github"
 	lib "github.com/warrensbox/tgswitch/lib"
+)
+
+const (
+	repoOwner string = "gruntwork-io"
+	repoName  string = "terragrunt"
 )
 
 // TestDownloadFromURL_FileNameMatch : Check expected filename exist when downloaded
 func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
-	gruntURL := "https://github.com/gruntwork-io/terragrunt/releases/download/"
 	installVersion := "terragrunt_"
 	installPath := "/.terragrunt.versions_test/"
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
+
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "repoOwner", repoOwner)
+	ctx = context.WithValue(ctx, "repoName", repoName)
+
+	ghClient := github.NewClient(nil)
 
 	// get current user
 	usr, errCurr := user.Current()
@@ -42,10 +54,10 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	/* test download lowest terragrunt version */
 	lowestVersion := "0.13.9"
+	asset := lib.FindMatchingReleaseAsset(ctx, ghClient, lowestVersion)
 
-	url := gruntURL + "v" + lowestVersion + "/" + installVersion + goos + "_" + goarch
 	expectedFile := usr.HomeDir + installPath + installVersion + goos + "_" + goarch
-	installedFile, _ := lib.DownloadFromURL(installLocation, url)
+	installedFile, _ := lib.DownloadFromURL(ctx, ghClient, installLocation, asset)
 
 	if installedFile == expectedFile {
 		t.Logf("Expected file %v", expectedFile)
@@ -59,10 +71,10 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	/* test download latest terragrunt version */
 	latestVersion := "0.14.11"
+	asset = lib.FindMatchingReleaseAsset(ctx, ghClient, latestVersion)
 
-	url = gruntURL + "v" + latestVersion + "/" + installVersion + goos + "_" + goarch
 	expectedFile = usr.HomeDir + installPath + installVersion + goos + "_" + goarch
-	installedFile, _ = lib.DownloadFromURL(installLocation, url)
+	installedFile, _ = lib.DownloadFromURL(ctx, ghClient, installLocation, asset)
 
 	if installedFile == expectedFile {
 		t.Logf("Expected file name %v", expectedFile)
@@ -80,11 +92,16 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 // TestDownloadFromURL_FileExist : Check expected file exist when downloaded
 func TestDownloadFromURL_FileExist(t *testing.T) {
 
-	gruntURL := "https://github.com/gruntwork-io/terragrunt/releases/download/"
 	installVersion := "terragrunt_"
 	installPath := "/.terragrunt.versions_test/"
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
+
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "repoOwner", repoOwner)
+	ctx = context.WithValue(ctx, "repoName", repoName)
+
+	ghClient := github.NewClient(nil)
 
 	// get current user
 	usr, errCurr := user.Current()
@@ -107,10 +124,10 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 
 	/* test download lowest terragrunt version */
 	lowestVersion := "0.13.9"
+	asset := lib.FindMatchingReleaseAsset(ctx, ghClient, lowestVersion)
 
-	url := gruntURL + "v" + lowestVersion + "/" + installVersion + goos + "_" + goarch
 	expectedFile := usr.HomeDir + installPath + installVersion + goos + "_" + goarch
-	installedFile, _ := lib.DownloadFromURL(installLocation, url)
+	installedFile, _ := lib.DownloadFromURL(ctx, ghClient, installLocation, asset)
 
 	if checkFileExist(expectedFile) {
 		t.Logf("Expected file %v", expectedFile)
@@ -124,10 +141,10 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 
 	/* test download latest terragrunt version */
 	latestVersion := "0.14.11"
+	asset = lib.FindMatchingReleaseAsset(ctx, ghClient, latestVersion)
 
-	url = gruntURL + "v" + latestVersion + "/" + installVersion + goos + "_" + goarch
 	expectedFile = usr.HomeDir + installPath + installVersion + goos + "_" + goarch
-	installedFile, _ = lib.DownloadFromURL(installLocation, url)
+	installedFile, _ = lib.DownloadFromURL(ctx, ghClient, installLocation, asset)
 
 	if checkFileExist(expectedFile) {
 		t.Logf("Expected file %v", expectedFile)

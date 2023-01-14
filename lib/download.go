@@ -1,18 +1,22 @@
 package lib
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
-	"strings"
+
+	"github.com/google/go-github/v49/github"
 )
 
 // DownloadFromURL : Downloads the binary from the source url
-func DownloadFromURL(installLocation string, url string) (string, error) {
+func DownloadFromURL(ctx context.Context, ghClient *github.Client, installLocation string, asset *github.ReleaseAsset) (string, error) {
 
-	tokens := strings.Split(url, "/")
-	fileName := tokens[len(tokens)-1]
+	fileName := *asset.Name
+	url := *asset.BrowserDownloadURL
+	repoOwner := ctx.Value("repoOwner").(string)
+	repoName := ctx.Value("repoName").(string)
 	fmt.Println("Downloading", url, "to", fileName)
 	fmt.Println("Downloading ...")
 
@@ -23,16 +27,16 @@ func DownloadFromURL(installLocation string, url string) (string, error) {
 	}
 	defer output.Close()
 
-	response, err := http.Get(url)
+	rc, _, err := ghClient.Repositories.DownloadReleaseAsset(ctx, repoOwner, repoName, *asset.ID, http.DefaultClient)
 	if err != nil {
 		fmt.Println("Error while downloading", url, "-", err)
 		return "", err
 	}
-	defer response.Body.Close()
+	defer rc.Close()
 
-	n, errCopy := io.Copy(output, response.Body)
+	n, errCopy := io.Copy(output, rc)
 	if errCopy != nil {
-		fmt.Println("Error while downloading", url, "-", errCopy)
+		fmt.Println("Error while writing to disk", url, "-", errCopy)
 		return "", errCopy
 	}
 
