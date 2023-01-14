@@ -7,10 +7,6 @@ import (
 	"github.com/warrensbox/tgswitch/lib"
 )
 
-const (
-	gruntURL = "https://api.github.com/repos/gruntwork-io/terragrunt/releases"
-)
-
 //TestRemoveDuplicateVersions :  test to removed duplicate
 func TestRemoveDuplicateVersions(t *testing.T) {
 

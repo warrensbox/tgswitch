@@ -1,16 +1,18 @@
 package lib
 
 import (
+	"context"
 	"fmt"
 	"sort"
 
+	"github.com/google/go-github/v49/github"
 	semver "github.com/hashicorp/go-version"
 )
 
 // GetSemver : returns version that will be installed based on server constaint provided
-func GetSemver(tgconstraint *string, proxyUrl string) (string, error) {
+func GetSemver(ctx context.Context, tgconstraint *string, ghClient *github.Client) (string, error) {
 
-	tglist := GetAppList(proxyUrl) //get list of versions
+	tglist := GetAppList(ctx, ghClient)
 	fmt.Printf("Reading required version from constraint: %s\n", *tgconstraint)
 	tfversion, err := SemVerParser(tgconstraint, tglist)
 	return tfversion, err

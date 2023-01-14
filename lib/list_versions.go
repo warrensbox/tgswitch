@@ -1,16 +1,16 @@
 package lib
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"context"
 	"log"
-	"net/http"
 	"reflect"
+	"regexp"
 	"strings"
-	"time"
+
+	"github.com/google/go-github/v49/github"
 )
 
-//VersionExist : check if requested version exist
+// VersionExist : check if requested version exist
 func VersionExist(val interface{}, array interface{}) (exists bool) {
 
 	exists = false
@@ -19,7 +19,7 @@ func VersionExist(val interface{}, array interface{}) (exists bool) {
 		s := reflect.ValueOf(array)
 
 		for i := 0; i < s.Len(); i++ {
-			if reflect.DeepEqual(val, s.Index(i).Interface()) == true {
+			if reflect.DeepEqual(val, s.Index(i).Interface()) {
 				exists = true
 				return exists
 			}
@@ -29,17 +29,15 @@ func VersionExist(val interface{}, array interface{}) (exists bool) {
 	return exists
 }
 
-//RemoveDuplicateVersions : remove duplicate version
+// RemoveDuplicateVersions : remove duplicate version
 func RemoveDuplicateVersions(elements []string) []string {
 	// Use map to record duplicates as we find them.
 	encountered := map[string]bool{}
 	result := []string{}
 
 	for _, val := range elements {
-		versionOnly := strings.Trim(val, " *recent")
-		if encountered[versionOnly] == true {
-			// Do not add duplicate.
-		} else {
+		versionOnly := strings.TrimSuffix(val, " *recent")
+		if !encountered[versionOnly] {
 			// Record this element as an encountered element.
 			encountered[versionOnly] = true
 			// Append to result slice.
@@ -50,40 +48,32 @@ func RemoveDuplicateVersions(elements []string) []string {
 	return result
 }
 
-func GetAppList(gruntURLPage string) []string {
+func GetAppList(ctx context.Context, ghClient *github.Client) []string {
+	repoOwner := ctx.Value("repoOwner").(string)
+	repoName := ctx.Value("repoName").(string)
 
-	gswitch := http.Client{
-		Timeout: time.Second * 10, // Maximum of 10 secs [decresing this seem to fail]
-	}
-
-	req, err := http.NewRequest(http.MethodGet, gruntURLPage, nil)
+	opt := &github.ListOptions{Page: 1, PerPage: 100}
+	releases, _, err := ghClient.Repositories.ListReleases(ctx, repoOwner, repoName, opt)
 	if err != nil {
 		log.Fatal("Unable to make request. Please try again.")
 	}
 
-	req.Header.Set("User-Agent", "github-appinstaller")
+	var re = regexp.MustCompile(`^v([0-9]+\.[0-9]+\.[0-9]+)$`)
 
-	res, getErr := gswitch.Do(req)
-	if getErr != nil {
-		log.Fatal("Unable to make request Please try again.")
+	values := []string{}
+	for _, v := range releases {
+		name := *v.Name
+		res := re.MatchString(name)
+		if !res {
+			continue
+		}
+		version := re.ReplaceAllString(name, `$1`)
+		values = append(values, version)
 	}
 
-	body, readErr := ioutil.ReadAll(res.Body)
-	if readErr != nil {
-		log.Println("Unable to get release from repo ", string(body))
-		log.Fatal(readErr)
-	}
-
-	var repo ListVersion
-	jsonErr := json.Unmarshal(body, &repo)
-	if jsonErr != nil {
-		log.Println("Unable to get release from repo ", string(body))
-		log.Fatal(jsonErr)
-	}
-
-	return repo.Versions
+	return values
 }
 
 type ListVersion struct {
-	Versions []string `json:"Versions"`
+	Name string `json:"name"`
 }
