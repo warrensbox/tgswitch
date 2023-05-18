@@ -15,7 +15,7 @@ const (
 	gruntURL       = "https://github.com/gruntwork-io/terragrunt/releases/download/"
 	installFile    = "terragrunt"
 	installVersion = "terragrunt_"
-	installPath    = "/.terragrunt.versions/"
+	installFolder  = ".terragrunt.versions"
 	recentFile     = "RECENT"
 )
 
@@ -50,24 +50,22 @@ func initialize() {
 }
 
 // GetInstallLocation : get location where the terragrunt binary will be installed,
-// will create a directory in the home location if it does not exist
-func GetInstallLocation() string {
-	/* get current user */
-	usr, errCurr := user.Current()
-	if errCurr != nil {
-		log.Fatal(errCurr)
-	}
+// will create the installFolder if it does not exist
+func GetInstallLocation(installPath string) string {
 	/* set installation location */
-	installLocation = usr.HomeDir + installPath
+	installLocation = filepath.Join(installPath, installFolder)
+
 	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
+
 	return installLocation
+
 }
 
 // AddRecent : add to recent file
-func AddRecent(requestedVersion string) {
+func AddRecent(requestedVersion string, installPath string) {
 
-	installLocation = GetInstallLocation()
+	installLocation = GetInstallLocation(installPath)
 
 	semverRegex := regexp.MustCompile(`\d+(\.\d+){2}\z`)
 
@@ -83,7 +81,7 @@ func AddRecent(requestedVersion string) {
 		for _, line := range lines {
 			if !semverRegex.MatchString(line) {
 				RemoveFiles(installLocation + recentFile)
-				CreateRecentFile(requestedVersion)
+				CreateRecentFile(requestedVersion, installPath)
 				return
 			}
 		}
@@ -103,14 +101,14 @@ func AddRecent(requestedVersion string) {
 		}
 
 	} else {
-		CreateRecentFile(requestedVersion)
+		CreateRecentFile(requestedVersion, installPath)
 	}
 }
 
 // GetRecentVersions : get recent version from file
-func GetRecentVersions() ([]string, error) {
+func GetRecentVersions(installPath string) ([]string, error) {
 
-	installLocation = GetInstallLocation()
+	installLocation = GetInstallLocation(installPath)
 
 	fileExist := CheckFileExist(installLocation + recentFile)
 	if fileExist {
@@ -140,10 +138,10 @@ func GetRecentVersions() ([]string, error) {
 	return nil, nil
 }
 
-//CreateRecentFile : create a recent file
-func CreateRecentFile(requestedVersion string) {
+// CreateRecentFile : create a recent file
+func CreateRecentFile(requestedVersion string, installPath string) {
 
-	installLocation = GetInstallLocation()
+	installLocation = GetInstallLocation(installPath)
 	WriteLines([]string{requestedVersion}, installLocation+recentFile)
 }
 
@@ -168,8 +166,8 @@ func ValidVersionFormat(version string) bool {
 	return semverRegex.MatchString(version)
 }
 
-//Install : Install the provided version in the argument
-func Install(tgversion string, usrBinPath string, mirrorURL string) string {
+// Install : Install the provided version in the argument
+func Install(tgversion string, usrBinPath string, installPath string, mirrorURL string) string {
 	/* Check to see if user has permission to the default bin location which is  "/usr/local/bin/terragrunt"
 	 * If user does not have permission to default bin location, proceed to create $HOME/bin and install the tgswitch there
 	 * Inform user that they dont have permission to default location, therefore tgswitch was installed in $HOME/bin
@@ -177,8 +175,8 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	 */
 	binPath := InstallableBinLocation(usrBinPath)
 
-	initialize()                           //initialize path
-	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terragrunt binary file
+	initialize()                                      //initialize path
+	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terragrunt binary file
 
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
@@ -200,7 +198,7 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 		/* set symlink to desired version */
 		CreateSymlink(installFileVersionPath, binPath)
 		fmt.Printf("Switched terragrunt to version %q \n", tgversion)
-		AddRecent(tgversion) //add to recent file for faster lookup
+		AddRecent(tgversion, installPath) //add to recent file for faster lookup
 		os.Exit(0)
 	}
 
@@ -239,14 +237,14 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
 	fmt.Printf("Switched terragrunt to version %q \n", tgversion)
-	AddRecent(tgversion) //add to recent file for faster lookup
+	AddRecent(tgversion, installPath) //add to recent file for faster lookup
 	os.Exit(0)
 	return ""
 }
 
-//InstallableBinLocation : Checks if terragrunt is installable in the location provided by the user.
-//If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH
-//Return $HOME/bin as install location
+// InstallableBinLocation : Checks if terragrunt is installable in the location provided by the user.
+// If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH
+// Return $HOME/bin as install location
 func InstallableBinLocation(userBinPath string) string {
 
 	usr, errCurr := user.Current()
@@ -294,7 +292,7 @@ func PrintCreateDirStmt(unableDir string, writable string) {
 	fmt.Printf("RUN `export PATH=$PATH:%s` to append bin to $PATH\n", writable)
 }
 
-//ConvertExecutableExt : convert excutable with local OS extension
+// ConvertExecutableExt : convert excutable with local OS extension
 func ConvertExecutableExt(fpath string) string {
 	switch runtime.GOOS {
 	case "windows":

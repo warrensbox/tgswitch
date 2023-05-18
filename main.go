@@ -46,7 +46,10 @@ var version = "0.5.0\n"
 func main() {
 
 	dir := lib.GetCurrentDirectory()
+	homedir := lib.GetHomeDirectory()
+
 	custBinPath := getopt.StringLong("bin", 'b', lib.ConvertExecutableExt(defaultBin), "Custom binary path. Ex: tgswitch -b "+lib.ConvertExecutableExt("/Users/username/bin/terragrunt"))
+	installPath := getopt.StringLong("install", 'i', homedir, "Custom install path. Ex: tfswitch -i /Users/username")
 	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tgswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
 	chDirPath := getopt.StringLong("chdir", 'c', dir, "Switch to a different working directory before executing the given command. Ex: tgswitch --chdir terragrunt dir will run tgswitch in the directory")
@@ -60,8 +63,6 @@ func main() {
 		log.Printf("Failed to get current directory %v\n", err)
 		os.Exit(1)
 	}
-
-	homedir := lib.GetHomeDirectory()
 
 	TOMLConfigFile := filepath.Join(*chDirPath, tomlFilename)  //settings for .tgswitch.toml file in current directory (option to specify bin directory)
 	HomeTOMLConfigFile := filepath.Join(homedir, tomlFilename) //settings for .tgswitch.toml file in home directory (option to specify bin directory)
@@ -84,9 +85,9 @@ func main() {
 		version := ""
 		binPath := *custBinPath
 		if lib.FileExists(TOMLConfigFile) { //read from toml from current directory
-			version, binPath = GetParamsTOML(binPath, *chDirPath)
+			version, binPath, *installPath = GetParamsTOML(binPath, *installPath, *chDirPath)
 		} else { // else read from toml from home directory
-			version, binPath = GetParamsTOML(binPath, homedir)
+			version, binPath, *installPath = GetParamsTOML(binPath, *installPath, homedir)
 		}
 
 		/* GIVEN A TOML FILE, */
@@ -99,7 +100,7 @@ func main() {
 				exist := lib.VersionExist(requestedVersion, listOfVersions)
 
 				if exist {
-					installLocation := lib.Install(requestedVersion, binPath, terragruntURL)
+					installLocation := lib.Install(requestedVersion, binPath, *installPath, terragruntURL)
 					fmt.Println("Install Location:", installLocation)
 				}
 			} else {
@@ -110,26 +111,26 @@ func main() {
 		case lib.FileExists(RCFile) && len(args) == 0:
 			lib.ReadingFileMsg(rcFilename)
 			tgversion := lib.RetrieveFileContents(RCFile)
-			installVersion(tgversion, &binPath)
+			installVersion(tgversion, &binPath, installPath)
 		/* if .terragrunt-version file found (IN ADDITION TO A TOML FILE) */
 		case lib.FileExists(TGVersionFile) && len(args) == 0:
 			lib.ReadingFileMsg(TGVersionFile)
 			tgversion := lib.RetrieveFileContents(TGVersionFile)
-			installVersion(tgversion, &binPath)
+			installVersion(tgversion, &binPath, installPath)
 		/* if terragrunt.hcl file found (IN ADDITION TO A TOML FILE) */
 		case lib.FileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
-			installTGHclFile(&TGHACLFile, binPath, proxyUrl)
+			installTGHclFile(&TGHACLFile, binPath, *installPath, proxyUrl)
 		/* if terragrunt Version environment variable is set  (IN ADDITION TO A TOML FILE)*/
 		case checkTGEnvExist() && len(args) == 0 && version == "":
 			tgversion := os.Getenv("TG_VERSION")
 			fmt.Printf("Terragrunt version environment variable: %s\n", tgversion)
-			installVersion(tgversion, &binPath)
+			installVersion(tgversion, &binPath, installPath)
 		/* if version is specified in the .toml file */
 		case version != "":
-			lib.Install(version, binPath, terragruntURL)
+			lib.Install(version, binPath, *installPath, terragruntURL)
 		/* show dropdown */
 		default:
-			installFromList(&binPath)
+			installFromList(&binPath, installPath)
 		}
 
 	case len(args) == 1:
@@ -140,7 +141,7 @@ func main() {
 			exist := lib.VersionExist(requestedVersion, listOfVersions)
 
 			if exist {
-				installLocation := lib.Install(requestedVersion, *custBinPath, terragruntURL)
+				installLocation := lib.Install(requestedVersion, *custBinPath, *installPath, terragruntURL)
 				fmt.Println("Install Location:", installLocation)
 			}
 		} else {
@@ -151,22 +152,22 @@ func main() {
 	case lib.FileExists(RCFile) && len(args) == 0:
 		lib.ReadingFileMsg(rcFilename)
 		tgversion := lib.RetrieveFileContents(RCFile)
-		installVersion(tgversion, custBinPath)
+		installVersion(tgversion, custBinPath, installPath)
 	case lib.FileExists(TGVersionFile) && len(args) == 0:
 		lib.ReadingFileMsg(TGVersionFile)
 		tgversion := lib.RetrieveFileContents(TGVersionFile)
-		installVersion(tgversion, custBinPath)
+		installVersion(tgversion, custBinPath, installPath)
 	/* if terragrunt.hcl file found */
 	case lib.FileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
-		installTGHclFile(&TGHACLFile, *custBinPath, proxyUrl)
+		installTGHclFile(&TGHACLFile, *custBinPath, *installPath, proxyUrl)
 	/* if terragrunt Version environment variable is set*/
 	case checkTGEnvExist() && len(args) == 0:
 		tgversion := os.Getenv("TG_VERSION")
 		fmt.Printf("Terragrunt version environment variable: %s\n", tgversion)
-		installVersion(tgversion, custBinPath)
+		installVersion(tgversion, custBinPath, installPath)
 	/* show dropdown */
 	default:
-		installFromList(custBinPath)
+		installFromList(custBinPath, installPath)
 		os.Exit(0)
 	}
 
@@ -179,7 +180,7 @@ func usageMessage() {
 }
 
 /* parses everything in the toml file, return required version and bin path */
-func GetParamsTOML(binPath string, dir string) (string, string) {
+func GetParamsTOML(binPath string, installPath string, dir string) (string, string, string) {
 	path := lib.GetHomeDirectory()
 	if dir == path {
 		path = "home directory"
@@ -207,14 +208,19 @@ func GetParamsTOML(binPath string, dir string) (string, string) {
 		version = ""
 	}
 
-	return version.(string), binPath
+	install := viper.Get("install") //attempt to get the install path if it's provided in the toml
+	if install != nil {
+		installPath = os.ExpandEnv(install.(string))
+	}
+
+	return version.(string), binPath, installPath
 }
 
 /* installFromList : displays & installs tf version */
-func installFromList(custBinPath *string) {
+func installFromList(custBinPath *string, installPath *string) {
 
 	listOfVersions := lib.GetAppList(proxyUrl)
-	recentVersions, _ := lib.GetRecentVersions()                 //get recent versions from RECENT file
+	recentVersions, _ := lib.GetRecentVersions(*installPath)     //get recent versions from RECENT file
 	listOfVersions = append(recentVersions, listOfVersions...)   //append recent versions to the top of the list
 	listOfVersions = lib.RemoveDuplicateVersions(listOfVersions) //remove duplicate version
 
@@ -230,23 +236,23 @@ func installFromList(custBinPath *string) {
 		os.Exit(1)
 	}
 
-	lib.Install(tgversion, *custBinPath, terragruntURL)
+	lib.Install(tgversion, *custBinPath, *installPath, terragruntURL)
 	os.Exit(0)
 }
 
 // install with provided version as argument
-func installVersion(arg string, custBinPath *string) {
+func installVersion(arg string, custBinPath *string, installPath *string) {
 	if lib.ValidVersionFormat(arg) {
 		requestedVersion := arg
 
 		//check to see if the requested version has been downloaded before
-		installLocation := lib.GetInstallLocation()
+		installLocation := lib.GetInstallLocation(*installPath)
 		installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, versionPrefix+requestedVersion))
 		recentDownloadFile := lib.CheckFileExist(installFileVersionPath)
 		if recentDownloadFile {
 			lib.ChangeSymlink(installFileVersionPath, *custBinPath)
 			fmt.Printf("Switched terragrunt to version %q \n", requestedVersion)
-			lib.AddRecent(requestedVersion) //add to recent file for faster lookup
+			lib.AddRecent(requestedVersion, *installPath) //add to recent file for faster lookup
 			os.Exit(0)
 		}
 
@@ -257,7 +263,7 @@ func installVersion(arg string, custBinPath *string) {
 		exist := lib.VersionExist(requestedVersion, listOfVersions)
 
 		if exist {
-			installLocation := lib.Install(requestedVersion, *custBinPath, terragruntURL)
+			installLocation := lib.Install(requestedVersion, *custBinPath, *installPath, terragruntURL)
 			fmt.Println("Install Location:", installLocation)
 		}
 
@@ -274,11 +280,11 @@ func checkTGEnvExist() bool {
 }
 
 // install using a version constraint
-func installFromConstraint(tgconstraint *string, custBinPath, mirrorURL string) {
+func installFromConstraint(tgconstraint *string, custBinPath, installPath, mirrorURL string) {
 
 	tgversion, err := lib.GetSemver(tgconstraint, mirrorURL)
 	if err == nil {
-		lib.Install(tgversion, custBinPath, mirrorURL)
+		lib.Install(tgversion, custBinPath, installPath, mirrorURL)
 	}
 	fmt.Println(err)
 	fmt.Println("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/warrensbox/tgswitch/blob/master/README.md")
@@ -286,7 +292,7 @@ func installFromConstraint(tgconstraint *string, custBinPath, mirrorURL string) 
 }
 
 // Install using version constraint from terragrunt file
-func installTGHclFile(tgFile *string, custBinPath, mirrorURL string) {
+func installTGHclFile(tgFile *string, custBinPath, installPath, mirrorURL string) {
 	fmt.Printf("Terragrunt file found: %s\n", *tgFile)
 	parser := hclparse.NewParser()
 	file, diags := parser.ParseHCLFile(*tgFile) //use hcl parser to parse HCL file
@@ -296,7 +302,7 @@ func installTGHclFile(tgFile *string, custBinPath, mirrorURL string) {
 	}
 	var version terragruntVersionConstraints
 	gohcl.DecodeBody(file.Body, nil, &version)
-	installFromConstraint(&version.TerragruntVersionConstraint, custBinPath, mirrorURL)
+	installFromConstraint(&version.TerragruntVersionConstraint, custBinPath, installPath, mirrorURL)
 }
 
 // check if version is defined in hcl file /* lazy-emergency fix - will improve later */
@@ -312,7 +318,7 @@ func checkVersionDefinedHCL(tgFile *string) bool {
 }
 
 // Install using version constraint from terragrunt file
-// func installTGHclFile(tgFile *string, custBinPath *string) {
+// func installTGHclFile(tgFile *string, custBinPath *string, installPath *string) {
 // 	fmt.Printf("Terragrunt file found: %s\n", *tgFile)
 // 	parser := hclparse.NewParser()
 // 	file, diags := parser.ParseHCLFile(*tgFile) //use hcl parser to parse HCL file
@@ -323,7 +329,7 @@ func checkVersionDefinedHCL(tgFile *string) bool {
 // 	var version terragruntVersionConstraints
 // 	gohcl.DecodeBody(file.Body, nil, &version)
 // 	//TODO figure out sermver
-// 	//installFromConstraint(&version.TerragruntVersionConstraint, custBinPath)
+// 	//installFromConstraint(&version.TerragruntVersionConstraint, custBinPath, installPath)
 // }
 
 type terragruntVersionConstraints struct {

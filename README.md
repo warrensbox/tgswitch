@@ -112,6 +112,23 @@ tgswitch --chdir terragrunt_dir
 tgswitch -c terragrunt_dir
 ```
 
+### Install to non-default location
+
+By default `tfswitch` will download the Terraform binary to the user home directory under this path: `/Users/warrenveerasingam/.terraform.versions`
+
+If you want to install the binaries outside of the home directory then you can provide the `-i` or `--install` to install Terraform binaries to a non-standard path. Useful if you want to install versions of Terraform that can be shared with multiple users.
+
+The Terraform binaries will then be placed in the folder `.terraform.versions` under the custom install path e.g. `/opt/terraform/.terraform.versions`
+
+```bash
+tfswitch -i /opt/terraform/
+```
+
+**NOTE**
+
+* The folder must exists before you run `tfswitch`
+* The folder passed in `-i`/`--install` must be created before running `tfswtich`
+
 **Automatically switch with bash**
 
 Add the following to the end of your `~/.bashrc` file:
