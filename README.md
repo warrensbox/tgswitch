@@ -112,6 +112,22 @@ tgswitch --chdir terragrunt_dir
 tgswitch -c terragrunt_dir
 ```
 
+### Install to non-default location
+
+By default `tgswitch` will download the Terragrunt binary to the user home directory under this path: `/Users/warrenveerasingam/.terragrunt.versions`
+
+If you want to install the binaries outside of the home directory then you can provide the `-i` or `--install` to install Terragrunt binaries to a non-standard path. Useful if you want to install versions of Terragrunt that can be shared with multiple users.
+
+The Terragrunt binaries will then be placed in the directory `.terragrunt.versions` under the custom install path e.g. `/opt/terragrunt/.terragrunt.versions`
+
+```bash
+tgswitch -i /opt/terragrunt/
+```
+
+**NOTE**
+
+* The directory passed in `-i`/`--install` must be created before running `tgswitch`
+
 **Automatically switch with bash**
 
 Add the following to the end of your `~/.bashrc` file:
