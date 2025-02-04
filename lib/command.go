@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"fmt"
+	"io"
 )
 
 // Command : type string
@@ -79,4 +81,32 @@ func (cmd *Command) Find() func() string {
 	return func() string {
 		return <-pathChan
 	}
+}
+
+func copyFile(sourceFile string, destinationFile string) bool {
+	// Open the source file
+	src, err := os.Open(sourceFile)
+	if err != nil {
+		fmt.Println("Error opening source file:", err)
+		return false
+	}
+	defer src.Close()
+
+	// Create the destination file
+	dst, err := os.Create(destinationFile)
+	if err != nil {
+		fmt.Println("Error creating destination file:", err)
+		return false
+	}
+	defer dst.Close()
+
+	// Copy the contents
+	_, err = io.Copy(dst, src)
+	if err != nil {
+		fmt.Println("Error copying file:", err)
+		return false
+	}
+
+	fmt.Println("File copied successfully: ", sourceFile, "-", destinationFile)
+	return true
 }

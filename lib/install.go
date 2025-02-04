@@ -225,19 +225,31 @@ func Install(tgversion string, usrBinPath string, mirrorURL string) string {
 	/* rename unzipped file to terragrunt version name - terraform_x.x.x */
 	RenameFile(downloadedFile, installFileVersionPath)
 
-	err := os.Chmod(installFileVersionPath, 0755)
-	if err != nil {
-		log.Println(err)
-	}
-	/* remove current symlink if exist*/
-	symlinkExist := CheckSymlink(binPath)
+	switch runtime.GOOS {
+		case "windows":
+			errCopy := copyFile(installFileVersionPath, ConvertExecutableExt(binPath));
+			if errCopy != true {
+				fmt.Println("Error while copying file")
+				return ""
+			}
 
-	if symlinkExist {
-		RemoveSymlink(binPath)
-	}
+		default:
+			err := os.Chmod(installFileVersionPath, 0755)
+			if err != nil {
+				log.Println(err)
+			}
+			
+			/* remove current symlink if exist*/
+			symlinkExist := CheckSymlink(binPath)
 
-	/* set symlink to desired version */
-	CreateSymlink(installFileVersionPath, binPath)
+			if symlinkExist {
+				RemoveSymlink(binPath)
+			}
+
+			/* set symlink to desired version */
+			CreateSymlink(installFileVersionPath, binPath)
+	}
+	
 	fmt.Printf("Switched terragrunt to version %q \n", tgversion)
 	AddRecent(tgversion) //add to recent file for faster lookup
 	os.Exit(0)
@@ -297,12 +309,12 @@ func PrintCreateDirStmt(unableDir string, writable string) {
 //ConvertExecutableExt : convert excutable with local OS extension
 func ConvertExecutableExt(fpath string) string {
 	switch runtime.GOOS {
-	case "windows":
-		if filepath.Ext(fpath) == ".exe" {
+		case "windows":
+			if filepath.Ext(fpath) == ".exe" {
+				return fpath
+			}
+			return fpath + ".exe"
+		default:
 			return fpath
-		}
-		return fpath + ".exe"
-	default:
-		return fpath
 	}
 }
