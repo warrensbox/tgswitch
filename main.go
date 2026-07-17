@@ -31,19 +31,30 @@ import (
 )
 
 const (
-	terragruntURL = "https://github.com/gruntwork-io/terragrunt/releases/download/"
-	defaultBin    = "/usr/local/bin/terragrunt" //default bin installation dir
-	rcFilename    = ".tgswitchrc"
-	tgvFilename   = ".terragrunt-version"
-	versionPrefix = "terragrunt_"
-	proxyUrl      = "https://warrensbox.github.io/terragunt-versions-list/index.json"
-	tomlFilename  = ".tgswitch.toml"
-	tgHclFilename = "terragrunt.hcl"
+	defaultTerragruntURL = "https://github.com/gruntwork-io/terragrunt/releases/download/"
+	defaultBin           = "/usr/local/bin/terragrunt" //default bin installation dir
+	rcFilename           = ".tgswitchrc"
+	tgvFilename          = ".terragrunt-version"
+	versionPrefix        = "terragrunt_"
+	defaultProxyURL      = "https://warrensbox.github.io/terragunt-versions-list/index.json"
+	tomlFilename         = ".tgswitch.toml"
+	tgHclFilename        = "terragrunt.hcl"
 )
 
 var version = "0.5.0\n"
 
+// resolveRemoteURLs returns the terragrunt release URL and version-list proxy URL,
+// honoring TGENV_REMOTE for a custom release location when set.
+func resolveRemoteURLs() (terragruntURL, proxyUrl string) {
+	if remote := os.Getenv("TGENV_REMOTE"); remote != "" {
+		return remote, fmt.Sprintf("%s/versions.json", remote)
+	}
+	return defaultTerragruntURL, defaultProxyURL
+}
+
 func main() {
+
+	terragruntURL, proxyUrl := resolveRemoteURLs()
 
 	dir := lib.GetCurrentDirectory()
 	custBinPath := getopt.StringLong("bin", 'b', lib.ConvertExecutableExt(defaultBin), "Custom binary path. Ex: tgswitch -b "+lib.ConvertExecutableExt("/Users/username/bin/terragrunt"))
@@ -110,12 +121,12 @@ func main() {
 		case lib.FileExists(RCFile) && len(args) == 0:
 			lib.ReadingFileMsg(rcFilename)
 			tgversion := lib.RetrieveFileContents(RCFile)
-			installVersion(tgversion, &binPath)
+			installVersion(tgversion, &binPath, terragruntURL, proxyUrl)
 		/* if .terragrunt-version file found (IN ADDITION TO A TOML FILE) */
 		case lib.FileExists(TGVersionFile) && len(args) == 0:
 			lib.ReadingFileMsg(TGVersionFile)
 			tgversion := lib.RetrieveFileContents(TGVersionFile)
-			installVersion(tgversion, &binPath)
+			installVersion(tgversion, &binPath, terragruntURL, proxyUrl)
 		/* if terragrunt.hcl file found (IN ADDITION TO A TOML FILE) */
 		case lib.FileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
 			installTGHclFile(&TGHACLFile, binPath, terragruntURL)
@@ -123,13 +134,13 @@ func main() {
 		case checkTGEnvExist() && len(args) == 0 && version == "":
 			tgversion := os.Getenv("TG_VERSION")
 			fmt.Printf("Terragrunt version environment variable: %s\n", tgversion)
-			installVersion(tgversion, &binPath)
+			installVersion(tgversion, &binPath, terragruntURL, proxyUrl)
 		/* if version is specified in the .toml file */
 		case version != "":
 			lib.Install(version, binPath, terragruntURL)
 		/* show dropdown */
 		default:
-			installFromList(&binPath)
+			installFromList(&binPath, terragruntURL, proxyUrl)
 		}
 
 	case len(args) == 1:
@@ -151,11 +162,11 @@ func main() {
 	case lib.FileExists(RCFile) && len(args) == 0:
 		lib.ReadingFileMsg(rcFilename)
 		tgversion := lib.RetrieveFileContents(RCFile)
-		installVersion(tgversion, custBinPath)
+		installVersion(tgversion, custBinPath, terragruntURL, proxyUrl)
 	case lib.FileExists(TGVersionFile) && len(args) == 0:
 		lib.ReadingFileMsg(TGVersionFile)
 		tgversion := lib.RetrieveFileContents(TGVersionFile)
-		installVersion(tgversion, custBinPath)
+		installVersion(tgversion, custBinPath, terragruntURL, proxyUrl)
 	/* if terragrunt.hcl file found */
 	case lib.FileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
 		installTGHclFile(&TGHACLFile, *custBinPath, terragruntURL)
@@ -163,10 +174,10 @@ func main() {
 	case checkTGEnvExist() && len(args) == 0:
 		tgversion := os.Getenv("TG_VERSION")
 		fmt.Printf("Terragrunt version environment variable: %s\n", tgversion)
-		installVersion(tgversion, custBinPath)
+		installVersion(tgversion, custBinPath, terragruntURL, proxyUrl)
 	/* show dropdown */
 	default:
-		installFromList(custBinPath)
+		installFromList(custBinPath, terragruntURL, proxyUrl)
 		os.Exit(0)
 	}
 
@@ -211,7 +222,7 @@ func GetParamsTOML(binPath string, dir string) (string, string) {
 }
 
 /* installFromList : displays & installs tf version */
-func installFromList(custBinPath *string) {
+func installFromList(custBinPath *string, terragruntURL, proxyUrl string) {
 
 	listOfVersions := lib.GetAppList(proxyUrl)
 	recentVersions, _ := lib.GetRecentVersions()                 //get recent versions from RECENT file
@@ -235,7 +246,7 @@ func installFromList(custBinPath *string) {
 }
 
 // install with provided version as argument
-func installVersion(arg string, custBinPath *string) {
+func installVersion(arg string, custBinPath *string, terragruntURL, proxyUrl string) {
 	if lib.ValidVersionFormat(arg) {
 		requestedVersion := arg
 

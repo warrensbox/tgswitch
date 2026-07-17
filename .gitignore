@@ -24,6 +24,8 @@ tgswitch
 
 .DS_Store
 
+terragrunt-releases/
+
 docs/vendor/**
 
 docs/.bundle/**
